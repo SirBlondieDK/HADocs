@@ -1,38 +1,34 @@
 # Changelog
 
+## v0.4.0
+
+### Added
+- Rules Engine.
+- Integration-aware classification.
+- Built-in rulesets for noisy integrations.
+- Rule match report.
+- Integration health report.
+- Entity importance levels.
+
+### Changed
+- Health Score now uses integration rules before device health.
+- Diagnostic entities are filtered more aggressively.
+- Duplicate name warnings are reduced.
+
+## v0.3.1
+
+### Fixed
+- Python 3.11+ version handling.
+- Test imports.
+
+## v0.3.0
+
+### Added
+- HADocs Core internal model.
+- Device-level Health Engine.
+
 ## v0.2.0
 
 ### Added
 - CLI command structure.
-- `hadocs init` for guided configuration.
-- `hadocs doctor` for preflight checks.
-- `hadocs generate` for documentation generation.
-- Configuration validation.
-- Token safety checks.
-- Git safety checks for sensitive files.
-- Security documentation.
-- Better error messages.
-
-### Changed
-- Improved first-run experience.
-- Reorganized CLI into its own package.
-- Updated README with safety and usability principles.
-
-## v0.1.2
-
-### Changed
-- Improved Health Score calculation.
-- Added Home Assistant-aware ignored domains.
-- Added ignored entity pattern rules.
-- Added physical device detection.
-- Added Health Score explanation report.
-- Reduced false warnings from button, update, event, image, notify, conversation, stt, and tts entities.
-
-## v0.1.0
-
-### Added
-- Initial project structure.
-- REST and WebSocket data collection.
-- Markdown documentation.
-- GUI.
-- Basic Health Score.
+- Safety checks.

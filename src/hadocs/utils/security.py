@@ -20,14 +20,7 @@ def tracked_sensitive_files(path: str = ".") -> list[str]:
     if not is_git_repository(path) or not git_is_available():
         return []
 
-    result = subprocess.run(
-        ["git", "ls-files"],
-        cwd=path,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-
+    result = subprocess.run(["git", "ls-files"], cwd=path, capture_output=True, text=True, check=False)
     if result.returncode != 0:
         return []
 

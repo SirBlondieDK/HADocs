@@ -10,12 +10,7 @@ DEFAULT_CONFIG = {
     "cache_dir": "cache",
 }
 
-
-SENSITIVE_CONFIG_FILES = [
-    "config.json",
-    "config.local.json",
-    ".env",
-]
+SENSITIVE_CONFIG_FILES = ["config.json", "config.local.json", ".env"]
 
 
 def load_config(path: str = "config.json") -> dict:

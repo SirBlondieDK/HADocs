@@ -12,23 +12,19 @@ def collect_all(cfg: dict, log=print) -> dict:
 
     data = {}
 
-    rest_endpoints = {
+    for name, endpoint in {
         "states": "/api/states",
         "config": "/api/config",
         "services": "/api/services",
-    }
-
-    ws_calls = {
-        "entities": "config/entity_registry/list",
-        "devices": "config/device_registry/list",
-        "areas": "config/area_registry/list",
-    }
-
-    for name, endpoint in rest_endpoints.items():
+    }.items():
         log(f"Collecting {name}...")
         data[name] = api.rest_get(endpoint)
 
-    for name, msg_type in ws_calls.items():
+    for name, msg_type in {
+        "entities": "config/entity_registry/list",
+        "devices": "config/device_registry/list",
+        "areas": "config/area_registry/list",
+    }.items():
         log(f"Collecting {name}...")
         data[name] = api.ws_call(msg_type)
 
