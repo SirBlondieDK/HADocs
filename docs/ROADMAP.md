@@ -1,27 +1,29 @@
 # Roadmap
 
-## v0.1
-- REST + WebSocket dataindsamling
-- Markdown-rapporter
+## v0.1.x
+- Project structure
+- REST + WebSocket collection
+- Markdown reports
 - GUI
-- Health Score
+- Health Score v2
 
 ## v0.2
-- Læse automationer/scripts YAML
-- Finde relationer mellem automationer og entities
-- Finde entities der ikke bruges
+- Automation analyzer
+- Script analyzer
+- Helper analyzer
 
 ## v0.3
-- Dashboard-parser
-- Lovelace relationer
-- Foreslå dashboard-oprydning
+- Dashboard analyzer
+- Dead entity references
+- Unused helpers
 
 ## v0.4
-- Diagrammer
-- Netværkskort
-- Proxmox visning
+- Relationship Engine
+
+## v0.5
+- Plugin system
 
 ## v1.0
-- Windows .exe
-- Installer
-- GitHub release workflow
+- PyPI package
+- Windows executable
+- Interactive HTML reports

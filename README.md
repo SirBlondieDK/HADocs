@@ -6,6 +6,7 @@ HADocs is an open-source tool that automatically documents, analyzes, and helps 
 
 Instead of simply listing entities and devices, HADocs builds a complete picture of your Home Assistant environment, helping you understand how your smart home is organized, identify potential issues, and improve long-term maintainability.
 
+
 Whether you run a small installation or hundreds of devices across multiple integrations, HADocs aims to become the toolbox for understanding your Home Assistant setup.
 
 ---
@@ -13,6 +14,9 @@ Whether you run a small installation or hundreds of devices across multiple inte
 # Features
 
 ## 📖 Documentation
+
+
+## Features
 
 - Automatic documentation of your Home Assistant installation
 - Room-based documentation
@@ -188,3 +192,16 @@ Think of it as **"documentation meets diagnostics."**
 HADocs is under active development.
 
 New features are added continuously, and feedback, bug reports, and pull requests are always welcome.
+
+- Architecture, network, and server overviews
+- Smart Home-aware Health Score
+
+## Health Score v2
+
+HADocs calculates health based on real-world impact instead of raw entity counts.
+
+System entities such as action buttons, update entities, event entities, images, notifications, conversation agents, STT/TTS entities, firmware controls, restart buttons, and snapshot buttons are ignored to avoid false warnings.
+
+## Current Status
+
+HADocs is under active development.
