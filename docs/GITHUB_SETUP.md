@@ -1,24 +1,17 @@
 # GitHub setup
 
-## Opret repo
-
-1. Gå til GitHub
-2. Opret et nyt repository, fx `homeassistant-docs`
-3. Vælg privat eller public
-
-## Fra PowerShell
+## Initial push
 
 ```powershell
 cd C:\HomeAssistantDocs
 git init
 git add .
-git commit -m "Initial project structure"
+git commit -m "Initial HADocs project"
 git branch -M main
-git remote add origin https://github.com/DIT-BRUGERNAVN/homeassistant-docs.git
+git remote add origin https://github.com/SirBlondieDK/HADocs.git
 git push -u origin main
 ```
 
-## Husk
+## Important
 
-Læg aldrig `config.json` med token på GitHub.
-Brug kun `config.example.json`.
+Never commit `config.json`, `cache/`, or `output/`.

@@ -1,6 +1,6 @@
 [project]
 name = "hadocs"
-version = "0.1.1"
+version = "0.2.0"
 description = "Home Assistant documentation and analysis generator"
 requires-python = ">=3.10"
 dependencies = [
@@ -8,6 +8,9 @@ dependencies = [
     "websocket-client>=1.7.0",
     "PyYAML>=6.0.1"
 ]
+
+[project.scripts]
+hadocs = "src.hadocs.cli.main:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

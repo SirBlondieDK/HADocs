@@ -1,26 +1,27 @@
 # Roadmap
 
-## v0.1.x
-- Project structure
-- REST + WebSocket collection
-- Markdown reports
-- GUI
-- Health Score v2
-
 ## v0.2
+- CLI
+- `hadocs init`
+- `hadocs doctor`
+- `hadocs generate`
+- Safety checks
+- Better first-run experience
+
+## v0.3
 - Automation analyzer
 - Script analyzer
 - Helper analyzer
 
-## v0.3
+## v0.4
 - Dashboard analyzer
 - Dead entity references
 - Unused helpers
 
-## v0.4
+## v0.5
 - Relationship Engine
 
-## v0.5
+## v0.6
 - Plugin system
 
 ## v1.0

@@ -1,7 +1,32 @@
-from src.hadocs.analyzers.rules import IGNORED_DOMAINS, IGNORED_ENTITY_PATTERNS, PHYSICAL_DOMAINS, SYSTEM_PLATFORMS
+from src.hadocs.analyzers.rules import (
+    IGNORED_DOMAINS,
+    IGNORED_ENTITY_PATTERNS,
+    PHYSICAL_DOMAINS,
+    SYSTEM_PLATFORMS,
+)
 
-IMPORTANT_DOMAINS = {"light","switch","sensor","binary_sensor","camera","media_player","person","lawn_mower","siren","device_tracker"}
-SERVER_WORDS = ["hp_mini","homeassistant","adguard","frigate","jellyfin","nextcloud","proxy","zigbee2mqtt","hadashboard","storage","backup","deco","remote_ui","mosquitto","mqtt"]
+IMPORTANT_DOMAINS = {
+    "light", "switch", "sensor", "binary_sensor", "camera",
+    "media_player", "person", "lawn_mower", "siren", "device_tracker"
+}
+
+NOISY_ENTITY_WORDS = [
+    "favorite_current_song",
+    "do_not_disturb",
+    "power_on_behavior",
+    "color_power_on_behavior",
+    "last_seen",
+    "linkquality",
+    "pre_release",
+    "_update",
+    "create_snapshot",
+]
+
+SERVER_WORDS = [
+    "hp_mini", "homeassistant", "adguard", "frigate", "jellyfin",
+    "nextcloud", "proxy", "zigbee2mqtt", "hadashboard", "storage",
+    "backup", "deco", "remote_ui", "mosquitto", "mqtt",
+]
 
 
 def state_for(entity_id: str, idx: dict) -> dict:
@@ -28,23 +53,38 @@ def device_name(device: dict) -> str:
 
 def friendly_name(entity: dict, idx: dict) -> str:
     st = state_for(entity["entity_id"], idx)
-    return st.get("attributes", {}).get("friendly_name") or entity.get("name") or entity["entity_id"]
+    attr = st.get("attributes", {})
+    return attr.get("friendly_name") or entity.get("name") or entity["entity_id"]
 
 
 def is_ignored_entity(entity: dict) -> bool:
     entity_id = entity["entity_id"].lower()
-    if entity_id.split(".")[0] in IGNORED_DOMAINS:
+    domain = entity_id.split(".")[0]
+    if domain in IGNORED_DOMAINS:
         return True
     return any(pattern in entity_id for pattern in IGNORED_ENTITY_PATTERNS)
 
 
 def is_physical_entity(entity: dict) -> bool:
-    if entity["entity_id"].split(".")[0] not in PHYSICAL_DOMAINS:
+    entity_id = entity["entity_id"]
+    domain = entity_id.split(".")[0]
+    platform = entity.get("platform") or ""
+
+    if domain not in PHYSICAL_DOMAINS:
         return False
-    if (entity.get("platform") or "") in SYSTEM_PLATFORMS:
+    if platform in SYSTEM_PLATFORMS:
         return False
-    return not is_ignored_entity(entity)
+    if is_ignored_entity(entity):
+        return False
+    return True
+
+
+def is_noisy(entity_id: str) -> bool:
+    low = entity_id.lower()
+    return any(w in low for w in NOISY_ENTITY_WORDS)
 
 
 def is_dashboard_candidate(entity: dict) -> bool:
-    return entity["entity_id"].split(".")[0] in IMPORTANT_DOMAINS and not is_ignored_entity(entity)
+    entity_id = entity["entity_id"]
+    domain = entity_id.split(".")[0]
+    return domain in IMPORTANT_DOMAINS and not is_noisy(entity_id) and not is_ignored_entity(entity)

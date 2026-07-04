@@ -1,4 +1,6 @@
 config.json
+config.local.json
+.env
 cache/
 output/
 __pycache__/
@@ -6,3 +8,4 @@ __pycache__/
 .venv/
 .env
 .pytest_cache/
+.DS_Store

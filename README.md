@@ -6,17 +6,43 @@ HADocs is an open-source tool that automatically documents, analyzes, and helps 
 
 Instead of simply listing entities and devices, HADocs builds a complete picture of your Home Assistant environment, helping you understand how your smart home is organized, identify potential issues, and improve long-term maintainability.
 
-
 Whether you run a small installation or hundreds of devices across multiple integrations, HADocs aims to become the toolbox for understanding your Home Assistant setup.
 
 ---
 
-# Features
+## Project Principles
 
-## 📖 Documentation
+HADocs is built around three core principles:
 
+### Safety first
+
+HADocs is read-only by design.
+
+It only reads data from Home Assistant APIs, analyzes it locally, and writes reports to your output folder. It does not modify devices, automations, integrations, entities, dashboards, or Home Assistant configuration.
+
+### Useful over noisy
+
+Home Assistant exposes many service-only entities, buttons, update entities, diagnostic entities, and integration internals.
+
+HADocs tries to filter out noise so reports and Health Scores focus on issues that actually matter.
+
+### Easy to use
+
+HADocs should be usable without deep Python, Git, or Home Assistant internals knowledge.
+
+The goal is a simple workflow:
+
+```bash
+hadocs init
+hadocs doctor
+hadocs generate
+```
+
+---
 
 ## Features
+
+### 📖 Documentation
 
 - Automatic documentation of your Home Assistant installation
 - Room-based documentation
@@ -28,9 +54,7 @@ Whether you run a small installation or hundreds of devices across multiple inte
 - Network overview
 - Server overview
 
----
-
-## 🔍 Analysis
+### 🔍 Analysis
 
 HADocs analyzes your installation and identifies:
 
@@ -43,43 +67,29 @@ HADocs analyzes your installation and identifies:
 - Integration health
 - Configuration inconsistencies
 
----
-
-## ❤️ Health Score
+### ❤️ Health Score
 
 Unlike simple statistics, HADocs calculates a meaningful Health Score.
 
 The score is based on real-world impact instead of raw entity counts.
 
-For example:
-
-- Critical services offline
-- Physical devices unavailable
-- Low batteries
-- Missing room assignments
-- Duplicate names
-- Configuration issues
-
-System entities such as buttons, firmware updates, and service actions are automatically ignored to avoid false warnings.
+System entities such as action buttons, update entities, event entities, firmware controls, and service-only entities are ignored to avoid false warnings.
 
 ---
 
-## 🏠 Smart Home Awareness
+## New in v0.2.0
 
-HADocs understands that not every Home Assistant entity represents a real device.
-
-It automatically filters or ignores entities such as:
-
-- button.*
-- update.*
-- event.*
-- image.*
-- firmware controls
-- restart buttons
-- snapshot buttons
-- service-only entities
-
-This results in much more accurate reports and Health Scores.
+- Added command-line interface
+- Added `hadocs init`
+- Added `hadocs doctor`
+- Added `hadocs generate`
+- Added configuration validation
+- Added token safety checks
+- Added Git safety checks
+- Added clearer first-run setup
+- Added better error messages
+- Added security documentation
+- Improved project structure for future packaging
 
 ---
 
@@ -91,7 +101,7 @@ One of the main goals of HADocs is to understand how everything is connected.
 
 Example:
 
-```
+```text
 light.kitchen
 
 Used by
@@ -105,7 +115,7 @@ Used by
 
 and the opposite:
 
-```
+```text
 Morning Automation
 
 Uses
@@ -120,31 +130,7 @@ This makes it possible to safely clean up old entities without breaking automati
 
 ---
 
-### Dashboard Analyzer
-
-Automatically discover
-
-- unused dashboard cards
-- missing entities
-- duplicated cards
-- suggested dashboards
-- room-specific dashboards
-
----
-
-### Automation Analyzer
-
-Discover
-
-- unused automations
-- orphaned scripts
-- unused helpers
-- broken entity references
-- dead automations
-
----
-
-### Plugin System (planned)
+### Plugin System
 
 Future versions will include dedicated plugins for:
 
@@ -162,46 +148,8 @@ allowing HADocs to generate documentation and health reports for the entire smar
 
 ---
 
-# Why HADocs?
-
-Home Assistant provides an incredible amount of information, but once an installation grows beyond a few dozen devices it becomes increasingly difficult to answer questions like:
-
-- What uses this entity?
-- Can I safely delete this helper?
-- Which automations depend on this device?
-- Why is my Health Score decreasing?
-- Which devices need maintenance?
-- Which integrations generate the most problems?
-
-HADocs aims to answer these questions automatically.
-
----
-
-# Vision
-
-Our goal is not simply to document Home Assistant.
-
-Our goal is to create the ultimate analysis and documentation platform for Home Assistant and modern smart homes.
-
-Think of it as **"documentation meets diagnostics."**
-
----
-
-# Current Status
+## Current Status
 
 HADocs is under active development.
 
 New features are added continuously, and feedback, bug reports, and pull requests are always welcome.
-
-- Architecture, network, and server overviews
-- Smart Home-aware Health Score
-
-## Health Score v2
-
-HADocs calculates health based on real-world impact instead of raw entity counts.
-
-System entities such as action buttons, update entities, event entities, images, notifications, conversation agents, STT/TTS entities, firmware controls, restart buttons, and snapshot buttons are ignored to avoid false warnings.
-
-## Current Status
-
-HADocs is under active development.

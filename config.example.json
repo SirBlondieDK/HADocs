@@ -1,7 +1,7 @@
 {
-  "ha_url": "http://192.168.68.129:8123",
+  "ha_url": "http://homeassistant.local:8123",
   "token": "INDSÆT_DIN_LONG_LIVED_ACCESS_TOKEN_HER",
-  "project_name": "Det Lille Hjem",
+  "project_name": "My Smart Home",
   "output_dir": "output",
   "cache_dir": "cache"
 }
