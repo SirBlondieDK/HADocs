@@ -11,12 +11,13 @@ from src.hadocs.core.health import (
     get_critical_entities,
 )
 from src.hadocs.core.history import compare_last_two, save_history_snapshot
-from src.hadocs.core.incidents import build_incidents
-from src.hadocs.core.relationships import (
-    build_relationship_graph,
-    top_problem_devices,
-    top_problem_integrations,
+from src.hadocs.core.incidents import (
+    build_incidents,
+    collapse_incidents,
+    hidden_incident_count,
+    visible_incidents,
 )
+from src.hadocs.core.relationships import build_relationship_graph
 from src.hadocs.exporters.csv_exporter import export_devices_csv, export_entities_csv
 from src.hadocs.utils.text import slugify, write_md
 
@@ -31,16 +32,17 @@ def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
     graph = build_relationship_graph(model)
     device_health = calculate_device_health(model)
     health_score, health_notes = calculate_health_score(model, device_health)
-    incidents = build_incidents(model, graph)
+    raw_incidents = build_incidents(model, graph)
+    incidents = collapse_incidents(raw_incidents)
     executive = build_executive_summary_from_incidents(health_score, incidents)
     save_history_snapshot(cfg, model, health_score, executive)
     history_comparison = compare_last_two(cfg)
 
-    generate_index(out, project_name, executive, now)
-    generate_executive_dashboard(out, project_name, model, graph, executive, health_notes, history_comparison, incidents, now)
+    generate_index(out, project_name, executive, incidents, now)
+    generate_executive_dashboard(out, project_name, model, executive, health_notes, history_comparison, incidents, raw_incidents, now)
     generate_root_causes(out, incidents, now)
-    generate_incidents(out, incidents, now)
-    generate_summary(out, model, graph, health_score, health_notes, incidents, now)
+    generate_incidents(out, incidents, raw_incidents, now)
+    generate_summary(out, model, graph, health_score, health_notes, incidents, raw_incidents, now)
     generate_areas(out, model, now)
     generate_devices(out, model, now)
     generate_integrations(out, model, graph, now)
@@ -48,7 +50,7 @@ def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
     generate_maintenance(out, executive, incidents, now)
     generate_problems(out, model, now)
     generate_rules_report(out, model, now)
-    generate_relationships(out, model, graph, now)
+    generate_relationships(out, graph, now)
     generate_insights(out, executive, incidents, now)
     generate_history(out, history_comparison, now)
     generate_architecture(out, now)
@@ -71,7 +73,8 @@ def bar(score: int, width: int = 20) -> str:
     return "█" * filled + "░" * (width - filled)
 
 
-def generate_index(out: Path, project_name: str, executive, now: str) -> None:
+def generate_index(out: Path, project_name: str, executive, incidents, now: str) -> None:
+    hidden = hidden_incident_count(incidents)
     lines = [
         f"# {project_name} - HADocs",
         "",
@@ -83,9 +86,11 @@ def generate_index(out: Path, project_name: str, executive, now: str) -> None:
         "",
         f"`{bar(executive.score)}`",
         "",
-        f"- Potential after recommended fixes: `{executive.potential_score}/100`",
+        f"- Potential after top fixes: `{executive.potential_score}/100`",
         f"- Main root cause: **{executive.main_cause}**",
         f"- Estimated repair time: `{executive.estimated_repair_minutes} minutes`",
+        f"- Visible root causes: `{len(visible_incidents(incidents))}`",
+        f"- Hidden lower-priority incidents: `{hidden}`",
         "",
         "## Start here",
         "",
@@ -116,11 +121,12 @@ def generate_index(out: Path, project_name: str, executive, now: str) -> None:
     write_md(out / "index.md", lines)
 
 
-def generate_executive_dashboard(out, project_name, model, graph, executive, health_notes, history_comparison, incidents, now):
+def generate_executive_dashboard(out, project_name, model, executive, health_notes, history_comparison, incidents, raw_incidents, now):
     physical_devices = [d for d in model.devices.values() if d.is_physical]
     virtual_devices = [d for d in model.devices.values() if d.is_virtual]
     system_devices = [d for d in model.devices.values() if d.is_system]
     total_symptoms = sum(len(i.affected_entities) for i in incidents)
+    hidden = hidden_incident_count(incidents)
 
     lines = [
         "# 00 Executive Dashboard",
@@ -133,7 +139,7 @@ def generate_executive_dashboard(out, project_name, model, graph, executive, hea
         "",
         f"`{bar(executive.score)}`",
         "",
-        f"- Potential score after recommended fixes: `{executive.potential_score}/100`",
+        f"- Potential score after top fixes: `{executive.potential_score}/100`",
         f"- Estimated repair time: `{executive.estimated_repair_minutes} minutes`",
         f"- Main root cause: **{executive.main_cause}**",
         "",
@@ -148,21 +154,26 @@ def generate_executive_dashboard(out, project_name, model, graph, executive, hea
         "",
         "## Root cause summary",
         "",
-        f"- 🔥 Incidents: `{len(incidents)}`",
+        f"- 🔥 Collapsed root causes: `{len(incidents)}`",
         f"- 🧩 Relevant affected entities: `{total_symptoms}`",
-        f"- 🔴 Critical incidents: `{executive.critical_count}`",
-        f"- 🟡 Warning incidents: `{executive.warning_count}`",
-        f"- 🧹 Maintenance incidents: `{executive.maintenance_count}`",
+        f"- 🔴 Critical root causes: `{executive.critical_count}`",
+        f"- 🟡 Warning root causes: `{executive.warning_count}`",
+        f"- 🧹 Maintenance root causes: `{executive.maintenance_count}`",
+        f"- 🗂 Hidden lower-priority incidents: `{hidden}`",
+        f"- 🔁 Raw incidents collapsed: `{len(raw_incidents) - len(incidents)}`",
         "",
     ]
 
-    if incidents:
+    shown = visible_incidents(incidents)
+    if shown:
         lines += ["## Fix these first", ""]
-        for incident in incidents[:8]:
+        for incident in shown[:10]:
             stars = "★" * {"critical": 5, "warning": 4, "maintenance": 3}.get(incident.severity, 1)
+            child_text = f", {incident.child_count} child incidents" if incident.child_count else ""
             lines.append(
                 f"- `{stars}` **{incident.root_cause}** — {incident.title} "
-                f"({len(incident.affected_entities)} affected, +{incident.estimated_score_gain}, ~{incident.estimated_repair_minutes} min)"
+                f"({len(incident.affected_entities)} affected, {len(incident.affected_devices)} devices{child_text}, "
+                f"+{incident.estimated_score_gain}, ~{incident.estimated_repair_minutes} min)"
             )
         lines.append("")
 
@@ -194,6 +205,7 @@ def generate_root_causes(out, incidents, now):
     lines = ["# 01 Root Causes", "", f"Generated: {now}", ""]
     if not incidents:
         lines.append("No root causes detected.")
+
     for incident in incidents:
         lines += [
             f"## {incident.root_cause}",
@@ -203,6 +215,7 @@ def generate_root_causes(out, incidents, now):
             f"- Severity: `{incident.severity}`",
             f"- Affected entities: `{len(incident.affected_entities)}`",
             f"- Affected devices: `{len(incident.affected_devices)}`",
+            f"- Child incidents: `{incident.child_count}`",
             f"- Affected integrations: `{', '.join(incident.affected_integrations)}`",
             f"- Estimated score gain: `+{incident.estimated_score_gain}`",
             f"- Estimated repair time: `{incident.estimated_repair_minutes} minutes`",
@@ -212,18 +225,34 @@ def generate_root_causes(out, incidents, now):
             incident.recommendation,
             "",
         ]
+
+        if incident.child_incidents:
+            lines += ["### Child incidents", ""]
+            for child in incident.child_incidents:
+                lines.append(f"- **{child.root_cause}** — {len(child.affected_entities)} affected entities")
+            lines.append("")
+
         if incident.affected_devices:
             lines += ["### Affected devices", ""]
             for item in incident.affected_devices[:20]:
                 lines.append(f"- `{item}`")
             lines.append("")
+
     write_md(out / "01_root_causes.md", lines)
 
 
-def generate_incidents(out, incidents, now):
+def generate_incidents(out, incidents, raw_incidents, now):
     lines = ["# 02 Incidents", "", f"Generated: {now}", ""]
+    lines += [
+        f"- Collapsed incidents: `{len(incidents)}`",
+        f"- Raw incidents: `{len(raw_incidents)}`",
+        f"- Raw incidents hidden/collapsed: `{len(raw_incidents) - len(incidents)}`",
+        "",
+    ]
+
     if not incidents:
         lines.append("No incidents detected.")
+
     for incident in incidents:
         lines += [
             f"## {incident.title}",
@@ -232,21 +261,29 @@ def generate_incidents(out, incidents, now):
             f"- Root cause: `{incident.root_cause}`",
             f"- Severity: `{incident.severity}`",
             f"- Category: `{incident.category}`",
+            f"- Child incidents: `{incident.child_count}`",
             f"- Estimated score gain: `+{incident.estimated_score_gain}`",
             f"- Estimated repair time: `{incident.estimated_repair_minutes} minutes`",
             "",
-            "### Affected entities",
-            "",
         ]
+
+        if incident.child_incidents:
+            lines += ["### Child incidents", ""]
+            for child in incident.child_incidents:
+                lines.append(f"- `{child.root_cause}` — {len(child.affected_entities)} affected entities")
+            lines.append("")
+
+        lines += ["### Affected entities", ""]
         for entity_id in incident.affected_entities[:50]:
             lines.append(f"- `{entity_id}`")
         if len(incident.affected_entities) > 50:
             lines.append(f"- ...and {len(incident.affected_entities) - 50} more")
         lines.append("")
+
     write_md(out / "02_incidents.md", lines)
 
 
-def generate_summary(out, model, graph, health_score, health_notes, incidents, now):
+def generate_summary(out, model, graph, health_score, health_notes, incidents, raw_incidents, now):
     physical_devices = [d for d in model.devices.values() if d.is_physical]
     ignored_entities = [e for e in model.entities.values() if e.is_ignored]
     diagnostic_entities = [e for e in model.entities.values() if e.importance == "diagnostic"]
@@ -269,7 +306,8 @@ def generate_summary(out, model, graph, health_score, health_notes, incidents, n
         f"- Diagnostic entities: `{len(diagnostic_entities)}`",
         f"- Ignored entities: `{len(ignored_entities)}`",
         f"- Integrations: `{len(model.integrations)}`",
-        f"- Incidents: `{len(incidents)}`",
+        f"- Collapsed incidents: `{len(incidents)}`",
+        f"- Raw incidents: `{len(raw_incidents)}`",
         f"- Entity relationships: `{len(graph.entities)}`",
         f"- Device relationships: `{len(graph.devices)}`",
         f"- Integration relationships: `{len(graph.integrations)}`",
@@ -383,7 +421,7 @@ def generate_maintenance(out, executive, incidents, now):
             lines.append("No actions.")
             lines.append("")
             continue
-        for incident in group_incidents:
+        for incident in group_incidents[:20]:
             stars = "★" * {"critical": 5, "warning": 4, "maintenance": 3}.get(incident.severity, 1)
             lines += [
                 f"### {incident.title}",
@@ -391,6 +429,8 @@ def generate_maintenance(out, executive, incidents, now):
                 f"- Priority: `{stars}`",
                 f"- Root cause: `{incident.root_cause}`",
                 f"- Affected entities: `{len(incident.affected_entities)}`",
+                f"- Affected devices: `{len(incident.affected_devices)}`",
+                f"- Child incidents: `{incident.child_count}`",
                 f"- Estimated score gain: `+{incident.estimated_score_gain}`",
                 f"- Estimated repair time: `{incident.estimated_repair_minutes} minutes`",
                 "",
@@ -433,18 +473,16 @@ def generate_rules_report(out, model, now):
     write_md(out / "09_rule_matches.md", lines)
 
 
-def generate_relationships(out, model, graph, now):
-    lines = ["# 10 Relationships", "", f"Generated: {now}", ""]
-    lines += [
-        "## Relationship model", "",
+def generate_relationships(out, graph, now):
+    write_md(out / "10_relationships.md", [
+        "# 10 Relationships", "", f"Generated: {now}", "",
         "```text",
         "Area",
         "  └── Device",
         "        └── Entity",
         "              └── Integration",
-        "```", "",
-    ]
-    write_md(out / "10_relationships.md", lines)
+        "```",
+    ])
 
     entity_lines = ["# 11 Entity Relationships", "", f"Generated: {now}", ""]
     for rel in sorted(graph.entities.values(), key=lambda r: r.entity_id):
@@ -535,9 +573,8 @@ def generate_architecture(out, now):
         "      │",
         "      ├── Rules Engine",
         "      ├── Advisor Engine",
-        "      ├── Intelligence Engine",
-        "      ├── Root Cause Engine",
-        "      ├── Incident Model",
+        "      ├── Smart Home Intelligence Engine",
+        "      ├── Incident Collapse Engine",
         "      ├── Health Model",
         "      └── Relationship Graph",
         "      │",

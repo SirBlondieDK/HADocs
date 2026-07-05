@@ -1,25 +1,24 @@
 # Roadmap
 
-## v0.8
-
-Root Cause Engine.
-
-- Incidents
-- Symptom grouping
-- Better repair estimates
-- Root cause reports
-
 ## v0.9
 
-Automation Analyzer.
+Incident Collapse Engine.
 
-- Automations
-- Scripts
-- Helpers
-- Broken references
-- Disabled automations
-- Orphan helpers
+- Collapse related symptoms
+- Reduce report noise
+- Show top root causes
+- Hide child/maintenance details by default
 
 ## v1.0
 
-HTML report, search, installer and stable plugin system.
+Polish release.
+
+- Stable reports
+- Better README
+- Screenshots
+- Installation docs
+- Release notes
+
+## v1.1
+
+HTML report engine.

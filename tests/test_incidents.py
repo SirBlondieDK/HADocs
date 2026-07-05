@@ -8,8 +8,8 @@ def test_severity_from_count():
 
 
 def test_score_gain_from_count():
-    assert _score_gain_from_count(60) == 10
-    assert _score_gain_from_count(20) == 5
+    assert _score_gain_from_count(60) == 8
+    assert _score_gain_from_count(20) == 4
     assert _score_gain_from_count(1) == 1
 
 

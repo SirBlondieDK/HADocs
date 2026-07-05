@@ -2,30 +2,30 @@
 
 **Home Assistant Documentation & Analysis**
 
-HADocs is a read-only Smart Home Analyzer for Home Assistant.
+HADocs is a read-only Smart Home Intelligence tool for Home Assistant.
 
-## New in v0.8.0
+## New in v0.9.0
 
-v0.8.0 introduces **Root Cause Engine v1**.
+v0.9.0 introduces the **Incident Collapse Engine**.
 
-Instead of treating every unavailable entity as a separate problem, HADocs groups symptoms into incidents.
+Previous versions could find root causes, but large installations could still show too many incidents. v0.9.0 groups related symptoms into a clearer hierarchy.
 
 Example:
 
 ```text
-176 unavailable entities
+Mobile App
 
-Root cause
+3 affected devices
+176 affected entities
+Estimated fix: 2 minutes
 
-2 mobile devices offline
-
-Affected entities
-
-Sebastian Wall Display: 53
-Sofia Wall Display: 48
+Devices:
+- Sebastian Wall Display
+- Sofia Wall Display
+- Tabet Stue
 ```
 
-This makes the reports more useful and helps users fix the few things that matter most.
+Instead of showing the integration and every device as separate top-level problems, HADocs now shows one parent incident with child details.
 
 ## Safety
 
