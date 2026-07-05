@@ -1,27 +1,21 @@
 # Roadmap
 
-## v0.12.0 - Knowledge Engine
-
-- Full local knowledge export
-- Redacted knowledge export
-- Manifest
-- Health JSON
-- Incidents JSON
-- Recommendations JSON
-- Relationships JSON
-- Explain Engine v1
-
 ## v0.13.0 - HTML Explorer Foundation
-
-- Device pages
-- Integration pages
-- Entity pages
+- Explorer index
+- Device index
+- Entity index
+- Integration index
+- Area index
 - Search index
+
+## v0.14.0 - Explorer Pages
+- Individual device pages
+- Individual integration pages
+- Individual entity pages
 - Breadcrumbs
-- Clickable child incidents
+- Clickable relationships
 
 ## v1.0.0 - Relationship Intelligence
-
 - What uses this?
 - Can I safely delete this?
 - Automation relationships

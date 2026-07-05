@@ -1,37 +1,25 @@
 # Changelog
 
-## v0.12.0 - Smart Home Knowledge Engine
+## v0.13.0 - Explorer Foundation
 
 ### Added
-- Knowledge Engine v1.
-- Structured local knowledge export.
-- `output/knowledge/manifest.json`.
-- `output/knowledge/inventory.json`.
-- `output/knowledge/health.json`.
-- `output/knowledge/incidents.json`.
-- `output/knowledge/recommendations.json`.
-- `output/knowledge/relationships.json`.
-- `output/knowledge/summary.md`.
-- Redacted knowledge export in `output/knowledge/redacted/`.
-- Explain Engine v1.
-- Beginner-friendly explanations for common root causes.
-- HTML dashboard Explain sections.
-- Documentation for Knowledge Engine and Explain Engine.
-- Tests for knowledge export and explanations.
+- HTML Explorer Foundation.
+- Explorer data builder.
+- Static local Explorer pages.
+- Device index page.
+- Integration index page.
+- Area index page.
+- Entity index page.
+- Search index export.
+- `output/explorer/index.html`.
+- `output/explorer/devices.html`.
+- `output/explorer/integrations.html`.
+- `output/explorer/areas.html`.
+- `output/explorer/entities.html`.
 
 ### Changed
-- Knowledge export is now a first-class local output.
-- README links to Knowledge and Explain documentation.
-- AI wording clarified: AI-compatible, not AI-connected.
+- HTML output now starts moving from a single dashboard toward a local documentation portal.
 
 ### Security
-- Knowledge export is local only.
-- Redacted export removes common sensitive values.
-- No AI provider calls added.
-- No cloud calls added.
-- No telemetry added.
-
-## v0.11.2 - Beginner Guide Release
-
-### Added
-- Beginner-friendly guide: `docs/BEGINNER_GUIDE.md`.
+- Explorer is fully local.
+- No external scripts, CDNs, analytics, telemetry, or AI calls.
