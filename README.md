@@ -24,9 +24,9 @@
   <strong>Open source.</strong>
 </p>
 
-\---
+---
 
-!\[HADocs Dashboard](docs/images/dashboard.png)
+![HADocs Dashboard](docs/images/dashboard.png)
 
 ## What is HADocs?
 
@@ -40,7 +40,7 @@ HADocs does **not** call AI services.
 
 Everything runs locally on your machine.
 
-\---
+---
 
 ## Why HADocs?
 
@@ -70,7 +70,7 @@ Estimated fix time: 2 minutes.
 Potential Health Score gain: +8.
 ```
 
-\---
+---
 
 ## Features
 
@@ -92,27 +92,27 @@ Potential Health Score gain: +8.
 |AI-compatible export|✅|
 |AI service calls|❌|
 
-\---
+---
 
 ## Screenshots
 
 ### Dashboard
 
-!\[Dashboard](docs/images/dashboard.png)
+![Dashboard](docs/images/dashboard.png)
 
 ### Root Causes
 
-!\[Root Causes](docs/images/root-causes.png)
+![Root Causes](docs/images/root-causes.png)
 
 ### Recommended Actions
 
-!\[Recommended Actions](docs/images/actions.png)
+![Recommended Actions](docs/images/actions.png)
 
 ### Explorer
 
-!\[Explorer](docs/images/explorer.png)
+![Explorer](docs/images/explorer.png)
 
-\---
+---
 
 ## Generated output
 
@@ -137,7 +137,7 @@ output/
 │   ├── relationships.json
 │   ├── summary.md
 │   └── redacted/
-└── \*.csv
+└── *.csv
 ```
 
 Start with:
@@ -152,7 +152,7 @@ Then open:
 output/explorer/index.html
 ```
 
-\---
+---
 
 ## Privacy First
 
@@ -175,7 +175,7 @@ See:
 * [`docs/PRIVACY.md`](docs/PRIVACY.md)
 * [`SECURITY.md`](SECURITY.md)
 
-\---
+---
 
 ## AI-compatible, not AI-connected
 
@@ -206,7 +206,7 @@ You decide what to share.
 
 See [`docs/AI.md`](docs/AI.md).
 
-\---
+---
 
 ## Beginner Quick Start
 
@@ -225,7 +225,7 @@ Simple workflow:
 6. Click Open Dashboard
 ```
 
-\---
+---
 
 ## Python Quick Start
 
@@ -235,7 +235,7 @@ py -3.14 -m pytest
 py -3.14 main.py
 ```
 
-\---
+---
 
 ## Roadmap
 
@@ -276,7 +276,7 @@ Smart Home Intelligence Platform.
 * relationship engine
 * privacy-first release
 
-\---
+---
 
 ## Project philosophy
 
@@ -284,7 +284,7 @@ Smart Home Intelligence Platform.
 
 HADocs should help users understand their smart home without compromising privacy.
 
-\---
+---
 
 ## Contributing
 
@@ -298,7 +298,7 @@ py -3.14 -m pytest
 
 See [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md).
 
-\---
+---
 
 ## License
 
