@@ -10,7 +10,14 @@ from src.hadocs.core.health import (
     find_duplicate_names_by_domain,
     get_critical_entities,
 )
-from src.hadocs.core.history import compare_last_two, save_history_snapshot
+from src.hadocs.core.history import (
+    build_trend_summary,
+    compare_last_two,
+    export_history_summary,
+    load_history,
+    save_history_snapshot,
+    sparkline,
+)
 from src.hadocs.core.incidents import (
     build_incidents,
     collapse_incidents,
@@ -38,8 +45,11 @@ def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
     raw_incidents = build_incidents(model, graph)
     incidents = collapse_incidents(raw_incidents)
     executive = build_executive_summary_from_incidents(health_score, incidents)
-    save_history_snapshot(cfg, model, health_score, executive)
+    save_history_snapshot(cfg, model, health_score, executive, incidents=incidents, raw_incidents=raw_incidents)
     history_comparison = compare_last_two(cfg)
+    history = load_history(cfg)
+    trend_summary = build_trend_summary(history)
+    export_history_summary(cfg)
 
     write_explorer(out, model, graph)
 
@@ -72,7 +82,7 @@ def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
     )
 
     generate_index(out, project_name, executive, incidents, now)
-    generate_executive_dashboard(out, project_name, model, executive, health_notes, history_comparison, incidents, raw_incidents, now)
+    generate_executive_dashboard(out, project_name, model, executive, health_notes, history_comparison, trend_summary, incidents, raw_incidents, now)
     generate_root_causes(out, incidents, now)
     generate_incidents(out, incidents, raw_incidents, now)
     generate_summary(out, model, graph, health_score, health_notes, incidents, raw_incidents, now)
@@ -85,7 +95,7 @@ def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
     generate_rules_report(out, model, now)
     generate_relationships(out, graph, now)
     generate_insights(out, executive, incidents, now)
-    generate_history(out, history_comparison, now)
+    generate_history(out, history_comparison, trend_summary, now)
     generate_architecture(out, now)
     export_entities_csv(out, model)
     export_devices_csv(out, model)
@@ -154,7 +164,7 @@ def generate_index(out: Path, project_name: str, executive, incidents, now: str)
     write_md(out / "index.md", lines)
 
 
-def generate_executive_dashboard(out, project_name, model, executive, health_notes, history_comparison, incidents, raw_incidents, now):
+def generate_executive_dashboard(out, project_name, model, executive, health_notes, history_comparison, trend_summary, incidents, raw_incidents, now):
     physical_devices = [d for d in model.devices.values() if d.is_physical]
     virtual_devices = [d for d in model.devices.values() if d.is_virtual]
     system_devices = [d for d in model.devices.values() if d.is_system]
@@ -216,6 +226,23 @@ def generate_executive_dashboard(out, project_name, model, executive, health_not
             "",
             f"- Health change: `{history_comparison['health_delta']:+}`",
             f"- Problem entity change: `{history_comparison['problem_entity_delta']:+}`",
+            f"- New root causes: `{len(history_comparison.get('new_root_causes', []))}`",
+            f"- Resolved root causes: `{len(history_comparison.get('resolved_root_causes', []))}`",
+            "",
+        ]
+
+    if trend_summary and trend_summary.get("scan_count", 0):
+        health_values = [point.get("value", 0) for point in trend_summary.get("health_points", [])]
+        problem_values = [point.get("value", 0) for point in trend_summary.get("problem_entity_points", [])]
+        lines += [
+            "## History trend",
+            "",
+            f"- Scans stored: `{trend_summary.get('scan_count', 0)}`",
+            f"- Best Health Score: `{trend_summary.get('best_health')}`",
+            f"- Worst Health Score: `{trend_summary.get('worst_health')}`",
+            f"- Total Health change: `{trend_summary.get('health_change_total', 0):+}`",
+            f"- Health trend: `{sparkline(health_values)}`",
+            f"- Problem trend: `{sparkline(problem_values)}`",
             "",
         ]
 
@@ -580,18 +607,71 @@ def generate_insights(out, executive, incidents, now):
     write_md(out / "14_insights.md", lines)
 
 
-def generate_history(out, history_comparison, now):
+def generate_history(out, history_comparison, trend_summary, now):
     lines = ["# 16 History", "", f"Generated: {now}", ""]
-    if not history_comparison:
-        lines.append("No previous scan available yet.")
-    else:
+
+    if not trend_summary or not trend_summary.get("scan_count"):
+        lines.append("No history snapshots available yet.")
+        write_md(out / "16_history.md", lines)
+        return
+
+    health_values = [point.get("value", 0) for point in trend_summary.get("health_points", [])]
+    problem_values = [point.get("value", 0) for point in trend_summary.get("problem_entity_points", [])]
+    latest = trend_summary.get("latest") or {}
+
+    lines += [
+        "## Trend summary",
+        "",
+        f"- Stored scans: `{trend_summary.get('scan_count', 0)}`",
+        f"- Latest Health Score: `{latest.get('health_score')}`",
+        f"- Best Health Score: `{trend_summary.get('best_health')}`",
+        f"- Worst Health Score: `{trend_summary.get('worst_health')}`",
+        f"- Total Health change: `{trend_summary.get('health_change_total', 0):+}`",
+        f"- Health trend: `{sparkline(health_values)}`",
+        f"- Problem entity trend: `{sparkline(problem_values)}`",
+        "",
+    ]
+
+    if history_comparison:
         lines += [
             "## Since last scan", "",
             f"- Health change: `{history_comparison['health_delta']:+}`",
+            f"- Potential score change: `{history_comparison['potential_delta']:+}`",
             f"- Problem entity change: `{history_comparison['problem_entity_delta']:+}`",
             f"- Critical action change: `{history_comparison['critical_delta']:+}`",
             f"- Warning action change: `{history_comparison['warning_delta']:+}`",
+            f"- Maintenance action change: `{history_comparison['maintenance_delta']:+}`",
+            "",
         ]
+
+        new_causes = history_comparison.get("new_root_causes", [])
+        resolved_causes = history_comparison.get("resolved_root_causes", [])
+
+        if new_causes:
+            lines += ["### New root causes", ""]
+            for cause in new_causes[:20]:
+                lines.append(f"- `{cause}`")
+            lines.append("")
+
+        if resolved_causes:
+            lines += ["### Resolved root causes", ""]
+            for cause in resolved_causes[:20]:
+                lines.append(f"- `{cause}`")
+            lines.append("")
+    else:
+        lines += ["## Since last scan", "", "No previous scan available yet.", ""]
+
+    lines += [
+        "## Latest root causes", "",
+    ]
+    for cause in latest.get("root_causes", [])[:15]:
+        lines.append(
+            f"- **{cause.get('key')}** — `{cause.get('severity')}` — "
+            f"{cause.get('affected_entities')} affected entities, "
+            f"+{cause.get('estimated_score_gain')} score, "
+            f"~{cause.get('estimated_repair_minutes')} min"
+        )
+
     write_md(out / "16_history.md", lines)
 
 
