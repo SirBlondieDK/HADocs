@@ -20,6 +20,7 @@ from src.hadocs.core.incidents import (
 from src.hadocs.core.relationships import build_relationship_graph
 from src.hadocs.exporters.csv_exporter import export_devices_csv, export_entities_csv
 from src.hadocs.utils.text import slugify, write_md
+from src.hadocs.reports.html_hook import generate_html_dashboard
 
 
 def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
@@ -37,6 +38,17 @@ def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
     executive = build_executive_summary_from_incidents(health_score, incidents)
     save_history_snapshot(cfg, model, health_score, executive)
     history_comparison = compare_last_two(cfg)
+
+    generate_html_dashboard(
+        out,
+        project_name,
+        model,
+        executive,
+        incidents,
+        raw_incidents,
+        history_comparison,
+        now,
+    )
 
     generate_index(out, project_name, executive, incidents, now)
     generate_executive_dashboard(out, project_name, model, executive, health_notes, history_comparison, incidents, raw_incidents, now)

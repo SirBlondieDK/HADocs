@@ -1,24 +1,10 @@
 # Roadmap
 
-## v0.9
-
-Incident Collapse Engine.
-
-- Collapse related symptoms
-- Reduce report noise
-- Show top root causes
-- Hide child/maintenance details by default
+## v0.10
+HTML Dashboard Engine.
 
 ## v1.0
-
-Polish release.
-
-- Stable reports
-- Better README
-- Screenshots
-- Installation docs
-- Release notes
+Relationship Intelligence.
 
 ## v1.1
-
-HTML report engine.
+HTML Explorer.
