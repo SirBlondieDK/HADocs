@@ -10,48 +10,29 @@ It documents your installation, analyzes health, groups root causes, generates a
 
 ---
 
+## New in v0.12.0
+
+v0.12.0 introduces the **Smart Home Knowledge Engine**.
+
+HADocs now creates structured local knowledge files in:
+
+```text
+output/knowledge/
+```
+
+These files make HADocs useful for local tools, future Explorer UI, future Relationship Engine, optional AI workflows, debugging, and shareable redacted reports.
+
+HADocs still does **not** call AI services.
+
+AI-compatible does not mean AI-connected.
+
+---
+
 ## New user?
 
 Start here:
 
 👉 [`docs/BEGINNER_GUIDE.md`](docs/BEGINNER_GUIDE.md)
-
-This guide is written for people who are not technical.
-
-It explains:
-
-- how to download HADocs
-- how to open PowerShell
-- how to install requirements
-- how to create a Home Assistant token
-- how to start HADocs
-- how to open the report
-- what the dashboard means
-
----
-
-## What HADocs does
-
-HADocs connects to Home Assistant using a Long-Lived Access Token and reads information from the Home Assistant API.
-
-It then generates local reports such as:
-
-- HTML dashboard
-- Markdown documentation
-- CSV exports
-- Health Score
-- Root Cause Analysis
-- Incident Collapse
-- Device and integration reports
-- Optional local knowledge export
-
-HADocs is designed for users with growing Home Assistant installations who want to answer questions like:
-
-- Why did my Health Score drop?
-- Which devices need attention?
-- Which integrations create the most issues?
-- What should I fix first?
-- Which entities, devices and integrations belong together?
 
 ---
 
@@ -61,6 +42,12 @@ Open:
 
 ```text
 output/index.html
+```
+
+Structured knowledge files are written to:
+
+```text
+output/knowledge/
 ```
 
 ---
@@ -78,27 +65,15 @@ By default:
 - no AI calls
 - no external upload
 
-See [`docs/PRIVACY.md`](docs/PRIVACY.md) and [`SECURITY.md`](SECURITY.md).
-
----
-
-## Installation
-
-See [`docs/INSTALL.md`](docs/INSTALL.md).
-
-Quick Windows setup:
-
-```powershell
-py -3.14 -m pip install -r requirements.txt
-py -3.14 -m pytest
-py -3.14 main.py
-```
+See [`docs/PRIVACY.md`](docs/PRIVACY.md), [`docs/AI.md`](docs/AI.md), and [`SECURITY.md`](SECURITY.md).
 
 ---
 
 ## Documentation
 
 - [`docs/BEGINNER_GUIDE.md`](docs/BEGINNER_GUIDE.md)
+- [`docs/KNOWLEDGE_ENGINE.md`](docs/KNOWLEDGE_ENGINE.md)
+- [`docs/EXPLAIN_ENGINE.md`](docs/EXPLAIN_ENGINE.md)
 - [`docs/INSTALL.md`](docs/INSTALL.md)
 - [`docs/QUICKSTART.md`](docs/QUICKSTART.md)
 - [`docs/CONFIGURATION.md`](docs/CONFIGURATION.md)
@@ -112,6 +87,9 @@ py -3.14 main.py
 
 ---
 
-## License
+## Run
 
-See [`LICENSE`](LICENSE).
+```powershell
+py -3.14 -m pytest
+py -3.14 main.py
+```

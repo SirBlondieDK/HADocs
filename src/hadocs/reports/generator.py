@@ -45,6 +45,15 @@ def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
         model=model,
         executive=executive,
         incidents=incidents,
+        graph=graph,
+        version="0.12.0",
+    )
+
+    export_knowledge(
+        out,
+        model=model,
+        executive=executive,
+        incidents=incidents,
         version="0.11.0",
     )
 

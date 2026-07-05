@@ -1,19 +1,24 @@
 # Roadmap
 
-## v0.11.1 - Stability & Test Environment
-
-- Local pytest temp folder
-- Cleanup tooling
-- Windows test stability
-- Documentation update
-
 ## v0.12.0 - Knowledge Engine
 
-- Full knowledge export
+- Full local knowledge export
 - Redacted knowledge export
 - Manifest
-- Privacy scanner
-- JSON schema
+- Health JSON
+- Incidents JSON
+- Recommendations JSON
+- Relationships JSON
+- Explain Engine v1
+
+## v0.13.0 - HTML Explorer Foundation
+
+- Device pages
+- Integration pages
+- Entity pages
+- Search index
+- Breadcrumbs
+- Clickable child incidents
 
 ## v1.0.0 - Relationship Intelligence
 
@@ -23,11 +28,3 @@
 - Script relationships
 - Helper relationships
 - Dashboard relationships
-
-## v1.1.0 - HTML Explorer
-
-- Device pages
-- Integration pages
-- Entity pages
-- Search index
-- Breadcrumbs
