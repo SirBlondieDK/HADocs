@@ -17,6 +17,7 @@ class ActionPlan:
     reason: str
     estimated_score_gain: int
     related_items: list[str] = field(default_factory=list)
+    estimated_repair_minutes: int = 0
 
 
 @dataclass

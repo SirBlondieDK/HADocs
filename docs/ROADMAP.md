@@ -1,16 +1,15 @@
 # Roadmap
 
-## v0.7
-
-HADocs Intelligence.
-
-- Executive Dashboard
-- Advisor Engine
-- Scan history
-- Estimated fix impact
-- Better recommendations
-
 ## v0.8
+
+Root Cause Engine.
+
+- Incidents
+- Symptom grouping
+- Better repair estimates
+- Root cause reports
+
+## v0.9
 
 Automation Analyzer.
 
@@ -20,15 +19,6 @@ Automation Analyzer.
 - Broken references
 - Disabled automations
 - Orphan helpers
-
-## v0.9
-
-Dashboard Analyzer.
-
-- Dashboard cards
-- Missing entities
-- Duplicate cards
-- Suggested dashboards
 
 ## v1.0
 

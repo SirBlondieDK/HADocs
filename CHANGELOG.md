@@ -1,5 +1,24 @@
 # Changelog
 
+## v0.8.0
+
+### Added
+- Root Cause Engine v1.
+- Incident model.
+- Incident report.
+- Root cause report.
+- Symptom grouping by device and integration.
+- Incident-based recommendations.
+- More realistic repair time estimates.
+- More conservative potential score calculation.
+- Better handling of devices with many unavailable entities.
+
+### Changed
+- Advisor now focuses on incidents instead of raw problem counts.
+- Executive Dashboard now highlights root causes.
+- Maintenance report groups actions by incident.
+- Main issue detection is based on affected unavailable/unknown entities, not total entity count.
+
 ## v0.7.0
 
 ### Added
@@ -7,26 +26,4 @@
 - Advisor Engine.
 - Executive dashboard.
 - Estimated score gain.
-- Prioritized action plan.
-- Health status labels.
 - Scan history snapshots.
-- History comparison between runs.
-- Insight report.
-- Maintenance report.
-- New reports:
-  - `00_executive_dashboard.md`
-  - `14_insights.md`
-  - `15_maintenance.md`
-  - `16_history.md`
-
-### Changed
-- `index.md` now links to the Executive Dashboard first.
-- Recommendations are grouped by priority and estimated impact.
-- Health Score is explained in a more user-friendly way.
-
-## v0.6.0
-
-### Added
-- Smart Analyzer foundation.
-- Relationship Engine v1.
-- Smart overview dashboard in `index.md`.

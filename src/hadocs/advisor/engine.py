@@ -1,7 +1,5 @@
-from collections import Counter, defaultdict
-
 from src.hadocs.advisor.models import ActionPlan, ExecutiveSummary, Insight
-from src.hadocs.core.relationships import RelationshipGraph
+from src.hadocs.core.incidents import Incident
 
 
 def health_status(score: int) -> str:
@@ -15,177 +13,109 @@ def health_status(score: int) -> str:
 
 
 def estimate_repair_minutes(actions: list[ActionPlan]) -> int:
-    if not actions:
-        return 0
-
-    minutes = 0
-    for action in actions:
-        if action.priority >= 5:
-            minutes += 8
-        elif action.priority == 4:
-            minutes += 5
-        else:
-            minutes += 3
-
-    return min(120, minutes)
+    return min(120, sum(action.estimated_repair_minutes for action in actions))
 
 
-def build_insights(model, graph: RelationshipGraph, device_health, recommendations, score: int) -> list[Insight]:
+def priority_from_severity(severity: str) -> int:
+    return {
+        "critical": 5,
+        "warning": 4,
+        "maintenance": 3,
+        "info": 1,
+    }.get(severity, 1)
+
+
+def build_insights_from_incidents(incidents: list[Incident]) -> list[Insight]:
     insights: list[Insight] = []
 
-    problem_devices = [item for item in device_health if item.status == "problem"]
-    warning_devices = [item for item in device_health if item.status == "warning"]
-
-    if problem_devices:
-        worst = sorted(problem_devices, key=lambda item: item.score)[0]
-        affected = len([
-            entity for entity in worst.device.entities
-            if entity.state in ("unknown", "unavailable")
-        ])
-        insights.append(
-            Insight(
-                title="Main device issue",
-                message=(
-                    f"The device '{worst.device.name}' appears to be the most important problem. "
-                    f"It has {affected} unknown or unavailable entities."
-                ),
-                severity="critical",
-                estimated_score_gain=8,
-                related_items=[worst.device.name],
-            )
-        )
-
-    integration_problems = []
-    for integration in graph.integrations.values():
-        if integration.problem_entities:
-            integration_problems.append((integration.platform, len(integration.problem_entities)))
-
-    if integration_problems:
-        integration, count = sorted(integration_problems, key=lambda item: item[1], reverse=True)[0]
-        insights.append(
-            Insight(
-                title="Main integration issue",
-                message=(
-                    f"Most relevant integration problems originate from '{integration}' "
-                    f"with {count} relevant problem entities."
-                ),
-                severity="warning" if count < 10 else "critical",
-                estimated_score_gain=min(12, max(3, count // 5)),
-                related_items=[integration],
-            )
-        )
-
-    area_missing = [
-        device for device in model.devices.values()
-        if device.is_physical and (not device.area_id or device.area_id == "_uden_område")
-    ]
-    if area_missing:
-        insights.append(
-            Insight(
-                title="Area cleanup",
-                message=(
-                    f"{len(area_missing)} physical devices are not assigned to an area. "
-                    "Assigning areas improves documentation, dashboards, and relationship analysis."
-                ),
-                severity="maintenance",
-                estimated_score_gain=min(8, max(1, len(area_missing) // 10)),
-                related_items=[device.name for device in area_missing[:10]],
-            )
-        )
-
-    ignored_bad = [
-        entity for entity in model.entities.values()
-        if entity.is_ignored and entity.state in ("unknown", "unavailable")
-    ]
-    if ignored_bad:
-        insights.append(
-            Insight(
-                title="Noise filtered",
-                message=(
-                    f"HADocs ignored {len(ignored_bad)} diagnostic or system entities that are "
-                    "unknown/unavailable, so they do not unfairly reduce your Health Score."
-                ),
-                severity="info",
-                estimated_score_gain=0,
-            )
-        )
-
-    if not problem_devices and not warning_devices:
-        insights.append(
+    if not incidents:
+        return [
             Insight(
                 title="Installation looks healthy",
-                message="No major device health issues were detected.",
+                message="No major root causes were detected.",
                 severity="positive",
-                estimated_score_gain=0,
+            )
+        ]
+
+    main = incidents[0]
+    insights.append(
+        Insight(
+            title="Main root cause",
+            message=(
+                f"{main.root_cause} is the strongest detected root cause. "
+                f"It affects {len(main.affected_entities)} relevant entities."
+            ),
+            severity=main.severity,
+            estimated_score_gain=main.estimated_score_gain,
+            related_items=[main.root_cause],
+        )
+    )
+
+    total_symptoms = sum(len(incident.affected_entities) for incident in incidents)
+    top_three_symptoms = sum(len(incident.affected_entities) for incident in incidents[:3])
+    if total_symptoms and top_three_symptoms:
+        percent = round((top_three_symptoms / total_symptoms) * 100)
+        insights.append(
+            Insight(
+                title="Few causes create most symptoms",
+                message=(
+                    f"The top {min(3, len(incidents))} incidents explain about {percent}% "
+                    "of relevant unknown/unavailable symptoms."
+                ),
+                severity="info",
+                estimated_score_gain=sum(i.estimated_score_gain for i in incidents[:3]),
+                related_items=[i.root_cause for i in incidents[:3]],
+            )
+        )
+
+    mobile_incidents = [incident for incident in incidents if incident.category == "mobile_app_device"]
+    if mobile_incidents:
+        affected = sum(len(incident.affected_entities) for incident in mobile_incidents)
+        insights.append(
+            Insight(
+                title="Mobile App root cause",
+                message=(
+                    f"{len(mobile_incidents)} Mobile App devices account for "
+                    f"{affected} relevant unavailable/unknown entities."
+                ),
+                severity="warning",
+                estimated_score_gain=min(12, sum(i.estimated_score_gain for i in mobile_incidents)),
+                related_items=[i.root_cause for i in mobile_incidents],
             )
         )
 
     return insights
 
 
-def build_action_plan(model, graph: RelationshipGraph, device_health, recommendations) -> list[ActionPlan]:
-    actions: list[ActionPlan] = []
-
-    for item in sorted(device_health, key=lambda health: health.score):
-        if item.status == "problem":
-            actions.append(
-                ActionPlan(
-                    title=f"Fix {item.device.name}",
-                    priority=5,
-                    reason="; ".join(item.reasons) or "Device has serious health issues.",
-                    estimated_score_gain=8,
-                    related_items=[entity.entity_id for entity in item.device.entities[:10]],
-                )
-            )
-        elif item.status == "warning":
-            actions.append(
-                ActionPlan(
-                    title=f"Check {item.device.name}",
-                    priority=4,
-                    reason="; ".join(item.reasons) or "Device has warnings.",
-                    estimated_score_gain=3,
-                    related_items=[entity.entity_id for entity in item.device.entities[:10]],
-                )
-            )
-
-    missing_area = [
-        device for device in model.devices.values()
-        if device.is_physical and (not device.area_id or device.area_id == "_uden_område")
-    ]
-    if missing_area:
+def build_action_plan_from_incidents(incidents: list[Incident]) -> list[ActionPlan]:
+    actions = []
+    for incident in incidents:
         actions.append(
             ActionPlan(
-                title=f"Assign areas to {len(missing_area)} physical devices",
-                priority=3,
-                reason="Area assignments improve reports, dashboards, and future automation analysis.",
-                estimated_score_gain=min(8, max(1, len(missing_area) // 10)),
-                related_items=[device.name for device in missing_area[:10]],
+                title=incident.title,
+                priority=priority_from_severity(incident.severity),
+                reason=incident.recommendation,
+                estimated_score_gain=incident.estimated_score_gain,
+                related_items=incident.affected_entities[:12] or incident.affected_devices[:12],
+                estimated_repair_minutes=incident.estimated_repair_minutes,
             )
         )
 
-    # Deduplicate by title.
-    unique = {}
-    for action in actions:
-        unique.setdefault(action.title, action)
-
-    return sorted(unique.values(), key=lambda action: (-action.priority, -action.estimated_score_gain))
+    return sorted(actions, key=lambda action: (-action.priority, -action.estimated_score_gain))
 
 
-def build_executive_summary(model, graph, device_health, recommendations, score: int) -> ExecutiveSummary:
-    actions = build_action_plan(model, graph, device_health, recommendations)
-    insights = build_insights(model, graph, device_health, recommendations, score)
+def build_executive_summary_from_incidents(score: int, incidents: list[Incident]) -> ExecutiveSummary:
+    actions = build_action_plan_from_incidents(incidents)
+    insights = build_insights_from_incidents(incidents)
 
-    critical_count = sum(1 for action in actions if action.priority >= 5)
-    warning_count = sum(1 for action in actions if action.priority == 4)
-    maintenance_count = sum(1 for action in actions if action.priority <= 3)
+    critical_count = sum(1 for incident in incidents if incident.severity == "critical")
+    warning_count = sum(1 for incident in incidents if incident.severity == "warning")
+    maintenance_count = sum(1 for incident in incidents if incident.severity == "maintenance")
 
-    potential_gain = min(30, sum(action.estimated_score_gain for action in actions[:8]))
+    potential_gain = min(24, sum(action.estimated_score_gain for action in actions[:5]))
     potential_score = min(100, score + potential_gain)
 
-    main_cause = "No major issue detected"
-    critical_insights = [insight for insight in insights if insight.severity in {"critical", "warning"}]
-    if critical_insights:
-        main_cause = critical_insights[0].title
+    main_cause = incidents[0].root_cause if incidents else "No major issue detected"
 
     return ExecutiveSummary(
         status=health_status(score),
@@ -199,3 +129,10 @@ def build_executive_summary(model, graph, device_health, recommendations, score:
         insights=insights,
         actions=actions,
     )
+
+
+# Backwards-compatible function name.
+def build_executive_summary(model, graph, device_health, recommendations, score: int) -> ExecutiveSummary:
+    from src.hadocs.core.incidents import build_incidents
+    incidents = build_incidents(model, graph)
+    return build_executive_summary_from_incidents(score, incidents)

@@ -11,8 +11,9 @@ def test_health_status():
 
 def test_estimated_repair_minutes():
     actions = [
-        ActionPlan("Fix one", 5, "Reason", 8),
-        ActionPlan("Check one", 4, "Reason", 3),
-        ActionPlan("Cleanup", 3, "Reason", 1),
+        ActionPlan("Fix one", 5, "Reason", 8, estimated_repair_minutes=8),
+        ActionPlan("Check one", 4, "Reason", 3, estimated_repair_minutes=5),
+        ActionPlan("Cleanup", 3, "Reason", 1, estimated_repair_minutes=3),
     ]
+
     assert estimate_repair_minutes(actions) == 16
