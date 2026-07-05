@@ -15,6 +15,7 @@ It builds an internal model of your Home Assistant setup and separates:
 - diagnostic entities
 - health signals
 - recommendations
+- relationships
 
 ## Safety first
 
@@ -44,21 +45,27 @@ py -3.14 -m pytest
 py -3.14 main.py
 ```
 
-CLI:
+## New in v0.6.0
 
-```powershell
-py -3.14 -m src.hadocs.cli.main doctor
-py -3.14 -m src.hadocs.cli.main generate
+v0.6.0 starts the transition from report generator to Smart Home Analyzer.
+
+New features:
+
+- Smart dashboard-style `index.md`
+- Relationship Engine v1
+- Entity relationship report
+- Device relationship report
+- Integration relationship report
+- Weekly checkup style recommendations
+- Better overview of what needs attention
+
+The Relationship Engine currently understands basic relationships:
+
+```text
+Area
+  └── Device
+        └── Entity
+              └── Integration
 ```
 
-## New in v0.5.0
-
-- Safer `.gitignore`
-- Generated ZIP files ignored
-- Better device classification
-- Better integration classification
-- Smarter health scoring
-- Device health no longer punishes diagnostic-only devices
-- Mobile App, HACS, Cloud, Spotify, Google Cast and system integrations handled more intelligently
-- Added cleanup guide
-- Added generated-output warning
+Future versions will expand this to automations, scripts, helpers, dashboards, scenes, and voice assistants.

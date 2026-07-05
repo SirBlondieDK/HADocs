@@ -10,6 +10,11 @@ from src.hadocs.core.health import (
     get_critical_entities,
 )
 from src.hadocs.core.recommendations import build_recommendations
+from src.hadocs.core.relationships import (
+    build_relationship_graph,
+    top_problem_devices,
+    top_problem_integrations,
+)
 from src.hadocs.exporters.csv_exporter import export_devices_csv, export_entities_csv
 from src.hadocs.utils.text import slugify, write_md
 
@@ -21,19 +26,21 @@ def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
     project_name = cfg.get("project_name", "Home Assistant")
 
     model = build_model(data, idx)
+    graph = build_relationship_graph(model)
     device_health = calculate_device_health(model)
     health_score, health_notes = calculate_health_score(model, device_health)
     recommendations = build_recommendations(model, device_health)
 
-    generate_index(out, project_name, now, health_score)
-    generate_summary(out, model, health_score, health_notes, now)
+    generate_index(out, project_name, model, graph, device_health, recommendations, health_score, health_notes, now)
+    generate_summary(out, model, graph, health_score, health_notes, now)
     generate_areas(out, model, now)
     generate_devices(out, model, now)
-    generate_integrations(out, model, now)
+    generate_integrations(out, model, graph, now)
     generate_device_health(out, device_health, now)
     generate_recommendations(out, recommendations, now)
     generate_problems(out, model, now)
     generate_rules_report(out, model, now)
+    generate_relationships(out, model, graph, now)
     generate_architecture(out, now)
     export_entities_csv(out, model)
     export_devices_csv(out, model)
@@ -41,14 +48,91 @@ def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
     log(f"Documentation complete: {out / 'index.md'}")
 
 
-def generate_index(out: Path, project_name: str, now: str, health_score: int) -> None:
-    write_md(out / "index.md", [
-        f"# {project_name} - Documentation",
+def status_icon(score: int) -> str:
+    if score >= 85:
+        return "🟢"
+    if score >= 60:
+        return "🟡"
+    return "🔴"
+
+
+def bar(score: int, width: int = 20) -> str:
+    filled = round((score / 100) * width)
+    return "█" * filled + "░" * (width - filled)
+
+
+def generate_index(out: Path, project_name: str, model, graph, device_health, recommendations, health_score, health_notes, now: str) -> None:
+    physical_devices = [d for d in model.devices.values() if d.is_physical]
+    virtual_devices = [d for d in model.devices.values() if d.is_virtual]
+    system_devices = [d for d in model.devices.values() if d.is_system]
+    problem_devices = [d for d in device_health if d.status == "problem"]
+    warning_devices = [d for d in device_health if d.status == "warning"]
+    ignored_bad = [
+        e for e in model.entities.values()
+        if e.is_ignored and e.state in ("unknown", "unavailable")
+    ]
+
+    lines = [
+        f"# {project_name} - HADocs Report",
         "",
-        f"Generated: {now}",
+        f"Generated: `{now}`",
         "",
-        f"## Health Score: `{health_score}/100`",
+        "## Smart Home Health",
         "",
+        f"# {status_icon(health_score)} {health_score}/100",
+        "",
+        f"`{bar(health_score)}`",
+        "",
+    ]
+
+    if health_notes:
+        lines.append("### Why this score?")
+        lines.append("")
+        for note in health_notes:
+            lines.append(f"- {note}")
+        lines.append("")
+
+    lines += [
+        "## Installation overview",
+        "",
+        f"- 🏠 Areas: `{len(model.areas)}`",
+        f"- 💡 Physical devices: `{len(physical_devices)}`",
+        f"- 🧩 Virtual devices: `{len(virtual_devices)}`",
+        f"- ⚙️ System devices: `{len(system_devices)}`",
+        f"- 🔌 Integrations: `{len(model.integrations)}`",
+        f"- 📦 Entities: `{len(model.entities)}`",
+        "",
+        "## Attention",
+        "",
+        f"- 🔴 Problem devices: `{len(problem_devices)}`",
+        f"- 🟡 Warning devices: `{len(warning_devices)}`",
+        f"- 💤 Ignored diagnostic/system unknown or unavailable: `{len(ignored_bad)}`",
+        f"- 🧭 Recommendations: `{len(recommendations)}`",
+        "",
+    ]
+
+    top_devices = top_problem_devices(graph, limit=5)
+    if top_devices:
+        lines += ["## Top problem devices", ""]
+        for device in top_devices:
+            lines.append(f"- **{device.name}** — `{len(device.problem_entities)}` relevant problem entities")
+        lines.append("")
+
+    top_integrations = top_problem_integrations(graph, limit=5)
+    if top_integrations:
+        lines += ["## Top problem integrations", ""]
+        for integration in top_integrations:
+            lines.append(f"- **{integration.platform}** — `{len(integration.problem_entities)}` relevant problem entities")
+        lines.append("")
+
+    if recommendations:
+        lines += ["## Recommended actions", ""]
+        for rec in recommendations[:8]:
+            stars = "★" * rec["priority"] + "☆" * (5 - rec["priority"])
+            lines.append(f"- `{stars}` **{rec['title']}** — {rec['reason']}")
+        lines.append("")
+
+    lines += [
         "## Reports",
         "",
         "- [01 Overview](01_overview.md)",
@@ -59,13 +143,19 @@ def generate_index(out: Path, project_name: str, now: str, health_score: int) ->
         "- [06 Recommendations](06_recommendations.md)",
         "- [07 Problems and cleanup](07_problems.md)",
         "- [08 Rule Matches](08_rule_matches.md)",
-        "- [09 Architecture](09_architecture.md)",
+        "- [09 Relationships](09_relationships.md)",
+        "- [10 Entity Relationships](10_entity_relationships.md)",
+        "- [11 Device Relationships](11_device_relationships.md)",
+        "- [12 Integration Relationships](12_integration_relationships.md)",
+        "- [13 Architecture](13_architecture.md)",
         "- [CSV entities](csv/entities.csv)",
         "- [CSV devices](csv/devices.csv)",
-    ])
+    ]
+
+    write_md(out / "index.md", lines)
 
 
-def generate_summary(out, model, health_score, health_notes, now):
+def generate_summary(out, model, graph, health_score, health_notes, now):
     physical_devices = [d for d in model.devices.values() if d.is_physical]
     virtual_devices = [d for d in model.devices.values() if d.is_virtual]
     system_devices = [d for d in model.devices.values() if d.is_system]
@@ -94,6 +184,9 @@ def generate_summary(out, model, health_score, health_notes, now):
         f"- Ignored entities: `{len(ignored_entities)}`",
         f"- Ignored unknown/unavailable entities: `{len(bad_ignored)}`",
         f"- Integrations: `{len(model.integrations)}`",
+        f"- Entity relationships: `{len(graph.entities)}`",
+        f"- Device relationships: `{len(graph.devices)}`",
+        f"- Integration relationships: `{len(graph.integrations)}`",
     ]
     write_md(out / "01_overview.md", lines)
 
@@ -135,15 +228,18 @@ def generate_devices(out, model, now):
     write_md(dev_dir / "index.md", index)
 
 
-def generate_integrations(out, model, now):
+def generate_integrations(out, model, graph, now):
     lines = ["# 04 Integrations", "", f"Generated: {now}", ""]
     for integration in sorted(model.integrations.values(), key=lambda i: i.platform):
+        rel = graph.integrations.get(integration.platform)
         important = [e for e in integration.entities if e.importance == "important"]
         diagnostic = [e for e in integration.entities if e.importance == "diagnostic"]
         ignored = [e for e in integration.entities if e.is_ignored]
-        bad = [e for e in integration.entities if e.state in ("unknown", "unavailable") and not e.is_ignored and e.importance != "diagnostic"]
+        bad = rel.problem_entities if rel else []
+        score = 100 if not important else max(0, 100 - min(60, len(bad) * 5))
         lines += [
             f"## {integration.platform}", "",
+            f"- Health: `{score}/100`",
             f"- Entities: `{len(integration.entities)}`",
             f"- Devices: `{len(integration.devices)}`",
             f"- Important: `{len(important)}`",
@@ -220,9 +316,91 @@ def generate_rules_report(out, model, now):
     write_md(out / "08_rule_matches.md", lines)
 
 
+def generate_relationships(out, model, graph, now):
+    lines = ["# 09 Relationships", "", f"Generated: {now}", ""]
+    lines += [
+        "## Relationship model",
+        "",
+        "```text",
+        "Area",
+        "  └── Device",
+        "        └── Entity",
+        "              └── Integration",
+        "```",
+        "",
+        "This is Relationship Engine v1. Future versions will include automations, scripts, helpers, scenes, dashboards and voice assistants.",
+        "",
+        "## Top problem devices",
+        "",
+    ]
+    for device in top_problem_devices(graph):
+        lines.append(f"- **{device.name}** — `{len(device.problem_entities)}` relevant problem entities")
+
+    lines += ["", "## Top problem integrations", ""]
+    for integration in top_problem_integrations(graph):
+        lines.append(f"- **{integration.platform}** — `{len(integration.problem_entities)}` relevant problem entities")
+
+    write_md(out / "09_relationships.md", lines)
+
+    entity_lines = ["# 10 Entity Relationships", "", f"Generated: {now}", ""]
+    for rel in sorted(graph.entities.values(), key=lambda r: r.entity_id):
+        if rel.is_ignored and rel.state not in ("unknown", "unavailable"):
+            continue
+        entity_lines += [
+            f"## {rel.entity_id}",
+            "",
+            f"- Name: `{rel.name}`",
+            f"- State: `{rel.state}`",
+            f"- Domain: `{rel.domain}`",
+            f"- Area ID: `{rel.area_id}`",
+            f"- Device: `{rel.device_name}`",
+            f"- Integration: `{rel.integration}`",
+            f"- Importance: `{rel.importance}`",
+            f"- Ignored: `{rel.is_ignored}`",
+            "",
+        ]
+    write_md(out / "10_entity_relationships.md", entity_lines)
+
+    device_lines = ["# 11 Device Relationships", "", f"Generated: {now}", ""]
+    for rel in sorted(graph.devices.values(), key=lambda r: r.name):
+        device_lines += [
+            f"## {rel.name}",
+            "",
+            f"- Classification: `{rel.classification}`",
+            f"- Area ID: `{rel.area_id}`",
+            f"- Integrations: `{', '.join(rel.integrations)}`",
+            f"- Important entities: `{len(rel.important_entities)}`",
+            f"- Diagnostic entities: `{len(rel.diagnostic_entities)}`",
+            f"- Ignored entities: `{len(rel.ignored_entities)}`",
+            f"- Problem entities: `{len(rel.problem_entities)}`",
+            "",
+        ]
+        if rel.problem_entities:
+            device_lines.append("### Problems")
+            device_lines.append("")
+            for entity_id in rel.problem_entities:
+                device_lines.append(f"- `{entity_id}`")
+            device_lines.append("")
+    write_md(out / "11_device_relationships.md", device_lines)
+
+    integration_lines = ["# 12 Integration Relationships", "", f"Generated: {now}", ""]
+    for rel in sorted(graph.integrations.values(), key=lambda r: r.platform):
+        integration_lines += [
+            f"## {rel.platform}",
+            "",
+            f"- Devices: `{len(rel.devices)}`",
+            f"- Important entities: `{len(rel.important_entities)}`",
+            f"- Diagnostic entities: `{len(rel.diagnostic_entities)}`",
+            f"- Ignored entities: `{len(rel.ignored_entities)}`",
+            f"- Problem entities: `{len(rel.problem_entities)}`",
+            "",
+        ]
+    write_md(out / "12_integration_relationships.md", integration_lines)
+
+
 def generate_architecture(out, now):
-    write_md(out / "09_architecture.md", [
-        "# 09 Architecture", "", f"Generated: {now}", "",
+    write_md(out / "13_architecture.md", [
+        "# 13 Architecture", "", f"Generated: {now}", "",
         "```text",
         "Home Assistant API",
         "      │",
@@ -236,9 +414,10 @@ def generate_architecture(out, now):
         "      ├── System Devices",
         "      ├── Entities",
         "      ├── Integrations",
-        "      └── Health Model",
+        "      ├── Health Model",
+        "      └── Relationship Graph",
         "      │",
         "      ▼",
-        "Reports / CSV / Future HTML / Future Relationship Engine",
+        "Reports / CSV / Future HTML / Future Full Relationship Engine",
         "```",
     ])
