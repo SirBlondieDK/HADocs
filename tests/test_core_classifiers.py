@@ -14,3 +14,8 @@ def test_light_device_is_physical():
 def test_spotify_device_is_system():
     device = {"manufacturer": "Spotify", "model": "", "name": "Spotify"}
     assert classify_device(device, {"media_player"}, {"spotify"}) == "system"
+
+
+def test_dashboard_device_is_virtual():
+    device = {"manufacturer": "", "model": "", "name": "Continuously Casting Dashboard"}
+    assert classify_device(device, {"sensor"}, {"mobile_app"}) == "virtual"

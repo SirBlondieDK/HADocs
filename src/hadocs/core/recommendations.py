@@ -10,7 +10,7 @@ def build_recommendations(model: HADocsModel, device_health: list[DeviceHealth])
             "priority": 5,
             "title": f"Fix device: {item.device.name}",
             "reason": "; ".join(item.reasons) or "Device has serious health issues.",
-            "estimated_score_gain": 6,
+            "estimated_score_gain": 5,
         })
 
     for item in sorted([d for d in device_health if d.status == "warning"], key=lambda d: d.score):
@@ -30,7 +30,7 @@ def build_recommendations(model: HADocsModel, device_health: list[DeviceHealth])
             "priority": 3,
             "title": f"Assign {len(without_area)} physical devices to areas",
             "reason": "Physical devices without areas are harder to document, analyze, and place on dashboards.",
-            "estimated_score_gain": min(8, max(1, len(without_area) // 8)),
+            "estimated_score_gain": min(6, max(1, len(without_area) // 10)),
         })
 
     duplicates = find_duplicate_names_by_domain(model)
@@ -39,7 +39,7 @@ def build_recommendations(model: HADocsModel, device_health: list[DeviceHealth])
             "priority": 2,
             "title": f"Review {len(duplicates)} duplicate names within the same domain",
             "reason": "Duplicate names can make dashboards, automations, and documentation harder to understand.",
-            "estimated_score_gain": min(3, max(1, len(duplicates) // 10)),
+            "estimated_score_gain": min(2, max(1, len(duplicates) // 15)),
         })
 
     return sorted(recommendations, key=lambda r: (-r["priority"], -r["estimated_score_gain"]))

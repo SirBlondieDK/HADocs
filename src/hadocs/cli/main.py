@@ -6,7 +6,11 @@ from src.hadocs.api.client import HomeAssistantAPI
 from src.hadocs.collectors.homeassistant import build_indexes, collect_all
 from src.hadocs.reports.generator import generate_all
 from src.hadocs.utils.config import config_exists, load_config, save_config, validate_config
-from src.hadocs.utils.security import gitignore_contains_required_entries, tracked_sensitive_files
+from src.hadocs.utils.security import (
+    gitignore_contains_required_entries,
+    tracked_generated_files,
+    tracked_sensitive_files,
+)
 
 
 def main():
@@ -85,6 +89,16 @@ def cmd_doctor():
             print(f"  - {file}")
     else:
         print("✓ No sensitive config files tracked by Git")
+
+    generated = tracked_generated_files()
+    if generated:
+        ok = False
+        print("✗ Generated files are tracked by Git:")
+        for file in generated:
+            print(f"  - {file}")
+        print("  Remove with: git rm --cached <file>")
+    else:
+        print("✓ No generated output files tracked by Git")
 
     gitignore_ok, missing = gitignore_contains_required_entries()
     if not gitignore_ok:

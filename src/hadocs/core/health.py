@@ -32,14 +32,14 @@ def calculate_device_health(model: HADocsModel) -> list[DeviceHealth]:
         if unavailable:
             important_count = sum(1 for e in unavailable if e.importance == "important")
             normal_count = len(unavailable) - important_count
-            penalty = min(70, important_count * 12 + normal_count * 4)
+            penalty = min(55, important_count * 10 + normal_count * 3)
             score -= penalty
             reasons.append(f"{len(unavailable)} relevant entities unavailable")
 
         if unknown:
             important_count = sum(1 for e in unknown if e.importance == "important")
             normal_count = len(unknown) - important_count
-            penalty = min(35, important_count * 8 + normal_count * 2)
+            penalty = min(25, important_count * 5 + normal_count)
             score -= penalty
             reasons.append(f"{len(unknown)} relevant entities unknown")
 
@@ -48,19 +48,19 @@ def calculate_device_health(model: HADocsModel) -> list[DeviceHealth]:
             try:
                 value = float(entity.state)
                 if value <= 10:
-                    score -= 15
+                    score -= 12
                     reasons.append(f"{entity.entity_id} battery critical ({value}%)")
                 elif value <= 25:
-                    score -= 5
+                    score -= 4
                     reasons.append(f"{entity.entity_id} battery low ({value}%)")
             except Exception:
                 pass
 
         score = max(0, min(100, score))
 
-        if score >= 90:
+        if score >= 85:
             status = "healthy"
-        elif score >= 60:
+        elif score >= 55:
             status = "warning"
         else:
             status = "problem"
@@ -78,12 +78,12 @@ def calculate_health_score(model: HADocsModel, device_health: list[DeviceHealth]
     warning_devices = [d for d in device_health if d.status == "warning"]
 
     if problem_devices:
-        penalty = min(35, len(problem_devices) * 6)
+        penalty = min(30, len(problem_devices) * 5)
         score -= penalty
         notes.append(f"{len(problem_devices)} physical devices have serious problems (-{penalty})")
 
     if warning_devices:
-        penalty = min(18, len(warning_devices) * 2)
+        penalty = min(15, len(warning_devices) * 2)
         score -= penalty
         notes.append(f"{len(warning_devices)} physical devices have warnings (-{penalty})")
 
@@ -92,13 +92,13 @@ def calculate_health_score(model: HADocsModel, device_health: list[DeviceHealth]
         if d.is_physical and (not d.area_id or d.area_id == "_uden_område")
     ]
     if physical_without_area:
-        penalty = min(8, max(1, len(physical_without_area) // 8))
+        penalty = min(6, max(1, len(physical_without_area) // 10))
         score -= penalty
         notes.append(f"{len(physical_without_area)} physical devices have no area (-{penalty})")
 
     duplicate_domain_names = find_duplicate_names_by_domain(model)
     if duplicate_domain_names:
-        penalty = min(3, max(1, len(duplicate_domain_names) // 10))
+        penalty = min(2, max(1, len(duplicate_domain_names) // 15))
         score -= penalty
         notes.append(f"{len(duplicate_domain_names)} duplicate names within same domain (-{penalty})")
 
@@ -118,7 +118,7 @@ def find_duplicate_names_by_domain(model: HADocsModel) -> dict[tuple[str, str], 
     for entity in model.entities.values():
         if entity.is_ignored or entity.importance == "diagnostic":
             continue
-        if entity.domain == "device_tracker":
+        if entity.domain in {"device_tracker", "sensor"}:
             continue
         key = (entity.domain, entity.name)
         grouped.setdefault(key, []).append(entity.entity_id)
@@ -130,6 +130,8 @@ def get_critical_entities(model: HADocsModel):
     critical = []
     for entity in model.entities.values():
         if entity.state not in ("unknown", "unavailable"):
+            continue
+        if entity.is_ignored or entity.importance == "diagnostic":
             continue
         eid = entity.entity_id.lower()
         if any(pattern in eid for pattern in CRITICAL_PATTERNS):

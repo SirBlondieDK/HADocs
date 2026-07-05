@@ -56,6 +56,12 @@ def build_model(data: dict, idx: dict) -> HADocsModel:
         if classification == "physical" and not any(e.is_physical and not e.is_ignored for e in dev_entities):
             classification = "virtual"
 
+        if classification == "physical":
+            important_count = sum(1 for e in dev_entities if e.importance == "important")
+            diagnostic_count = sum(1 for e in dev_entities if e.importance in ("diagnostic", "ignored"))
+            if important_count == 0 and diagnostic_count >= max(1, len(dev_entities) - 1):
+                classification = "virtual"
+
         area_id = dev.get("area_id") or "_uden_område"
         model = DeviceModel(
             device_id=device_id,

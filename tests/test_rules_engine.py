@@ -16,6 +16,11 @@ def test_wled_segments_are_ignored():
     assert ignored
 
 
+def test_mobile_app_storage_is_ignored():
+    ignored, physical, importance, reason = classify_entity("sensor.iphone_storage", "mobile_app")
+    assert ignored
+
+
 def test_ring_camera_is_important():
     ignored, physical, importance, reason = classify_entity("camera.front_door", "ring")
     assert not ignored

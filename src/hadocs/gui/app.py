@@ -7,7 +7,11 @@ from tkinter import ttk, messagebox
 from src.hadocs.collectors.homeassistant import build_indexes, collect_all
 from src.hadocs.reports.generator import generate_all
 from src.hadocs.utils.config import load_config, save_config, validate_config
-from src.hadocs.utils.security import gitignore_contains_required_entries, tracked_sensitive_files
+from src.hadocs.utils.security import (
+    gitignore_contains_required_entries,
+    tracked_generated_files,
+    tracked_sensitive_files,
+)
 
 
 class App(tk.Tk):
@@ -86,12 +90,21 @@ class App(tk.Tk):
             self.log_msg("✓ Configuration looks valid")
 
         tracked = tracked_sensitive_files()
+        generated = tracked_generated_files()
+
         if tracked:
             self.log_msg("✗ Sensitive files tracked by Git:")
             for file in tracked:
                 self.log_msg(f"- {file}")
         else:
             self.log_msg("✓ No sensitive files tracked by Git")
+
+        if generated:
+            self.log_msg("✗ Generated files tracked by Git:")
+            for file in generated:
+                self.log_msg(f"- {file}")
+        else:
+            self.log_msg("✓ No generated files tracked by Git")
 
         ok, missing = gitignore_contains_required_entries()
         if ok:

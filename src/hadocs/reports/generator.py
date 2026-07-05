@@ -30,12 +30,10 @@ def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
     generate_areas(out, model, now)
     generate_devices(out, model, now)
     generate_integrations(out, model, now)
-    generate_integration_health(out, model, now)
     generate_device_health(out, device_health, now)
     generate_recommendations(out, recommendations, now)
     generate_problems(out, model, now)
     generate_rules_report(out, model, now)
-    generate_dashboard_whitelist(out, model, now)
     generate_architecture(out, now)
     export_entities_csv(out, model)
     export_devices_csv(out, model)
@@ -57,13 +55,11 @@ def generate_index(out: Path, project_name: str, now: str, health_score: int) ->
         "- [02 Areas](02_areas/index.md)",
         "- [03 Devices](03_devices/index.md)",
         "- [04 Integrations](04_integrations.md)",
-        "- [05 Integration Health](05_integration_health.md)",
-        "- [06 Device Health](06_device_health.md)",
-        "- [07 Recommendations](07_recommendations.md)",
-        "- [08 Problems and cleanup](08_problems.md)",
-        "- [09 Rule Matches](09_rule_matches.md)",
-        "- [10 Dashboard whitelist](10_dashboard_whitelist.md)",
-        "- [11 Architecture](11_architecture.md)",
+        "- [05 Device Health](05_device_health.md)",
+        "- [06 Recommendations](06_recommendations.md)",
+        "- [07 Problems and cleanup](07_problems.md)",
+        "- [08 Rule Matches](08_rule_matches.md)",
+        "- [09 Architecture](09_architecture.md)",
         "- [CSV entities](csv/entities.csv)",
         "- [CSV devices](csv/devices.csv)",
     ])
@@ -130,15 +126,11 @@ def generate_devices(out, model, now):
             f"- Area ID: `{device.area_id}`",
             f"- Manufacturer: `{device.manufacturer}`",
             f"- Model: `{device.model}`",
-            f"- Software: `{device.sw_version}`",
-            f"- Hardware: `{device.hw_version}`",
             f"- Entity count: `{len(device.entities)}`",
             "", "## Entities", "",
         ]
         for entity in sorted(device.entities, key=lambda e: e.entity_id):
-            lines.append(
-                f"- `{entity.entity_id}` — `{entity.state}` — `{entity.importance}` — {entity.rule_reason}"
-            )
+            lines.append(f"- `{entity.entity_id}` — `{entity.state}` — `{entity.importance}` — {entity.rule_reason}")
         write_md(dev_dir / filename, lines)
     write_md(dev_dir / "index.md", index)
 
@@ -149,7 +141,7 @@ def generate_integrations(out, model, now):
         important = [e for e in integration.entities if e.importance == "important"]
         diagnostic = [e for e in integration.entities if e.importance == "diagnostic"]
         ignored = [e for e in integration.entities if e.is_ignored]
-        bad = [e for e in integration.entities if e.state in ("unknown", "unavailable") and not e.is_ignored]
+        bad = [e for e in integration.entities if e.state in ("unknown", "unavailable") and not e.is_ignored and e.importance != "diagnostic"]
         lines += [
             f"## {integration.platform}", "",
             f"- Entities: `{len(integration.entities)}`",
@@ -162,23 +154,8 @@ def generate_integrations(out, model, now):
     write_md(out / "04_integrations.md", lines)
 
 
-def generate_integration_health(out, model, now):
-    lines = ["# 05 Integration Health", "", f"Generated: {now}", ""]
-    for integration in sorted(model.integrations.values(), key=lambda i: i.platform):
-        relevant = [e for e in integration.entities if not e.is_ignored and e.importance != "diagnostic"]
-        bad = [e for e in relevant if e.state in ("unknown", "unavailable")]
-        score = 100 if not relevant else max(0, 100 - min(60, len(bad) * 5))
-        lines += [
-            f"## {integration.platform}", "",
-            f"- Score: `{score}/100`",
-            f"- Relevant entities: `{len(relevant)}`",
-            f"- Relevant unknown/unavailable: `{len(bad)}`", "",
-        ]
-    write_md(out / "05_integration_health.md", lines)
-
-
 def generate_device_health(out, device_health, now):
-    lines = ["# 06 Device Health", "", f"Generated: {now}", ""]
+    lines = ["# 05 Device Health", "", f"Generated: {now}", ""]
     for item in sorted(device_health, key=lambda d: (d.status, d.score, d.device.name)):
         lines += [
             f"## {item.device.name}", "",
@@ -193,11 +170,11 @@ def generate_device_health(out, device_health, now):
             for reason in item.reasons:
                 lines.append(f"- {reason}")
             lines.append("")
-    write_md(out / "06_device_health.md", lines)
+    write_md(out / "05_device_health.md", lines)
 
 
 def generate_recommendations(out, recommendations, now):
-    lines = ["# 07 Recommendations", "", f"Generated: {now}", ""]
+    lines = ["# 06 Recommendations", "", f"Generated: {now}", ""]
     if not recommendations:
         lines.append("No recommendations found.")
     for rec in recommendations:
@@ -208,7 +185,7 @@ def generate_recommendations(out, recommendations, now):
             f"- Reason: {rec['reason']}",
             f"- Estimated score gain: `+{rec['estimated_score_gain']}`", "",
         ]
-    write_md(out / "07_recommendations.md", lines)
+    write_md(out / "06_recommendations.md", lines)
 
 
 def generate_problems(out, model, now):
@@ -217,7 +194,7 @@ def generate_problems(out, model, now):
     physical_without_area = [d for d in model.devices.values() if d.is_physical and (not d.area_id or d.area_id == "_uden_område")]
     ignored_bad = [e for e in model.entities.values() if e.is_ignored and e.state in ("unknown", "unavailable")]
 
-    lines = ["# 08 Problems and cleanup", "", f"Generated: {now}", ""]
+    lines = ["# 07 Problems and cleanup", "", f"Generated: {now}", ""]
     lines += ["## Critical entities", ""]
     for entity in critical:
         lines.append(f"- `{entity.entity_id}` — `{entity.state}`")
@@ -232,33 +209,20 @@ def generate_problems(out, model, now):
     lines += ["", "## Ignored unknown/unavailable", ""]
     for entity in sorted(ignored_bad, key=lambda e: e.entity_id):
         lines.append(f"- `{entity.entity_id}` — `{entity.state}` — `{entity.rule_reason}`")
-    write_md(out / "08_problems.md", lines)
+    write_md(out / "07_problems.md", lines)
 
 
 def generate_rules_report(out, model, now):
-    lines = ["# 09 Rule Matches", "", f"Generated: {now}", ""]
+    lines = ["# 08 Rule Matches", "", f"Generated: {now}", ""]
     counts = Counter((e.importance, e.rule_reason) for e in model.entities.values())
     for (importance, reason), count in sorted(counts.items(), key=lambda x: (-x[1], x[0][0])):
         lines.append(f"- `{importance}` — {reason}: `{count}`")
-    write_md(out / "09_rule_matches.md", lines)
-
-
-def generate_dashboard_whitelist(out, model, now):
-    lines = ["# 10 Dashboard whitelist", "", f"Generated: {now}", ""]
-    for area in sorted(model.areas.values(), key=lambda a: a.name):
-        candidates = [e for e in area.entities if e.importance == "important" and not e.is_ignored]
-        if not candidates:
-            continue
-        lines += [f"## {area.name}", ""]
-        for entity in sorted(candidates, key=lambda e: e.entity_id):
-            lines.append(f"- **{entity.name}** — `{entity.entity_id}` — `{entity.state}`")
-        lines.append("")
-    write_md(out / "10_dashboard_whitelist.md", lines)
+    write_md(out / "08_rule_matches.md", lines)
 
 
 def generate_architecture(out, now):
-    write_md(out / "11_architecture.md", [
-        "# 11 Architecture", "", f"Generated: {now}", "",
+    write_md(out / "09_architecture.md", [
+        "# 09 Architecture", "", f"Generated: {now}", "",
         "```text",
         "Home Assistant API",
         "      │",

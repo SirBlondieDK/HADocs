@@ -1,13 +1,13 @@
 # Roadmap
 
-## v0.4
-Rules Engine
-
 ## v0.5
-Automation analyzer
+Cleanup and trustworthy health scoring
 
 ## v0.6
-Dashboard analyzer
+Automation analyzer
 
 ## v0.7
+Dashboard analyzer
+
+## v0.8
 Relationship Engine

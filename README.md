@@ -2,42 +2,63 @@
 
 **Home Assistant Documentation & Analysis**
 
-HADocs is an open-source, read-only tool that documents, analyzes, and helps maintain Home Assistant installations.
+HADocs is a read-only tool that documents, analyzes, and helps maintain Home Assistant installations.
 
-HADocs builds a core model of your Home Assistant environment, separating areas, physical devices, virtual/service devices, system devices, entities, integrations, and health signals.
+It builds an internal model of your Home Assistant setup and separates:
+
+- areas
+- physical devices
+- virtual devices
+- system devices
+- entities
+- integrations
+- diagnostic entities
+- health signals
+- recommendations
+
+## Safety first
+
+HADocs does not modify Home Assistant.
+
+It only reads API data and writes local reports.
+
+Never commit:
+
+- `config.json`
+- `config.local.json`
+- `.env`
+- `cache/`
+- `output/`
+- generated archives such as `output.zip`
 
 ## Requirements
 
-- Python 3.11 or newer
+- Python 3.11+
 - Home Assistant Long-Lived Access Token
 
-## Quick start
+## Run
 
-```bash
+```powershell
 py -3.14 -m pip install -r requirements.txt
+py -3.14 -m pytest
 py -3.14 main.py
 ```
 
 CLI:
 
-```bash
-py -3.14 -m src.hadocs.cli.main init
+```powershell
 py -3.14 -m src.hadocs.cli.main doctor
 py -3.14 -m src.hadocs.cli.main generate
 ```
 
-## Safety
+## New in v0.5.0
 
-HADocs is read-only by design.
-
-It does not modify Home Assistant, call services, change entities, edit automations, or send commands to devices.
-
-## New in v0.4.0
-
-- Rules Engine
-- Integration-aware entity classification
-- Built-in rules for Ring, Tapo, Frigate, WLED, Mobile App, Spotify, Deco, Proxmox, Zigbee2MQTT, MQTT and Google
-- Smarter Health Score
-- Integration Health report
-- Rule Match report
-- Fewer false warnings from diagnostic entities
+- Safer `.gitignore`
+- Generated ZIP files ignored
+- Better device classification
+- Better integration classification
+- Smarter health scoring
+- Device health no longer punishes diagnostic-only devices
+- Mobile App, HACS, Cloud, Spotify, Google Cast and system integrations handled more intelligently
+- Added cleanup guide
+- Added generated-output warning

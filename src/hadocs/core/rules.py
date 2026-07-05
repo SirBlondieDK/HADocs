@@ -36,10 +36,15 @@ class RulesEngine:
 
     def matching_rulesets(self, platform: str) -> list[RuleSet]:
         platform = (platform or "_unknown").lower()
-        return [
+        matched = [
             ruleset for ruleset in self.rulesets
             if platform in {p.lower() for p in ruleset.platforms}
         ]
+        matched.extend([
+            ruleset for ruleset in self.rulesets
+            if "_global" in {p.lower() for p in ruleset.platforms}
+        ])
+        return matched
 
     def classify_entity(self, entity_id: str, platform: str) -> RuleResult:
         rulesets = self.matching_rulesets(platform)

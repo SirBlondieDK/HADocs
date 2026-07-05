@@ -1,10 +1,28 @@
+# Local configuration / secrets
 config.json
 config.local.json
 .env
+
+# Generated data
 cache/
 output/
+reports/
+
+# Generated archives
+*.zip
+*.tar
+*.tar.gz
+*.7z
+
+# Python
 __pycache__/
 *.pyc
-.venv/
 .pytest_cache/
+.venv/
+venv/
+
+# OS/editor
 .DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -1,6 +1,6 @@
 [project]
 name = "hadocs"
-version = "0.4.0"
+version = "0.5.0"
 description = "Home Assistant documentation and analysis generator"
 requires-python = ">=3.11"
 dependencies = [

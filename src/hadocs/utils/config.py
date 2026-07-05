@@ -11,6 +11,8 @@ DEFAULT_CONFIG = {
 }
 
 SENSITIVE_CONFIG_FILES = ["config.json", "config.local.json", ".env"]
+GENERATED_PATHS = ["cache", "output", "reports"]
+GENERATED_ARCHIVE_PATTERNS = [".zip", ".tar", ".tar.gz", ".7z"]
 
 
 def load_config(path: str = "config.json") -> dict:
