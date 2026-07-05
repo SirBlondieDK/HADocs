@@ -1,30 +1,36 @@
-# Changelog
+# GUI_DESKTOP.md
 
-## v0.15.0 - Desktop GUI & README Refresh
+# Desktop GUI
 
-### Added
-- New modern desktop GUI foundation.
-- Clear post-scan output section.
-- Open Dashboard button.
-- Open Explorer button.
-- Open Markdown button.
-- Open Output Folder button.
-- Improved success message after scan.
-- Optional auto-open dashboard checkbox.
-- README 3.0 with project positioning, badges, screenshots and roadmap.
-- `docs/images/README_IMAGES.md` describing required screenshots and logo files.
-- Tests for desktop GUI output helpers.
+The desktop application is the recommended way to use HADocs.
 
-### Changed
-- README now presents HADocs as a local-first Smart Home Intelligence platform.
-- README now highlights HTML Dashboard, Explorer, Knowledge Engine, Explain Engine and Privacy.
-- GUI user flow is now designed around "Generate → Open Dashboard / Explorer".
+## Sidebar
 
-### Security
-- GUI open actions only open local generated files.
-- No cloud, telemetry, tracking, analytics, or AI calls added.
+- Scan Home Assistant
+- Dashboard
+- Explorer
+- Markdown
+- Output Folder
+- Doctor
+- Settings
+- About
 
-## v0.14.0 - GUI UX Release
+## Dashboard
 
-### Added
-- GUI helper functions for opening generated outputs.
+Shows:
+
+- Health Score
+- Top Recommendation
+- Installation KPIs
+- Scan Status
+
+## Developer Log
+
+Accessible from 'Open developer log' and opens in its own window.
+
+## Workflow
+
+1. Enter Home Assistant URL
+2. Paste Long-Lived Access Token
+3. Press Scan
+4. Open Dashboard

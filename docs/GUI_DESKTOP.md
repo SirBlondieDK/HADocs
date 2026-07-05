@@ -1,33 +1,36 @@
+# GUI_DESKTOP.md
+
 # Desktop GUI
 
-v0.15 introduces the foundation for a cleaner desktop experience.
+The desktop application is the recommended way to use HADocs.
 
-## Goal
+## Sidebar
 
-After a scan completes, users should immediately know what to do next.
+- Scan Home Assistant
+- Dashboard
+- Explorer
+- Markdown
+- Output Folder
+- Doctor
+- Settings
+- About
 
-Recommended actions:
+## Dashboard
 
-- Open Dashboard
-- Open Explorer
-- Open Markdown
-- Open Output Folder
+Shows:
 
-## Recommended post-scan text
+- Health Score
+- Top Recommendation
+- Installation KPIs
+- Scan Status
 
-```text
-Documentation successfully generated.
+## Developer Log
 
-Dashboard: output/index.html
-Explorer: output/explorer/index.html
-Knowledge Pack: output/knowledge/
-Markdown: output/index.md
-```
+Accessible from 'Open developer log' and opens in its own window.
 
-## Future goals
+## Workflow
 
-- Health Score shown directly in GUI
-- Main root cause shown directly in GUI
-- Potential Score shown directly in GUI
-- Optional auto-open dashboard
-- Better beginner mode
+1. Enter Home Assistant URL
+2. Paste Long-Lived Access Token
+3. Press Scan
+4. Open Dashboard
