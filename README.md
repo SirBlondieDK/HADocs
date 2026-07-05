@@ -10,35 +10,23 @@ It documents your installation, analyzes health, groups root causes, generates a
 
 ---
 
-## New in v0.11.1
+## New user?
 
-v0.11.1 improves stability on Windows and makes the test environment more predictable.
+Start here:
 
-Pytest now uses a local project folder:
+👉 [`docs/BEGINNER_GUIDE.md`](docs/BEGINNER_GUIDE.md)
 
-```text
-.pytest_tmp/
-```
+This guide is written for people who are not technical.
 
-instead of Windows temp folders such as:
+It explains:
 
-```text
-C:\Users\<user>\AppData\Local\Temp\pytest-of-<user>
-```
-
-This avoids permission problems when Windows, antivirus, or another process locks the temp directory.
-
-Run tests:
-
-```powershell
-py -3.14 -m pytest
-```
-
-Clean local generated files:
-
-```powershell
-py -3.14 tools_cleanup.py
-```
+- how to download HADocs
+- how to open PowerShell
+- how to install requirements
+- how to create a Home Assistant token
+- how to start HADocs
+- how to open the report
+- what the dashboard means
 
 ---
 
@@ -57,11 +45,19 @@ It then generates local reports such as:
 - Device and integration reports
 - Optional local knowledge export
 
+HADocs is designed for users with growing Home Assistant installations who want to answer questions like:
+
+- Why did my Health Score drop?
+- Which devices need attention?
+- Which integrations create the most issues?
+- What should I fix first?
+- Which entities, devices and integrations belong together?
+
 ---
 
-## Start here
+## Start here after generating a report
 
-After generating a report, open:
+Open:
 
 ```text
 output/index.html
@@ -102,6 +98,7 @@ py -3.14 main.py
 
 ## Documentation
 
+- [`docs/BEGINNER_GUIDE.md`](docs/BEGINNER_GUIDE.md)
 - [`docs/INSTALL.md`](docs/INSTALL.md)
 - [`docs/QUICKSTART.md`](docs/QUICKSTART.md)
 - [`docs/CONFIGURATION.md`](docs/CONFIGURATION.md)
