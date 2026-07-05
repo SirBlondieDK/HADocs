@@ -1,12 +1,65 @@
 # HADocs
 
-**Home Assistant Documentation & Intelligence**
+**Understand your Home Assistant.**
 
-HADocs is a read-only Smart Home Intelligence tool for Home Assistant.
+HADocs is a read-only **Home Assistant Documentation & Intelligence** tool.
 
-## New in v0.10.0
+It documents your installation, analyzes health, groups root causes, generates a local HTML dashboard, and helps you understand what to fix first — without sending your data anywhere.
 
-v0.10.0 introduces the first **HTML Dashboard Engine**.
+> Privacy First. Documentation First. Intelligence Second. AI Optional.
+
+---
+
+## New in v0.11.1
+
+v0.11.1 improves stability on Windows and makes the test environment more predictable.
+
+Pytest now uses a local project folder:
+
+```text
+.pytest_tmp/
+```
+
+instead of Windows temp folders such as:
+
+```text
+C:\Users\<user>\AppData\Local\Temp\pytest-of-<user>
+```
+
+This avoids permission problems when Windows, antivirus, or another process locks the temp directory.
+
+Run tests:
+
+```powershell
+py -3.14 -m pytest
+```
+
+Clean local generated files:
+
+```powershell
+py -3.14 tools_cleanup.py
+```
+
+---
+
+## What HADocs does
+
+HADocs connects to Home Assistant using a Long-Lived Access Token and reads information from the Home Assistant API.
+
+It then generates local reports such as:
+
+- HTML dashboard
+- Markdown documentation
+- CSV exports
+- Health Score
+- Root Cause Analysis
+- Incident Collapse
+- Device and integration reports
+- Optional local knowledge export
+
+---
+
+## Start here
 
 After generating a report, open:
 
@@ -14,10 +67,54 @@ After generating a report, open:
 output/index.html
 ```
 
-The HTML dashboard includes Health Score, Potential Score, Estimated Repair Time, Root Cause cards, Top Actions, Installation overview, Search/filter, Dark theme, and a screenshot-friendly layout.
+---
 
-Markdown reports are still generated.
+## Privacy
 
-## Safety
+HADocs is local-first.
 
-HADocs is read-only. It does not call services, change entities, edit automations, modify dashboards, or send commands to devices.
+By default:
+
+- no cloud
+- no telemetry
+- no analytics
+- no tracking
+- no AI calls
+- no external upload
+
+See [`docs/PRIVACY.md`](docs/PRIVACY.md) and [`SECURITY.md`](SECURITY.md).
+
+---
+
+## Installation
+
+See [`docs/INSTALL.md`](docs/INSTALL.md).
+
+Quick Windows setup:
+
+```powershell
+py -3.14 -m pip install -r requirements.txt
+py -3.14 -m pytest
+py -3.14 main.py
+```
+
+---
+
+## Documentation
+
+- [`docs/INSTALL.md`](docs/INSTALL.md)
+- [`docs/QUICKSTART.md`](docs/QUICKSTART.md)
+- [`docs/CONFIGURATION.md`](docs/CONFIGURATION.md)
+- [`docs/PRIVACY.md`](docs/PRIVACY.md)
+- [`docs/AI.md`](docs/AI.md)
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
+- [`docs/FAQ.md`](docs/FAQ.md)
+- [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md)
+- [`docs/ROADMAP.md`](docs/ROADMAP.md)
+- [`docs/RELEASE_CHECKLIST.md`](docs/RELEASE_CHECKLIST.md)
+
+---
+
+## License
+
+See [`LICENSE`](LICENSE).

@@ -1,12 +1,5 @@
 # Security
 
-HADocs is read-only and should never modify Home Assistant.
+This document mirrors the root `SECURITY.md`.
 
-Never commit:
-
-- `config.json`
-- `config.local.json`
-- `.env`
-- `cache/`
-- `output/`
-- `*.zip`
+HADocs is read-only, local-first and privacy-first.
