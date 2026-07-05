@@ -2,6 +2,7 @@ from pathlib import Path
 from datetime import datetime
 from collections import Counter
 
+from src.hadocs.advisor.engine import build_executive_summary
 from src.hadocs.core.builder import build_model
 from src.hadocs.core.health import (
     calculate_device_health,
@@ -9,6 +10,7 @@ from src.hadocs.core.health import (
     find_duplicate_names_by_domain,
     get_critical_entities,
 )
+from src.hadocs.core.history import compare_last_two, save_history_snapshot
 from src.hadocs.core.recommendations import build_recommendations
 from src.hadocs.core.relationships import (
     build_relationship_graph,
@@ -30,8 +32,12 @@ def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
     device_health = calculate_device_health(model)
     health_score, health_notes = calculate_health_score(model, device_health)
     recommendations = build_recommendations(model, device_health)
+    executive = build_executive_summary(model, graph, device_health, recommendations, health_score)
+    save_history_snapshot(cfg, model, health_score, executive)
+    history_comparison = compare_last_two(cfg)
 
-    generate_index(out, project_name, model, graph, device_health, recommendations, health_score, health_notes, now)
+    generate_index(out, project_name, executive, now)
+    generate_executive_dashboard(out, project_name, model, graph, executive, health_notes, history_comparison, now)
     generate_summary(out, model, graph, health_score, health_notes, now)
     generate_areas(out, model, now)
     generate_devices(out, model, now)
@@ -41,6 +47,9 @@ def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
     generate_problems(out, model, now)
     generate_rules_report(out, model, now)
     generate_relationships(out, model, graph, now)
+    generate_insights(out, executive, now)
+    generate_maintenance(out, model, executive, now)
+    generate_history(out, history_comparison, now)
     generate_architecture(out, now)
     export_entities_csv(out, model)
     export_devices_csv(out, model)
@@ -61,78 +70,29 @@ def bar(score: int, width: int = 20) -> str:
     return "█" * filled + "░" * (width - filled)
 
 
-def generate_index(out: Path, project_name: str, model, graph, device_health, recommendations, health_score, health_notes, now: str) -> None:
-    physical_devices = [d for d in model.devices.values() if d.is_physical]
-    virtual_devices = [d for d in model.devices.values() if d.is_virtual]
-    system_devices = [d for d in model.devices.values() if d.is_system]
-    problem_devices = [d for d in device_health if d.status == "problem"]
-    warning_devices = [d for d in device_health if d.status == "warning"]
-    ignored_bad = [
-        e for e in model.entities.values()
-        if e.is_ignored and e.state in ("unknown", "unavailable")
-    ]
-
+def generate_index(out: Path, project_name: str, executive, now: str) -> None:
     lines = [
-        f"# {project_name} - HADocs Report",
+        f"# {project_name} - HADocs",
         "",
         f"Generated: `{now}`",
         "",
-        "## Smart Home Health",
+        f"# {status_icon(executive.score)} {executive.status}",
         "",
-        f"# {status_icon(health_score)} {health_score}/100",
+        f"## Health Score: `{executive.score}/100`",
         "",
-        f"`{bar(health_score)}`",
+        f"`{bar(executive.score)}`",
         "",
-    ]
-
-    if health_notes:
-        lines.append("### Why this score?")
-        lines.append("")
-        for note in health_notes:
-            lines.append(f"- {note}")
-        lines.append("")
-
-    lines += [
-        "## Installation overview",
+        f"- Potential after recommended fixes: `{executive.potential_score}/100`",
+        f"- Main cause: **{executive.main_cause}**",
+        f"- Estimated repair time: `{executive.estimated_repair_minutes} minutes`",
         "",
-        f"- 🏠 Areas: `{len(model.areas)}`",
-        f"- 💡 Physical devices: `{len(physical_devices)}`",
-        f"- 🧩 Virtual devices: `{len(virtual_devices)}`",
-        f"- ⚙️ System devices: `{len(system_devices)}`",
-        f"- 🔌 Integrations: `{len(model.integrations)}`",
-        f"- 📦 Entities: `{len(model.entities)}`",
+        "## Start here",
         "",
-        "## Attention",
+        "- [00 Executive Dashboard](00_executive_dashboard.md)",
+        "- [14 Insights](14_insights.md)",
+        "- [15 Maintenance](15_maintenance.md)",
+        "- [16 History](16_history.md)",
         "",
-        f"- 🔴 Problem devices: `{len(problem_devices)}`",
-        f"- 🟡 Warning devices: `{len(warning_devices)}`",
-        f"- 💤 Ignored diagnostic/system unknown or unavailable: `{len(ignored_bad)}`",
-        f"- 🧭 Recommendations: `{len(recommendations)}`",
-        "",
-    ]
-
-    top_devices = top_problem_devices(graph, limit=5)
-    if top_devices:
-        lines += ["## Top problem devices", ""]
-        for device in top_devices:
-            lines.append(f"- **{device.name}** — `{len(device.problem_entities)}` relevant problem entities")
-        lines.append("")
-
-    top_integrations = top_problem_integrations(graph, limit=5)
-    if top_integrations:
-        lines += ["## Top problem integrations", ""]
-        for integration in top_integrations:
-            lines.append(f"- **{integration.platform}** — `{len(integration.problem_entities)}` relevant problem entities")
-        lines.append("")
-
-    if recommendations:
-        lines += ["## Recommended actions", ""]
-        for rec in recommendations[:8]:
-            stars = "★" * rec["priority"] + "☆" * (5 - rec["priority"])
-            lines.append(f"- `{stars}` **{rec['title']}** — {rec['reason']}")
-        lines.append("")
-
-    lines += [
         "## Reports",
         "",
         "- [01 Overview](01_overview.md)",
@@ -151,8 +111,80 @@ def generate_index(out: Path, project_name: str, model, graph, device_health, re
         "- [CSV entities](csv/entities.csv)",
         "- [CSV devices](csv/devices.csv)",
     ]
-
     write_md(out / "index.md", lines)
+
+
+def generate_executive_dashboard(out, project_name, model, graph, executive, health_notes, history_comparison, now):
+    physical_devices = [d for d in model.devices.values() if d.is_physical]
+    virtual_devices = [d for d in model.devices.values() if d.is_virtual]
+    system_devices = [d for d in model.devices.values() if d.is_system]
+
+    lines = [
+        f"# 00 Executive Dashboard",
+        "",
+        f"Generated: `{now}`",
+        "",
+        f"# {status_icon(executive.score)} {executive.status}",
+        "",
+        f"## Health Score: `{executive.score}/100`",
+        "",
+        f"`{bar(executive.score)}`",
+        "",
+        f"- Potential score after recommended fixes: `{executive.potential_score}/100`",
+        f"- Estimated repair time: `{executive.estimated_repair_minutes} minutes`",
+        f"- Main cause: **{executive.main_cause}**",
+        "",
+        "## Installation",
+        "",
+        f"- 🏠 Areas: `{len(model.areas)}`",
+        f"- 💡 Physical devices: `{len(physical_devices)}`",
+        f"- 🧩 Virtual devices: `{len(virtual_devices)}`",
+        f"- ⚙️ System devices: `{len(system_devices)}`",
+        f"- 🔌 Integrations: `{len(model.integrations)}`",
+        f"- 📦 Entities: `{len(model.entities)}`",
+        "",
+        "## Problem summary",
+        "",
+        f"- 🔴 Critical actions: `{executive.critical_count}`",
+        f"- 🟡 Warning actions: `{executive.warning_count}`",
+        f"- 🧹 Maintenance actions: `{executive.maintenance_count}`",
+        "",
+    ]
+
+    if history_comparison:
+        health_delta = history_comparison["health_delta"]
+        problem_delta = history_comparison["problem_entity_delta"]
+        lines += [
+            "## Since last scan",
+            "",
+            f"- Health change: `{health_delta:+}`",
+            f"- Problem entity change: `{problem_delta:+}`",
+            "",
+        ]
+
+    if health_notes:
+        lines += ["## Score explanation", ""]
+        for note in health_notes:
+            lines.append(f"- {note}")
+        lines.append("")
+
+    if executive.insights:
+        lines += ["## Key insights", ""]
+        for insight in executive.insights[:5]:
+            lines.append(f"- **{insight.title}** — {insight.message}")
+        lines.append("")
+
+    if executive.actions:
+        lines += ["## Fix these first", ""]
+        for action in executive.actions[:8]:
+            stars = "★" * action.priority + "☆" * (5 - action.priority)
+            lines.append(
+                f"- `{stars}` **{action.title}** — {action.reason} "
+                f"(`+{action.estimated_score_gain}` estimated)"
+            )
+        lines.append("")
+
+    write_md(out / "00_executive_dashboard.md", lines)
 
 
 def generate_summary(out, model, graph, health_score, health_notes, now):
@@ -229,14 +261,18 @@ def generate_devices(out, model, now):
 
 
 def generate_integrations(out, model, graph, now):
-    lines = ["# 04 Integrations", "", f"Generated: {now}", ""]
-    for integration in sorted(model.integrations.values(), key=lambda i: i.platform):
+    integrations = []
+    for integration in model.integrations.values():
         rel = graph.integrations.get(integration.platform)
+        bad = rel.problem_entities if rel else []
         important = [e for e in integration.entities if e.importance == "important"]
+        score = 100 if not important else max(0, 100 - min(60, len(bad) * 5))
+        integrations.append((score, integration, rel, bad, important))
+
+    lines = ["# 04 Integrations", "", f"Generated: {now}", ""]
+    for score, integration, rel, bad, important in sorted(integrations, key=lambda x: x[0]):
         diagnostic = [e for e in integration.entities if e.importance == "diagnostic"]
         ignored = [e for e in integration.entities if e.is_ignored]
-        bad = rel.problem_entities if rel else []
-        score = 100 if not important else max(0, 100 - min(60, len(bad) * 5))
         lines += [
             f"## {integration.platform}", "",
             f"- Health: `{score}/100`",
@@ -253,8 +289,10 @@ def generate_integrations(out, model, graph, now):
 def generate_device_health(out, device_health, now):
     lines = ["# 05 Device Health", "", f"Generated: {now}", ""]
     for item in sorted(device_health, key=lambda d: (d.status, d.score, d.device.name)):
+        stars = "★" * max(1, round(item.score / 20)) + "☆" * (5 - max(1, round(item.score / 20)))
         lines += [
             f"## {item.device.name}", "",
+            f"- Health: `{stars}`",
             f"- Status: `{item.status}`",
             f"- Score: `{item.score}/100`",
             f"- Area ID: `{item.device.area_id}`",
@@ -319,19 +357,16 @@ def generate_rules_report(out, model, now):
 def generate_relationships(out, model, graph, now):
     lines = ["# 09 Relationships", "", f"Generated: {now}", ""]
     lines += [
-        "## Relationship model",
-        "",
+        "## Relationship model", "",
         "```text",
         "Area",
         "  └── Device",
         "        └── Entity",
         "              └── Integration",
-        "```",
-        "",
+        "```", "",
         "This is Relationship Engine v1. Future versions will include automations, scripts, helpers, scenes, dashboards and voice assistants.",
         "",
-        "## Top problem devices",
-        "",
+        "## Top problem devices", "",
     ]
     for device in top_problem_devices(graph):
         lines.append(f"- **{device.name}** — `{len(device.problem_entities)}` relevant problem entities")
@@ -347,8 +382,7 @@ def generate_relationships(out, model, graph, now):
         if rel.is_ignored and rel.state not in ("unknown", "unavailable"):
             continue
         entity_lines += [
-            f"## {rel.entity_id}",
-            "",
+            f"## {rel.entity_id}", "",
             f"- Name: `{rel.name}`",
             f"- State: `{rel.state}`",
             f"- Domain: `{rel.domain}`",
@@ -356,24 +390,21 @@ def generate_relationships(out, model, graph, now):
             f"- Device: `{rel.device_name}`",
             f"- Integration: `{rel.integration}`",
             f"- Importance: `{rel.importance}`",
-            f"- Ignored: `{rel.is_ignored}`",
-            "",
+            f"- Ignored: `{rel.is_ignored}`", "",
         ]
     write_md(out / "10_entity_relationships.md", entity_lines)
 
     device_lines = ["# 11 Device Relationships", "", f"Generated: {now}", ""]
     for rel in sorted(graph.devices.values(), key=lambda r: r.name):
         device_lines += [
-            f"## {rel.name}",
-            "",
+            f"## {rel.name}", "",
             f"- Classification: `{rel.classification}`",
             f"- Area ID: `{rel.area_id}`",
             f"- Integrations: `{', '.join(rel.integrations)}`",
             f"- Important entities: `{len(rel.important_entities)}`",
             f"- Diagnostic entities: `{len(rel.diagnostic_entities)}`",
             f"- Ignored entities: `{len(rel.ignored_entities)}`",
-            f"- Problem entities: `{len(rel.problem_entities)}`",
-            "",
+            f"- Problem entities: `{len(rel.problem_entities)}`", "",
         ]
         if rel.problem_entities:
             device_lines.append("### Problems")
@@ -386,16 +417,83 @@ def generate_relationships(out, model, graph, now):
     integration_lines = ["# 12 Integration Relationships", "", f"Generated: {now}", ""]
     for rel in sorted(graph.integrations.values(), key=lambda r: r.platform):
         integration_lines += [
-            f"## {rel.platform}",
-            "",
+            f"## {rel.platform}", "",
             f"- Devices: `{len(rel.devices)}`",
             f"- Important entities: `{len(rel.important_entities)}`",
             f"- Diagnostic entities: `{len(rel.diagnostic_entities)}`",
             f"- Ignored entities: `{len(rel.ignored_entities)}`",
-            f"- Problem entities: `{len(rel.problem_entities)}`",
-            "",
+            f"- Problem entities: `{len(rel.problem_entities)}`", "",
         ]
     write_md(out / "12_integration_relationships.md", integration_lines)
+
+
+def generate_insights(out, executive, now):
+    lines = ["# 14 Insights", "", f"Generated: {now}", ""]
+    for insight in executive.insights:
+        lines += [
+            f"## {insight.title}", "",
+            f"- Severity: `{insight.severity}`",
+            f"- Estimated score gain: `+{insight.estimated_score_gain}`",
+            "",
+            insight.message,
+            "",
+        ]
+        if insight.related_items:
+            lines += ["### Related", ""]
+            for item in insight.related_items:
+                lines.append(f"- `{item}`")
+            lines.append("")
+    write_md(out / "14_insights.md", lines)
+
+
+def generate_maintenance(out, model, executive, now):
+    lines = ["# 15 Maintenance", "", f"Generated: {now}", ""]
+    lines += [
+        "## Action plan", "",
+        f"- Estimated repair time: `{executive.estimated_repair_minutes} minutes`",
+        f"- Potential score: `{executive.potential_score}/100`",
+        "",
+    ]
+
+    groups = {
+        "Critical": [a for a in executive.actions if a.priority >= 5],
+        "Warning": [a for a in executive.actions if a.priority == 4],
+        "Cleanup": [a for a in executive.actions if a.priority <= 3],
+    }
+
+    for group, actions in groups.items():
+        lines += [f"## {group}", ""]
+        if not actions:
+            lines.append("No actions.")
+            lines.append("")
+            continue
+        for action in actions:
+            stars = "★" * action.priority + "☆" * (5 - action.priority)
+            lines += [
+                f"### {action.title}",
+                "",
+                f"- Priority: `{stars}`",
+                f"- Reason: {action.reason}",
+                f"- Estimated score gain: `+{action.estimated_score_gain}`",
+                "",
+            ]
+
+    write_md(out / "15_maintenance.md", lines)
+
+
+def generate_history(out, history_comparison, now):
+    lines = ["# 16 History", "", f"Generated: {now}", ""]
+    if not history_comparison:
+        lines.append("No previous scan available yet.")
+    else:
+        lines += [
+            "## Since last scan", "",
+            f"- Health change: `{history_comparison['health_delta']:+}`",
+            f"- Problem entity change: `{history_comparison['problem_entity_delta']:+}`",
+            f"- Critical action change: `{history_comparison['critical_delta']:+}`",
+            f"- Warning action change: `{history_comparison['warning_delta']:+}`",
+        ]
+    write_md(out / "16_history.md", lines)
 
 
 def generate_architecture(out, now):
@@ -408,6 +506,8 @@ def generate_architecture(out, now):
         "HADocs Core Model",
         "      │",
         "      ├── Rules Engine",
+        "      ├── Advisor Engine",
+        "      ├── Intelligence Engine",
         "      ├── Areas",
         "      ├── Physical Devices",
         "      ├── Virtual Devices",

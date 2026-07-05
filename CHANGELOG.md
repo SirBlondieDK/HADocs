@@ -1,30 +1,32 @@
 # Changelog
 
+## v0.7.0
+
+### Added
+- Intelligence Engine v1.
+- Advisor Engine.
+- Executive dashboard.
+- Estimated score gain.
+- Prioritized action plan.
+- Health status labels.
+- Scan history snapshots.
+- History comparison between runs.
+- Insight report.
+- Maintenance report.
+- New reports:
+  - `00_executive_dashboard.md`
+  - `14_insights.md`
+  - `15_maintenance.md`
+  - `16_history.md`
+
+### Changed
+- `index.md` now links to the Executive Dashboard first.
+- Recommendations are grouped by priority and estimated impact.
+- Health Score is explained in a more user-friendly way.
+
 ## v0.6.0
 
 ### Added
 - Smart Analyzer foundation.
 - Relationship Engine v1.
 - Smart overview dashboard in `index.md`.
-- Entity relationship report.
-- Device relationship report.
-- Integration relationship report.
-- Weekly checkup style recommendations.
-- More useful report navigation.
-
-### Changed
-- `index.md` is now a real dashboard instead of a plain link list.
-- Reports now focus more on questions users actually ask:
-  - What is unhealthy?
-  - What needs attention?
-  - What belongs together?
-  - Which devices/entities are connected?
-
-## v0.5.0
-
-### Added
-- Repository cleanup guide.
-- Generated-output safety checks.
-- Stronger `.gitignore`.
-- Better system / virtual / physical classification rules.
-- More conservative Health Score.
