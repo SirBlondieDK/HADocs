@@ -4,24 +4,29 @@
 
 HADocs is a local-first **Smart Home Intelligence** tool for Home Assistant.
 
-## New in v0.13.0
+## New in v0.14.0
 
-v0.13.0 introduces the **HTML Explorer Foundation**.
+v0.14.0 improves the GUI experience after a scan.
 
-```text
-output/explorer/
-├── index.html
-├── devices.html
-├── integrations.html
-├── areas.html
-└── entities.html
-```
+After generating documentation, users can open generated output directly:
 
-Open:
+- Dashboard
+- Explorer
+- Markdown report
+- Output folder
+
+Recommended files:
 
 ```text
 output/index.html
 output/explorer/index.html
+output/index.md
+output/knowledge/
 ```
 
-HADocs stays local-first: no cloud, no telemetry, no tracking, no AI calls.
+HADocs remains local-first:
+
+- No cloud
+- No telemetry
+- No tracking
+- No AI calls

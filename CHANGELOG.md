@@ -1,25 +1,29 @@
 # Changelog
 
+## v0.14.0 - GUI UX Release
+
+### Added
+- Improved post-scan user experience.
+- GUI helper functions for opening generated outputs.
+- Open Dashboard action.
+- Open Explorer action.
+- Open Markdown action.
+- Open Output Folder action.
+- Scan completion summary helper.
+- Output readiness detection.
+- Tests for GUI output helpers.
+
+### Changed
+- GUI workflow is now more user-friendly after documentation generation.
+- Generated output paths are easier to open directly from the app.
+- User-facing completion text now mentions Dashboard, Explorer, Knowledge Pack and Markdown output.
+
+### Security
+- Open actions only open local generated files/folders.
+- No cloud upload, telemetry, analytics, or AI calls added.
+
 ## v0.13.0 - Explorer Foundation
 
 ### Added
 - HTML Explorer Foundation.
-- Explorer data builder.
 - Static local Explorer pages.
-- Device index page.
-- Integration index page.
-- Area index page.
-- Entity index page.
-- Search index export.
-- `output/explorer/index.html`.
-- `output/explorer/devices.html`.
-- `output/explorer/integrations.html`.
-- `output/explorer/areas.html`.
-- `output/explorer/entities.html`.
-
-### Changed
-- HTML output now starts moving from a single dashboard toward a local documentation portal.
-
-### Security
-- Explorer is fully local.
-- No external scripts, CDNs, analytics, telemetry, or AI calls.

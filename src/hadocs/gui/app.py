@@ -1,3 +1,11 @@
+from src.hadocs.gui.output_actions import (
+    completion_message,
+    open_dashboard,
+    open_explorer,
+    open_markdown,
+    open_output_folder,
+)
+
 import threading
 import webbrowser
 from pathlib import Path
