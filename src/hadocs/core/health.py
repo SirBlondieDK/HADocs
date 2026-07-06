@@ -137,3 +137,187 @@ def get_critical_entities(model: HADocsModel):
         if any(pattern in eid for pattern in CRITICAL_PATTERNS):
             critical.append(entity)
     return critical
+
+# ---------------------------------------------------------------------------
+# Health Engine v2
+# ---------------------------------------------------------------------------
+
+import math
+from dataclasses import dataclass
+from typing import Any
+
+
+@dataclass(frozen=True)
+class HealthScoreBreakdown:
+    score: int
+    potential_score: int
+    grade: str
+    status: str
+    enabled_entities: int
+    disabled_entities_ignored: int
+    affected_active_entities: int
+    normalized_penalty: int
+    severity_penalty: int
+    root_cause_penalty: int
+
+    def as_dict(self) -> dict[str, int | str]:
+        return {
+            "score": self.score,
+            "potential_score": self.potential_score,
+            "grade": self.grade,
+            "status": self.status,
+            "enabled_entities": self.enabled_entities,
+            "disabled_entities_ignored": self.disabled_entities_ignored,
+            "affected_active_entities": self.affected_active_entities,
+            "normalized_penalty": self.normalized_penalty,
+            "severity_penalty": self.severity_penalty,
+            "root_cause_penalty": self.root_cause_penalty,
+        }
+
+
+def _hs_get(obj: Any, name: str, default: Any = None) -> Any:
+    if isinstance(obj, dict):
+        return obj.get(name, default)
+    return getattr(obj, name, default)
+
+
+def _hs_list(value: Any) -> list[Any]:
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return value
+    if isinstance(value, tuple):
+        return list(value)
+    if isinstance(value, dict):
+        return list(value.values())
+    return []
+
+
+def is_disabled_entity(entity: Any) -> bool:
+    disabled_by = _hs_get(entity, "disabled_by")
+    if disabled_by:
+        return True
+
+    registry = _hs_get(entity, "entity_registry", {})
+    if isinstance(registry, dict) and registry.get("disabled_by"):
+        return True
+
+    if bool(_hs_get(entity, "disabled", False)):
+        return True
+
+    state = str(_hs_get(entity, "state", "")).lower()
+    return state in {"disabled", "unavailable_disabled"}
+
+
+def _hs_severity(incident: Any) -> str:
+    severity = str(_hs_get(incident, "severity", "")).lower()
+    if severity in {"critical", "error"}:
+        return "critical"
+    if severity in {"warning", "warn"}:
+        return "warning"
+    return "maintenance"
+
+
+def _hs_entity_key(entity: Any) -> str:
+    return str(
+        _hs_get(entity, "entity_id", None)
+        or _hs_get(entity, "id", None)
+        or _hs_get(entity, "unique_id", None)
+        or entity
+    )
+
+
+def calculate_health_score_v2(model: Any, incidents: list[Any]) -> HealthScoreBreakdown:
+    entities = _hs_list(_hs_get(model, "entities", []))
+    enabled_entities = [entity for entity in entities if not is_disabled_entity(entity)]
+    disabled_entities = max(0, len(entities) - len(enabled_entities))
+    enabled_count = max(1, len(enabled_entities))
+
+    affected_active: set[str] = set()
+    disabled_problem_entities = 0
+
+    for incident in incidents or []:
+        for entity in _hs_list(_hs_get(incident, "affected_entities", [])):
+            if is_disabled_entity(entity):
+                disabled_problem_entities += 1
+                continue
+            affected_active.add(_hs_entity_key(entity))
+
+    affected_count = len(affected_active)
+
+    # Fairer scoring for large installations:
+    # same absolute issue count should hurt less in a 2000 entity install than in a 100 entity install.
+    normalized_penalty = round((affected_count / max(1.0, math.sqrt(enabled_count))) * 2.6)
+
+    critical = 0
+    warning = 0
+    maintenance = 0
+
+    for incident in incidents or []:
+        severity = _hs_severity(incident)
+        if severity == "critical":
+            critical += 1
+        elif severity == "warning":
+            warning += 1
+        else:
+            maintenance += 1
+
+    severity_penalty = min(28, critical * 3 + warning * 2 + maintenance)
+    root_cause_penalty = min(18, round(len(incidents or []) * 0.9))
+
+    total_penalty = min(75, normalized_penalty + severity_penalty + root_cause_penalty)
+    score = max(25, 100 - total_penalty)
+    potential_score = min(100, score + min(30, 6 + critical * 2 + warning))
+
+    if score >= 90:
+        grade, status = "A", "Excellent"
+    elif score >= 80:
+        grade, status = "B", "Healthy"
+    elif score >= 65:
+        grade, status = "C", "Needs attention"
+    elif score >= 50:
+        grade, status = "D", "Degraded"
+    else:
+        grade, status = "E", "Critical"
+
+    return HealthScoreBreakdown(
+        score=int(score),
+        potential_score=int(potential_score),
+        grade=grade,
+        status=status,
+        enabled_entities=int(enabled_count),
+        disabled_entities_ignored=int(disabled_problem_entities or disabled_entities),
+        affected_active_entities=int(affected_count),
+        normalized_penalty=int(normalized_penalty),
+        severity_penalty=int(severity_penalty),
+        root_cause_penalty=int(root_cause_penalty),
+    )
+
+
+def apply_health_score_v2(model: Any, executive: Any, incidents: list[Any]) -> Any:
+    breakdown = calculate_health_score_v2(model, incidents)
+    data = breakdown.as_dict()
+
+    if isinstance(executive, dict):
+        executive["score"] = breakdown.score
+        executive["potential_score"] = breakdown.potential_score
+        executive["health_score_v2"] = data
+        executive["health_grade"] = breakdown.grade
+        executive["health_status_v2"] = breakdown.status
+        return executive
+
+    values = {
+        "score": breakdown.score,
+        "potential_score": breakdown.potential_score,
+        "health_score_v2": data,
+        "health_grade": breakdown.grade,
+        "health_status_v2": breakdown.status,
+    }
+
+    for key, value in values.items():
+        try:
+            setattr(executive, key, value)
+        except Exception:
+            pass
+
+    return executive

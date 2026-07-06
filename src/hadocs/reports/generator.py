@@ -29,6 +29,7 @@ from src.hadocs.exporters.csv_exporter import export_devices_csv, export_entitie
 from src.hadocs.utils.text import slugify, write_md
 from src.hadocs.html.explorer import write_explorer
 from src.hadocs.knowledge.exporter import export_knowledge
+from src.hadocs.core.health import apply_health_score_v2
 
 
 def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
@@ -69,6 +70,7 @@ def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
         version="0.11.0",
     )
 
+    executive = apply_health_score_v2(model, executive, incidents)
     generate_index(out, project_name, executive, incidents, now)
     generate_executive_dashboard(out, project_name, model, executive, health_notes, history_comparison, trend_summary, incidents, raw_incidents, now)
     generate_root_causes(out, incidents, now)
@@ -257,6 +259,12 @@ def generate_executive_dashboard(out, project_name, model, executive, health_not
     integrations = as_list(get(model, "integrations", []))
 
     score = clamp(get(executive, "score", 0))
+    health_score_v2 = get(executive, "health_score_v2", {})
+    score_grade = get(health_score_v2, "grade", "-")
+    ignored_disabled = get(health_score_v2, "disabled_ignored", 0)
+    normalized_penalty = get(health_score_v2, "normalized_penalty", 0)
+    severity_penalty = get(health_score_v2, "severity_penalty", 0)
+    root_cause_penalty = get(health_score_v2, "root_cause_penalty", 0)
     potential_score = clamp(get(executive, "potential_score", score))
     repair_minutes = num(get(executive, "estimated_repair_minutes", 0))
     main_cause = get(executive, "main_cause", "No major root cause")
@@ -567,6 +575,19 @@ def generate_executive_dashboard(out, project_name, model, executive, health_not
       {render_hero()}
       {render_executive()}
       {render_installation()}
+      <section class="section panel" id="score-model">
+        <div class="section-head">
+          <h2>Health Score v2</h2>
+          <p class="muted">Smarter scoring: disabled entities are ignored and penalties are normalized for large installations.</p>
+        </div>
+        <div class="grid four">
+          {render_metric("Grade", score_grade)}
+          {render_metric("Disabled ignored", ignored_disabled)}
+          {render_metric("Size-normalized penalty", normalized_penalty)}
+          {render_metric("Severity penalty", severity_penalty)}
+        </div>
+        <p class="muted">Root-cause penalty: {esc(root_cause_penalty)}. This makes large installations feel fairer while keeping serious issues visible.</p>
+      </section>
       {render_actions()}
       {render_root_cards()}
       {render_health_notes()}
