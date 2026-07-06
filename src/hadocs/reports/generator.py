@@ -29,7 +29,6 @@ from src.hadocs.exporters.csv_exporter import export_devices_csv, export_entitie
 from src.hadocs.utils.text import slugify, write_md
 from src.hadocs.html.explorer import write_explorer
 from src.hadocs.knowledge.exporter import export_knowledge
-from src.hadocs.reports.html_hook import generate_html_dashboard
 
 
 def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
@@ -70,17 +69,6 @@ def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
         version="0.11.0",
     )
 
-    generate_html_dashboard(
-        out,
-        project_name,
-        model,
-        executive,
-        incidents,
-        raw_incidents,
-        history_comparison,
-        now,
-    )
-
     generate_index(out, project_name, executive, incidents, now)
     generate_executive_dashboard(out, project_name, model, executive, health_notes, history_comparison, trend_summary, incidents, raw_incidents, now)
     generate_root_causes(out, incidents, now)
@@ -116,7 +104,14 @@ def bar(score: int, width: int = 20) -> str:
     return "█" * filled + "░" * (width - filled)
 
 
-def generate_index(out: Path, project_name: str, executive, incidents, now: str) -> None:
+def generate_index(out: Path, project_name: str, *args) -> None:
+    if len(args) == 3:
+        executive, incidents, now = args
+    elif len(args) >= 8:
+        model, executive, health_notes, history_comparison, trend_summary, incidents, raw_incidents, now = args[:8]
+    else:
+        raise TypeError(f"generate_index expected 3 or 8+ extra arguments, got {len(args)}")
+
     hidden = hidden_incident_count(incidents)
     lines = [
         f"# {project_name} - HADocs",
@@ -165,101 +160,374 @@ def generate_index(out: Path, project_name: str, executive, incidents, now: str)
 
 
 def generate_executive_dashboard(out, project_name, model, executive, health_notes, history_comparison, trend_summary, incidents, raw_incidents, now):
-    physical_devices = [d for d in model.devices.values() if d.is_physical]
-    virtual_devices = [d for d in model.devices.values() if d.is_virtual]
-    system_devices = [d for d in model.devices.values() if d.is_system]
-    total_symptoms = sum(len(i.affected_entities) for i in incidents)
-    hidden = hidden_incident_count(incidents)
+    """Generate Dashboard Engine v2.
 
-    lines = [
-        "# 00 Executive Dashboard",
-        "",
-        f"Generated: `{now}`",
-        "",
-        f"# {status_icon(executive.score)} {executive.status}",
-        "",
-        f"## Health Score: `{executive.score}/100`",
-        "",
-        f"`{bar(executive.score)}`",
-        "",
-        f"- Potential score after top fixes: `{executive.potential_score}/100`",
-        f"- Estimated repair time: `{executive.estimated_repair_minutes} minutes`",
-        f"- Main root cause: **{executive.main_cause}**",
-        "",
-        "## Installation",
-        "",
-        f"- 🏠 Areas: `{len(model.areas)}`",
-        f"- 💡 Physical devices: `{len(physical_devices)}`",
-        f"- 🧩 Virtual devices: `{len(virtual_devices)}`",
-        f"- ⚙️ System devices: `{len(system_devices)}`",
-        f"- 🔌 Integrations: `{len(model.integrations)}`",
-        f"- 📦 Entities: `{len(model.entities)}`",
-        "",
-        "## Root cause summary",
-        "",
-        f"- 🔥 Collapsed root causes: `{len(incidents)}`",
-        f"- 🧩 Relevant affected entities: `{total_symptoms}`",
-        f"- 🔴 Critical root causes: `{executive.critical_count}`",
-        f"- 🟡 Warning root causes: `{executive.warning_count}`",
-        f"- 🧹 Maintenance root causes: `{executive.maintenance_count}`",
-        f"- 🗂 Hidden lower-priority incidents: `{hidden}`",
-        f"- 🔁 Raw incidents collapsed: `{len(raw_incidents) - len(incidents)}`",
-        "",
-    ]
+    Stable, self-contained HTML dashboard renderer.
+    Always writes output/index.html.
+    """
 
-    shown = visible_incidents(incidents)
-    if shown:
-        lines += ["## Fix these first", ""]
-        for incident in shown[:10]:
-            stars = "★" * {"critical": 5, "warning": 4, "maintenance": 3}.get(incident.severity, 1)
-            child_text = f", {incident.child_count} child incidents" if incident.child_count else ""
-            lines.append(
-                f"- `{stars}` **{incident.root_cause}** — {incident.title} "
-                f"({len(incident.affected_entities)} affected, {len(incident.affected_devices)} devices{child_text}, "
-                f"+{incident.estimated_score_gain}, ~{incident.estimated_repair_minutes} min)"
-            )
-        lines.append("")
+    import html
 
-    if history_comparison:
-        lines += [
-            "## Since last scan",
-            "",
-            f"- Health change: `{history_comparison['health_delta']:+}`",
-            f"- Problem entity change: `{history_comparison['problem_entity_delta']:+}`",
-            f"- New root causes: `{len(history_comparison.get('new_root_causes', []))}`",
-            f"- Resolved root causes: `{len(history_comparison.get('resolved_root_causes', []))}`",
-            "",
+    def get(obj, name, default=None):
+        if isinstance(obj, dict):
+            return obj.get(name, default)
+        return getattr(obj, name, default)
+
+    def as_list(value):
+        if value is None:
+            return []
+        if isinstance(value, list):
+            return value
+        if isinstance(value, tuple):
+            return list(value)
+        if isinstance(value, dict):
+            return list(value.values())
+        return []
+
+    def esc(value):
+        return html.escape(str(value if value is not None else ""))
+
+    def num(value, default=0):
+        try:
+            return int(value)
+        except Exception:
+            return default
+
+    def clamp(value, low=0, high=100):
+        return max(low, min(high, num(value)))
+
+    def device_type(device):
+        return str(get(device, "device_type", get(device, "type", ""))).lower()
+
+    def title_of(incident):
+        return get(incident, "title", get(incident, "root_cause", "Issue"))
+
+    def root_of(incident):
+        return get(incident, "root_cause", title_of(incident))
+
+    def reason_of(incident):
+        return get(incident, "reason", get(incident, "explanation", ""))
+
+    def severity_of(incident):
+        sev = str(get(incident, "severity", "")).lower()
+        if sev in {"critical", "error"}:
+            return "critical"
+        if sev in {"warning", "warn"}:
+            return "warning"
+        return "maintenance"
+
+    def affected_entities(incident):
+        return as_list(get(incident, "affected_entities", []))
+
+    def affected_devices(incident):
+        return as_list(get(incident, "affected_devices", []))
+
+    def children_of(incident):
+        children = as_list(get(incident, "children", []))
+        child_incidents = as_list(get(incident, "child_incidents", []))
+        return children or child_incidents
+
+    areas = as_list(get(model, "areas", []))
+    devices = as_list(get(model, "devices", []))
+    entities = as_list(get(model, "entities", []))
+    integrations = as_list(get(model, "integrations", []))
+
+    score = clamp(get(executive, "score", 0))
+    potential_score = clamp(get(executive, "potential_score", score))
+    repair_minutes = num(get(executive, "estimated_repair_minutes", 0))
+    main_cause = get(executive, "main_cause", "No major root cause")
+    visible = as_list(incidents)
+    raw = as_list(raw_incidents)
+
+    critical = [i for i in visible if severity_of(i) == "critical"]
+    warnings = [i for i in visible if severity_of(i) == "warning"]
+    maintenance = [i for i in visible if severity_of(i) == "maintenance"]
+    total_affected = sum(len(affected_entities(i)) for i in visible)
+
+    physical_devices = [d for d in devices if device_type(d) in {"physical", "device", ""}]
+    virtual_devices = [d for d in devices if device_type(d) == "virtual"]
+    system_devices = [d for d in devices if device_type(d) == "system"]
+
+    status = "Healthy" if score >= 85 else "Needs attention" if score >= 60 else "Critical"
+    status_class = "ok" if score >= 85 else "warn" if score >= 60 else "bad"
+
+    top = visible[0] if visible else None
+    top_title = title_of(top) if top else "No major issues found"
+    top_reason = reason_of(top) if top else "Your installation looks healthy."
+    top_gain = get(top, "estimated_score_gain", 0) if top else 0
+    top_minutes = get(top, "estimated_repair_minutes", 0) if top else 0
+
+    def render_metric(label, value, sub=""):
+        return f"""
+        <div class="metric-card">
+          <div class="metric-value">{esc(value)}</div>
+          <div class="metric-label">{esc(label)}</div>
+          {f'<div class="metric-sub">{esc(sub)}</div>' if sub else ''}
+        </div>
+        """
+
+    def render_sidebar():
+        items = [
+            ("Dashboard", "#dashboard"),
+            ("Root Causes", "#root-causes"),
+            ("Actions", "#actions"),
+            ("Installation", "#installation"),
+            ("Health Notes", "#health-notes"),
+            ("History", "#history"),
+            ("Explorer", "explorer/index.html"),
+            ("Markdown", "index.md"),
+            ("Knowledge", "knowledge/summary.md"),
         ]
+        links = "".join(f'<a class="{ "active" if idx == 0 else "" }" href="{href}">{label}</a>' for idx, (label, href) in enumerate(items))
+        return f"""
+        <aside class="sidebar">
+          <div class="brand">
+            <div class="logo">HA</div>
+            <div>
+              <h1>HADocs</h1>
+              <p>Smart Home Intelligence</p>
+            </div>
+          </div>
+          <nav>{links}</nav>
+          <div class="side-note">Local only • No cloud</div>
+        </aside>
+        """
 
-    if trend_summary and trend_summary.get("scan_count", 0):
-        health_values = [point.get("value", 0) for point in trend_summary.get("health_points", [])]
-        problem_values = [point.get("value", 0) for point in trend_summary.get("problem_entity_points", [])]
-        lines += [
-            "## History trend",
-            "",
-            f"- Scans stored: `{trend_summary.get('scan_count', 0)}`",
-            f"- Best Health Score: `{trend_summary.get('best_health')}`",
-            f"- Worst Health Score: `{trend_summary.get('worst_health')}`",
-            f"- Total Health change: `{trend_summary.get('health_change_total', 0):+}`",
-            f"- Health trend: `{sparkline(health_values)}`",
-            f"- Problem trend: `{sparkline(problem_values)}`",
-            "",
-        ]
+    def render_hero():
+        return f"""
+        <section class="hero-grid" id="dashboard">
+          <div class="panel hero">
+            <span class="pill {status_class}">{esc(status)}</span>
+            <h2>{esc(project_name)}</h2>
+            <p class="lead">
+              Your installation currently has <strong>{len(visible)}</strong> collapsed root causes.
+              The main root cause is <strong>{esc(main_cause)}</strong>, affecting
+              <strong>{total_affected}</strong> relevant entities.
+            </p>
+            <div class="hero-stats">
+              {render_metric("Potential score", f"{potential_score}/100")}
+              {render_metric("Repair time", f"{repair_minutes} min")}
+              {render_metric("Main root cause", main_cause)}
+            </div>
+          </div>
 
-    if executive.insights:
-        lines += ["## Key insights", ""]
-        for insight in executive.insights[:5]:
-            lines.append(f"- **{insight.title}** — {insight.message}")
-        lines.append("")
+          <div class="panel health-panel">
+            <div class="ring" style="--value:{score}">
+              <span>{score}</span>
+              <small>HEALTH</small>
+            </div>
+            <div>
+              <h2>Health Score</h2>
+              <p class="muted">
+                Based on device health, unavailable entities, areas, duplicates and filtered diagnostic noise.
+              </p>
+              <div class="badges">
+                <span>{len(critical)} critical</span>
+                <span>{len(warnings)} warnings</span>
+                <span>{len(maintenance)} maintenance</span>
+              </div>
+            </div>
+          </div>
+        </section>
+        """
 
-    if health_notes:
-        lines += ["## Score explanation", ""]
-        for note in health_notes:
-            lines.append(f"- {note}")
-        lines.append("")
+    def render_installation():
+        return f"""
+        <section class="section panel" id="installation">
+          <div class="section-head">
+            <h2>Installation Overview</h2>
+            <p class="muted">Inventory summary from this scan.</p>
+          </div>
+          <div class="grid">
+            {render_metric("Areas", len(areas))}
+            {render_metric("Physical devices", len(physical_devices))}
+            {render_metric("Virtual devices", len(virtual_devices))}
+            {render_metric("System devices", len(system_devices))}
+            {render_metric("Integrations", len(integrations))}
+            {render_metric("Entities", len(entities))}
+            {render_metric("Collapsed root causes", len(visible))}
+            {render_metric("Raw incidents", len(raw))}
+          </div>
+        </section>
+        """
 
-    write_md(out / "00_executive_dashboard.md", lines)
+    def render_actions():
+        rows = []
+        for idx, incident in enumerate(visible[:8], 1):
+            rows.append(f"""
+            <li>
+              <span class="rank">{idx}</span>
+              <div>
+                <strong>{esc(root_of(incident))}</strong>
+                <p>{esc(reason_of(incident) or title_of(incident))}</p>
+              </div>
+            </li>
+            """)
+        if not rows:
+            rows.append("<li><span class='rank'>✓</span><div><strong>No action needed</strong><p>No root causes found.</p></div></li>")
 
+        return f"""
+        <section class="section panel" id="actions">
+          <div class="section-head">
+            <h2>Top Recommendation</h2>
+            <p class="muted">Highest-impact action first.</p>
+          </div>
+          <div class="recommendation">
+            <h3>{esc(top_title)}</h3>
+            <p class="muted">+{esc(top_gain)} Health Score • ~{esc(top_minutes)} min</p>
+            <p>{esc(top_reason)}</p>
+          </div>
+          <ol class="action-list">{''.join(rows)}</ol>
+        </section>
+        """
+
+    def render_root_cards():
+        cards = []
+        for incident in visible[:18]:
+            sev = severity_of(incident)
+            ents = affected_entities(incident)
+            devs = affected_devices(incident)
+            children = children_of(incident)
+            child_count = num(get(incident, "child_count", len(children)), len(children))
+            gain = get(incident, "estimated_score_gain", 0)
+            minutes = get(incident, "estimated_repair_minutes", 0)
+
+            child_html = ""
+            if children:
+                child_items = []
+                for child in children[:5]:
+                    child_items.append(f"<li>{esc(get(child, 'title', get(child, 'entity_id', child)))}</li>")
+                if len(children) > 5:
+                    child_items.append(f"<li>...and {len(children) - 5} more</li>")
+                child_html = f"<details><summary>Child incidents</summary><ul>{''.join(child_items)}</ul></details>"
+
+            cards.append(f"""
+            <article class="root-card {sev}">
+              <div class="severity-line"></div>
+              <h3>{esc(root_of(incident))}</h3>
+              <p class="muted">{esc(title_of(incident))}</p>
+              <div class="badges">
+                <span>{sev.upper()}</span>
+                <span>{len(ents)} entities</span>
+                <span>{len(devs)} devices</span>
+                <span>{child_count} child incidents</span>
+                <span>+{esc(gain)} score</span>
+                <span>~{esc(minutes)} min</span>
+              </div>
+              <div class="impact-bar"><i style="width:{min(100, max(7, len(ents)))}%"></i></div>
+              <p>{esc(reason_of(incident))}</p>
+              {child_html}
+            </article>
+            """)
+
+        return f"""
+        <section class="section" id="root-causes">
+          <div class="section-head">
+            <h2>Top Root Causes</h2>
+            <p class="muted">Collapsed issues grouped by likely root cause.</p>
+          </div>
+          <div class="cards">{''.join(cards) if cards else '<div class="panel">No root causes found.</div>'}</div>
+        </section>
+        """
+
+    def render_health_notes():
+        notes = as_list(health_notes)
+        note_html = "".join(f"<li>{esc(note)}</li>" for note in notes) if notes else "<li>No detailed health notes available.</li>"
+        return f"""
+        <section class="section panel" id="health-notes">
+          <div class="section-head">
+            <h2>Score Explanation</h2>
+            <p class="muted">Why the health score is what it is.</p>
+          </div>
+          <ul class="notes">{note_html}</ul>
+        </section>
+        """
+
+    def render_history():
+        if history_comparison:
+            delta = get(history_comparison, "health_delta", 0)
+            problem_delta = get(history_comparison, "problem_entity_delta", 0)
+            new_count = len(as_list(get(history_comparison, "new_root_causes", [])))
+            resolved_count = len(as_list(get(history_comparison, "resolved_root_causes", [])))
+            content = f"""
+            <div class="grid four">
+              {render_metric("Health change", f"{delta:+}")}
+              {render_metric("Problem entity change", f"{problem_delta:+}")}
+              {render_metric("New root causes", new_count)}
+              {render_metric("Resolved root causes", resolved_count)}
+            </div>
+            """
+        else:
+            content = "<p class='muted'>No previous scan comparison available yet.</p>"
+
+        scan_count = get(trend_summary, "scan_count", 0) if trend_summary else 0
+        if scan_count:
+            content += f"<p class='muted'>Trend history contains {esc(scan_count)} scans.</p>"
+
+        return f"""
+        <section class="section panel" id="history">
+          <div class="section-head">
+            <h2>History</h2>
+            <p class="muted">Changes since previous scans.</p>
+          </div>
+          {content}
+        </section>
+        """
+
+    def render_output_links():
+        return """
+        <section class="section panel">
+          <div class="section-head">
+            <h2>Generated Output</h2>
+            <p class="muted">Open the generated reports.</p>
+          </div>
+          <div class="link-grid">
+            <a href="explorer/index.html">Open Explorer</a>
+            <a href="index.md">Open Markdown Report</a>
+            <a href="knowledge/summary.md">Open Knowledge Summary</a>
+            <a href="01_root_causes.md">Open Root Causes Markdown</a>
+          </div>
+        </section>
+        """
+
+    css = """
+    :root{--bg:#0b1220;--panel:#111a2c;--card:#111827;--card2:#0f172a;--border:#243044;--text:#f8fafc;--muted:#b6c4d6;--blue:#38bdf8;--yellow:#facc15;--red:#fb7185;--green:#22c55e;--purple:#a78bfa}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Segoe UI,Inter,Arial,sans-serif;color:var(--text);background:radial-gradient(circle at top right,#18213a 0,#0b1220 42%,#070d19 100%);line-height:1.55}a{color:inherit;text-decoration:none}
+    .app{display:flex;min-height:100vh}.sidebar{position:sticky;top:0;width:260px;min-height:100vh;padding:30px 24px;background:rgba(15,23,42,.94);border-right:1px solid var(--border)}.brand{display:flex;align-items:center;gap:12px;margin-bottom:34px}.logo{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,#60a5fa,#a78bfa);color:white;font-weight:900;box-shadow:0 16px 40px rgba(56,189,248,.18)}.brand h1{font-size:24px;margin:0}.brand p{margin:2px 0 0;color:var(--muted);font-size:12px}nav a{display:block;padding:13px 14px;border-radius:12px;color:#e5eefb;margin:6px 0}nav a:hover,nav a.active{background:#1b2740}.side-note{position:absolute;bottom:24px;color:var(--muted);font-size:12px}
+    .content{flex:1;padding:42px;max-width:1680px}.hero-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(360px,1.2fr);gap:28px}.panel{background:linear-gradient(180deg,rgba(17,26,44,.98),rgba(15,23,42,.98));border:1px solid var(--border);border-radius:24px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.18)}.hero h2{font-size:46px;line-height:1.04;margin:10px 0 12px}.lead{font-size:16px;color:#d8e3f0}.pill{display:inline-flex;border:1px solid var(--border);border-radius:999px;padding:6px 14px;color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:.05em}.pill.ok{color:#bbf7d0}.pill.warn{color:#fde68a}.pill.bad{color:#fecaca}.muted{color:var(--muted)}.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:24px}
+    .metric-card{border:1px solid var(--border);border-radius:16px;padding:18px;background:#0d1424}.metric-value{font-size:30px;font-weight:900}.metric-label{color:#e5eefb}.metric-sub{color:var(--muted);font-size:13px}.health-panel{display:flex;gap:26px;align-items:center}.ring{width:150px;height:150px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--yellow) calc(var(--value)*1%),#253044 0);position:relative;flex:0 0 auto}.ring::before{content:"";position:absolute;inset:18px;border-radius:50%;background:#0f172a}.ring span{position:relative;font-size:42px;font-weight:900}.ring small{position:relative;color:var(--muted);font-size:12px;margin-top:-45px}.section{margin-top:30px}.section-head{margin-bottom:16px}.section h2{margin:0 0 6px;font-size:28px}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}.grid.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .recommendation{border:1px solid var(--border);border-radius:18px;padding:20px;background:#0d1424;margin-bottom:18px}.action-list{padding-left:0;list-style:none}.action-list li{display:flex;gap:14px;margin:12px 0;padding:14px;border:1px solid var(--border);border-radius:14px;background:#0d1424}.rank{width:28px;height:28px;display:grid;place-items:center;border-radius:999px;background:#243044;color:#fff;font-weight:800;flex:0 0 auto}.action-list p{margin:4px 0 0;color:var(--muted)}
+    .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}.root-card{position:relative;overflow:hidden;background:#111a2c;border:1px solid var(--border);border-radius:22px;padding:24px}.root-card h3{margin:0 0 8px}.severity-line{position:absolute;top:0;left:0;right:0;height:5px;background:var(--purple)}.root-card.critical .severity-line{background:var(--red)}.root-card.warning .severity-line{background:var(--yellow)}.root-card.maintenance .severity-line{background:var(--blue)}.badges{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.badges span{padding:5px 10px;border-radius:999px;background:#253044;color:#dbeafe;font-size:12px}.impact-bar{height:9px;background:#253044;border-radius:999px;overflow:hidden;margin:12px 0 18px}.impact-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--purple))}details{margin-top:14px;color:var(--muted)}details ul{padding-left:20px}.notes li{margin:8px 0}.link-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.link-grid a{border:1px solid var(--border);border-radius:14px;background:#0d1424;padding:16px;color:#7dd3fc}.footer{margin:34px 0 10px;color:var(--muted);font-size:13px}
+    @media(max-width:1100px){.app{display:block}.sidebar{position:relative;width:auto;min-height:auto}.side-note{position:static;margin-top:20px}.hero-grid,.cards,.grid,.grid.four,.link-grid{grid-template-columns:1fr}.content{padding:22px}.hero h2{font-size:34px}}
+    """
+
+    html_doc = f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{esc(project_name)} - HADocs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>{css}</style>
+</head>
+<body>
+  <div class="app">
+    {render_sidebar()}
+    <main class="content">
+      {render_hero()}
+      {render_installation()}
+      {render_actions()}
+      {render_root_cards()}
+      {render_health_notes()}
+      {render_history()}
+      {render_output_links()}
+      <p class="footer">Generated {esc(now)} • HADocs runs locally • No cloud upload • No AI calls</p>
+    </main>
+  </div>
+</body>
+</html>"""
+
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "index.html").write_text(html_doc, encoding="utf-8")
 
 def generate_root_causes(out, incidents, now):
     lines = ["# 01 Root Causes", "", f"Generated: {now}", ""]
