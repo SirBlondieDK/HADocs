@@ -1,0 +1,9 @@
+<svg width="1600" height="500" viewBox="0 0 1600 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1600" y2="500"><stop stop-color="#07111f"/><stop offset=".55" stop-color="#0f1f38"/><stop offset="1" stop-color="#22164f"/></linearGradient><linearGradient id="a" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#38bdf8"/><stop offset="1" stop-color="#a78bfa"/></linearGradient></defs>
+<rect width="1600" height="500" fill="url(#bg)"/><rect x="90" y="70" width="1420" height="360" rx="36" fill="#0f172a" opacity=".84" stroke="#263244"/>
+<rect x="140" y="145" width="110" height="110" rx="28" fill="url(#a)"/><path d="M169 206 L195 181 L221 206 V230 H204 V213 H186 V230 H169 V206Z" fill="white"/><circle cx="223" cy="174" r="12" fill="#22c55e"/>
+<text x="280" y="175" fill="#f8fafc" font-family="Segoe UI, Arial" font-size="72" font-weight="800">HADocs</text>
+<text x="284" y="230" fill="#b6c4d6" font-family="Segoe UI, Arial" font-size="34">Smart Home Intelligence for Home Assistant</text>
+<text x="286" y="285" fill="#e5eefb" font-family="Segoe UI, Arial" font-size="30">Find root causes. Improve health. Generate documentation.</text>
+<circle cx="1200" cy="240" r="92" fill="none" stroke="#253044" stroke-width="24"/><path d="M1200 148 A92 92 0 0 1 1292 240" stroke="#facc15" stroke-width="24" stroke-linecap="round"/><text x="1166" y="253" fill="#f8fafc" font-family="Segoe UI, Arial" font-size="52" font-weight="900">25</text><text x="1153" y="285" fill="#b6c4d6" font-family="Segoe UI, Arial" font-size="18">HEALTH</text>
+</svg>

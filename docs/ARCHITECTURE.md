@@ -1,30 +1,9 @@
 # Architecture
 
+HADocs turns Home Assistant data into local Smart Home Intelligence reports.
+
 ```text
-Home Assistant API
-        │
-        ▼
-Collectors
-        │
-        ▼
-Normalized Model
-        │
-        ├── Rules Engine
-        ├── Classification Engine
-        ├── Health Engine
-        ├── Incident Engine
-        ├── Incident Collapse Engine
-        ├── Relationship Engine
-        ├── Recommendation Engine
-        ├── Knowledge Engine
-        └── Privacy Engine
-        │
-        ▼
-Renderers
-        ├── HTML
-        ├── Markdown
-        ├── CSV
-        └── JSON
+Home Assistant API -> Collector -> Model Builder -> Incident Engine -> Root Cause Engine -> Health Engine -> Reports
 ```
 
-Analysis logic should live in engines, not renderers.
+Core principles: local-first, privacy-first, explainable scoring and root-cause focused reports.

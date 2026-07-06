@@ -1,26 +1,17 @@
+# Pull Request
+
 ## Summary
 
-Describe what changed.
+## Type
 
-## Type of change
-
-- [ ] Feature
 - [ ] Bug fix
+- [ ] Feature
 - [ ] Documentation
-- [ ] Security/privacy
 - [ ] Refactor
 - [ ] Tests
 
-## Testing
+## Checklist
 
-- [ ] pytest passes
-- [ ] GUI tested
-- [ ] HTML output tested
-- [ ] Markdown output tested
-
-## Privacy checklist
-
-- [ ] No telemetry added
-- [ ] No cloud upload added
-- [ ] No AI provider call added
-- [ ] No Home Assistant write action added
+- [ ] I ran `py -3.14 -m pytest`
+- [ ] I did not include tokens or private data
+- [ ] I updated docs if needed

@@ -1,17 +1,13 @@
 # FAQ
 
-## Does HADocs change Home Assistant?
-
-No. HADocs is read-only.
-
-## Does HADocs send data to the cloud?
+## Does HADocs upload data?
 
 No.
 
-## Does HADocs use AI?
+## Does HADocs use cloud AI?
 
-No. It can optionally generate AI-compatible local files.
+No.
 
-## What should I open first?
+## Is Python required?
 
-Open `output/index.html`.
+Not for the Windows release.

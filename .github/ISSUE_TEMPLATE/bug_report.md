@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Report something that does not work
+about: Report something that is not working
 title: "[Bug]: "
 labels: bug
 assignees: ""
@@ -10,14 +10,12 @@ assignees: ""
 
 ## Expected behavior
 
+## Screenshots
+
 ## HADocs version
 
-## Environment
+## Platform
 
-- OS:
-- Python version:
-- Home Assistant version:
+## Logs
 
-## Logs or screenshots
-
-Please remove tokens, IP addresses and private data before sharing.
+Please remove tokens, private URLs and personal information.

@@ -6,12 +6,8 @@ labels: enhancement
 assignees: ""
 ---
 
-## Feature
+## What would you like HADocs to do?
 
-## Why?
+## Why would this be useful?
 
-## Privacy impact
-
-- [ ] No
-- [ ] Yes
-- [ ] Not sure
+## Example

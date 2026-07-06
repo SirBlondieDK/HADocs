@@ -1,0 +1,39 @@
+name: Build Windows Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .
+          python -m pip install pyinstaller pytest
+      - name: Run tests
+        run: pytest
+      - name: Build Windows package
+        shell: pwsh
+        run: |
+          if (Test-Path installer/build_windows.ps1) {
+            powershell -ExecutionPolicy Bypass -File installer/build_windows.ps1
+          } else {
+            pyinstaller --noconfirm --windowed --name HADocs main.py
+          }
+      - name: Zip package
+        shell: pwsh
+        run: Compress-Archive -Path dist\HADocs\* -DestinationPath HADocs-${{ github.ref_name }}-win64.zip -Force
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: HADocs-${{ github.ref_name }}-win64
+          path: HADocs-${{ github.ref_name }}-win64.zip
