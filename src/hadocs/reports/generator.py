@@ -160,13 +160,15 @@ def generate_index(out: Path, project_name: str, *args) -> None:
 
 
 def generate_executive_dashboard(out, project_name, model, executive, health_notes, history_comparison, trend_summary, incidents, raw_incidents, now):
-    """Generate Dashboard Engine v2.
+    """Generate polished Dashboard Engine v2.
 
-    Stable, self-contained HTML dashboard renderer.
+    Stable self-contained renderer.
     Always writes output/index.html.
     """
 
     import html
+    import base64
+    from pathlib import Path
 
     def get(obj, name, default=None):
         if isinstance(obj, dict):
@@ -223,9 +225,31 @@ def generate_executive_dashboard(out, project_name, model, executive, health_not
         return as_list(get(incident, "affected_devices", []))
 
     def children_of(incident):
-        children = as_list(get(incident, "children", []))
-        child_incidents = as_list(get(incident, "child_incidents", []))
-        return children or child_incidents
+        return as_list(get(incident, "children", [])) or as_list(get(incident, "child_incidents", []))
+
+    def entity_label(value):
+        if isinstance(value, dict):
+            return value.get("entity_id") or value.get("name") or value.get("id") or str(value)
+        return str(value)
+
+    def try_logo_data_uri():
+        candidates = [
+            Path("docs/images/logo.png"),
+            Path("docs/images/logo.svg"),
+            Path("assets/logo.png"),
+            Path("logo.png"),
+        ]
+        for path in candidates:
+            if path.exists():
+                data = path.read_bytes()
+                if path.suffix.lower() == ".svg":
+                    mime = "image/svg+xml"
+                else:
+                    mime = "image/png"
+                return f"data:{mime};base64,{base64.b64encode(data).decode('ascii')}"
+        return ""
+
+    logo_uri = try_logo_data_uri()
 
     areas = as_list(get(model, "areas", []))
     devices = as_list(get(model, "devices", []))
@@ -243,6 +267,7 @@ def generate_executive_dashboard(out, project_name, model, executive, health_not
     warnings = [i for i in visible if severity_of(i) == "warning"]
     maintenance = [i for i in visible if severity_of(i) == "maintenance"]
     total_affected = sum(len(affected_entities(i)) for i in visible)
+    hidden = max(0, len(raw) - len(visible))
 
     physical_devices = [d for d in devices if device_type(d) in {"physical", "device", ""}]
     virtual_devices = [d for d in devices if device_type(d) == "virtual"]
@@ -253,43 +278,44 @@ def generate_executive_dashboard(out, project_name, model, executive, health_not
 
     top = visible[0] if visible else None
     top_title = title_of(top) if top else "No major issues found"
+    top_root = root_of(top) if top else "Healthy installation"
     top_reason = reason_of(top) if top else "Your installation looks healthy."
     top_gain = get(top, "estimated_score_gain", 0) if top else 0
     top_minutes = get(top, "estimated_repair_minutes", 0) if top else 0
 
-    def render_metric(label, value, sub=""):
+    def render_metric(label, value, sub="", icon=""):
         return f"""
         <div class="metric-card">
+          <div class="metric-top">{f'<span>{icon}</span>' if icon else ''}<span>{esc(label)}</span></div>
           <div class="metric-value">{esc(value)}</div>
-          <div class="metric-label">{esc(label)}</div>
           {f'<div class="metric-sub">{esc(sub)}</div>' if sub else ''}
         </div>
         """
 
     def render_sidebar():
         items = [
-            ("Dashboard", "#dashboard"),
-            ("Root Causes", "#root-causes"),
-            ("Actions", "#actions"),
-            ("Installation", "#installation"),
-            ("Health Notes", "#health-notes"),
-            ("History", "#history"),
-            ("Explorer", "explorer/index.html"),
-            ("Markdown", "index.md"),
-            ("Knowledge", "knowledge/summary.md"),
+            ("Dashboard", "#dashboard", "▣"),
+            ("Executive", "#executive", "★"),
+            ("Root Causes", "#root-causes", "◆"),
+            ("Actions", "#actions", "✓"),
+            ("Installation", "#installation", "⌂"),
+            ("Health Notes", "#health-notes", "♡"),
+            ("History", "#history", "↺"),
+            ("Explorer", "explorer/index.html", "⌕"),
+            ("Markdown", "index.md", "▤"),
+            ("Knowledge", "knowledge/summary.md", "◇"),
         ]
-        links = "".join(f'<a class="{ "active" if idx == 0 else "" }" href="{href}">{label}</a>' for idx, (label, href) in enumerate(items))
+        links = "".join(f'<a class="{ "active" if idx == 0 else "" }" href="{href}"><span>{icon}</span>{label}</a>' for idx, (label, href, icon) in enumerate(items))
+        logo = f'<img src="{logo_uri}" alt="HADocs logo">' if logo_uri else '<div class="logo-fallback">HA</div>'
         return f"""
         <aside class="sidebar">
+          <div class="logo-wrap">{logo}<small>HADocs</small></div>
           <div class="brand">
-            <div class="logo">HA</div>
-            <div>
-              <h1>HADocs</h1>
-              <p>Smart Home Intelligence</p>
-            </div>
+            <h1>HADocs</h1>
+            <p>Smart Home Intelligence</p>
           </div>
           <nav>{links}</nav>
-          <div class="side-note">Local only • No cloud</div>
+          <div class="side-note">Local only • No cloud • No AI calls</div>
         </aside>
         """
 
@@ -300,14 +326,13 @@ def generate_executive_dashboard(out, project_name, model, executive, health_not
             <span class="pill {status_class}">{esc(status)}</span>
             <h2>{esc(project_name)}</h2>
             <p class="lead">
-              Your installation currently has <strong>{len(visible)}</strong> collapsed root causes.
-              The main root cause is <strong>{esc(main_cause)}</strong>, affecting
-              <strong>{total_affected}</strong> relevant entities.
+              Main root cause: <strong>{esc(main_cause)}</strong>. Fixing the highest-impact issues could improve
+              the Health Score from <strong>{score}</strong> to <strong>{potential_score}</strong>.
             </p>
             <div class="hero-stats">
-              {render_metric("Potential score", f"{potential_score}/100")}
-              {render_metric("Repair time", f"{repair_minutes} min")}
-              {render_metric("Main root cause", main_cause)}
+              {render_metric("Potential score", f"{potential_score}/100", "after top fixes", "▲")}
+              {render_metric("Repair time", f"{repair_minutes} min", "estimated", "⏱")}
+              {render_metric("Affected entities", total_affected, "relevant symptoms", "⚡")}
             </div>
           </div>
 
@@ -318,15 +343,33 @@ def generate_executive_dashboard(out, project_name, model, executive, health_not
             </div>
             <div>
               <h2>Health Score</h2>
-              <p class="muted">
-                Based on device health, unavailable entities, areas, duplicates and filtered diagnostic noise.
-              </p>
+              <p class="muted">Based on device health, unavailable entities, areas, duplicates and filtered diagnostic noise.</p>
               <div class="badges">
                 <span>{len(critical)} critical</span>
                 <span>{len(warnings)} warnings</span>
                 <span>{len(maintenance)} maintenance</span>
               </div>
             </div>
+          </div>
+        </section>
+        """
+
+    def render_executive():
+        return f"""
+        <section class="section panel" id="executive">
+          <div class="section-head">
+            <h2>Executive Summary</h2>
+            <p class="muted">What matters most in this scan.</p>
+          </div>
+          <div class="summary-grid">
+            <div class="summary-main">
+              <h3>{esc(top_root)}</h3>
+              <p>{esc(top_title)}</p>
+              <p class="muted">{esc(top_reason)}</p>
+            </div>
+            {render_metric("Current score", f"{score}/100", status, "♡")}
+            {render_metric("Top fix gain", f"+{top_gain}", "health score", "▲")}
+            {render_metric("Hidden noise", hidden, "lower priority", "◌")}
           </div>
         </section>
         """
@@ -339,14 +382,14 @@ def generate_executive_dashboard(out, project_name, model, executive, health_not
             <p class="muted">Inventory summary from this scan.</p>
           </div>
           <div class="grid">
-            {render_metric("Areas", len(areas))}
-            {render_metric("Physical devices", len(physical_devices))}
-            {render_metric("Virtual devices", len(virtual_devices))}
-            {render_metric("System devices", len(system_devices))}
-            {render_metric("Integrations", len(integrations))}
-            {render_metric("Entities", len(entities))}
-            {render_metric("Collapsed root causes", len(visible))}
-            {render_metric("Raw incidents", len(raw))}
+            {render_metric("Areas", len(areas), icon="⌂")}
+            {render_metric("Physical devices", len(physical_devices), icon="▣")}
+            {render_metric("Virtual devices", len(virtual_devices), icon="◇")}
+            {render_metric("System devices", len(system_devices), icon="⚙")}
+            {render_metric("Integrations", len(integrations), icon="⌁")}
+            {render_metric("Entities", len(entities), icon="⚡")}
+            {render_metric("Collapsed root causes", len(visible), icon="◆")}
+            {render_metric("Raw incidents", len(raw), icon="▤")}
           </div>
         </section>
         """
@@ -370,7 +413,7 @@ def generate_executive_dashboard(out, project_name, model, executive, health_not
         <section class="section panel" id="actions">
           <div class="section-head">
             <h2>Top Recommendation</h2>
-            <p class="muted">Highest-impact action first.</p>
+            <p class="muted">Highest-impact actions first.</p>
           </div>
           <div class="recommendation">
             <h3>{esc(top_title)}</h3>
@@ -401,6 +444,13 @@ def generate_executive_dashboard(out, project_name, model, executive, health_not
                     child_items.append(f"<li>...and {len(children) - 5} more</li>")
                 child_html = f"<details><summary>Child incidents</summary><ul>{''.join(child_items)}</ul></details>"
 
+            entity_html = ""
+            if ents:
+                entity_items = "".join(f"<li>{esc(entity_label(e))}</li>" for e in ents[:8])
+                if len(ents) > 8:
+                    entity_items += f"<li>...and {len(ents) - 8} more</li>"
+                entity_html = f"<details><summary>Affected entities</summary><ul>{entity_items}</ul></details>"
+
             cards.append(f"""
             <article class="root-card {sev}">
               <div class="severity-line"></div>
@@ -417,6 +467,7 @@ def generate_executive_dashboard(out, project_name, model, executive, health_not
               <div class="impact-bar"><i style="width:{min(100, max(7, len(ents)))}%"></i></div>
               <p>{esc(reason_of(incident))}</p>
               {child_html}
+              {entity_html}
             </article>
             """)
 
@@ -451,10 +502,10 @@ def generate_executive_dashboard(out, project_name, model, executive, health_not
             resolved_count = len(as_list(get(history_comparison, "resolved_root_causes", [])))
             content = f"""
             <div class="grid four">
-              {render_metric("Health change", f"{delta:+}")}
-              {render_metric("Problem entity change", f"{problem_delta:+}")}
-              {render_metric("New root causes", new_count)}
-              {render_metric("Resolved root causes", resolved_count)}
+              {render_metric("Health change", f"{delta:+}", icon="↺")}
+              {render_metric("Problem entity change", f"{problem_delta:+}", icon="⚡")}
+              {render_metric("New root causes", new_count, icon="+")}
+              {render_metric("Resolved root causes", resolved_count, icon="✓")}
             </div>
             """
         else:
@@ -462,7 +513,7 @@ def generate_executive_dashboard(out, project_name, model, executive, health_not
 
         scan_count = get(trend_summary, "scan_count", 0) if trend_summary else 0
         if scan_count:
-            content += f"<p class='muted'>Trend history contains {esc(scan_count)} scans.</p>"
+            content += f"<p class='muted trend-note'>Trend history contains {esc(scan_count)} scans.</p>"
 
         return f"""
         <section class="section panel" id="history">
@@ -493,12 +544,12 @@ def generate_executive_dashboard(out, project_name, model, executive, health_not
     css = """
     :root{--bg:#0b1220;--panel:#111a2c;--card:#111827;--card2:#0f172a;--border:#243044;--text:#f8fafc;--muted:#b6c4d6;--blue:#38bdf8;--yellow:#facc15;--red:#fb7185;--green:#22c55e;--purple:#a78bfa}
     *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Segoe UI,Inter,Arial,sans-serif;color:var(--text);background:radial-gradient(circle at top right,#18213a 0,#0b1220 42%,#070d19 100%);line-height:1.55}a{color:inherit;text-decoration:none}
-    .app{display:flex;min-height:100vh}.sidebar{position:sticky;top:0;width:260px;min-height:100vh;padding:30px 24px;background:rgba(15,23,42,.94);border-right:1px solid var(--border)}.brand{display:flex;align-items:center;gap:12px;margin-bottom:34px}.logo{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,#60a5fa,#a78bfa);color:white;font-weight:900;box-shadow:0 16px 40px rgba(56,189,248,.18)}.brand h1{font-size:24px;margin:0}.brand p{margin:2px 0 0;color:var(--muted);font-size:12px}nav a{display:block;padding:13px 14px;border-radius:12px;color:#e5eefb;margin:6px 0}nav a:hover,nav a.active{background:#1b2740}.side-note{position:absolute;bottom:24px;color:var(--muted);font-size:12px}
-    .content{flex:1;padding:42px;max-width:1680px}.hero-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(360px,1.2fr);gap:28px}.panel{background:linear-gradient(180deg,rgba(17,26,44,.98),rgba(15,23,42,.98));border:1px solid var(--border);border-radius:24px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.18)}.hero h2{font-size:46px;line-height:1.04;margin:10px 0 12px}.lead{font-size:16px;color:#d8e3f0}.pill{display:inline-flex;border:1px solid var(--border);border-radius:999px;padding:6px 14px;color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:.05em}.pill.ok{color:#bbf7d0}.pill.warn{color:#fde68a}.pill.bad{color:#fecaca}.muted{color:var(--muted)}.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:24px}
-    .metric-card{border:1px solid var(--border);border-radius:16px;padding:18px;background:#0d1424}.metric-value{font-size:30px;font-weight:900}.metric-label{color:#e5eefb}.metric-sub{color:var(--muted);font-size:13px}.health-panel{display:flex;gap:26px;align-items:center}.ring{width:150px;height:150px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--yellow) calc(var(--value)*1%),#253044 0);position:relative;flex:0 0 auto}.ring::before{content:"";position:absolute;inset:18px;border-radius:50%;background:#0f172a}.ring span{position:relative;font-size:42px;font-weight:900}.ring small{position:relative;color:var(--muted);font-size:12px;margin-top:-45px}.section{margin-top:30px}.section-head{margin-bottom:16px}.section h2{margin:0 0 6px;font-size:28px}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}.grid.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .app{display:flex;min-height:100vh}.sidebar{position:sticky;top:0;width:270px;min-height:100vh;padding:28px 22px;background:rgba(15,23,42,.95);border-right:1px solid var(--border)}.logo-wrap{text-align:center;margin-bottom:22px}.logo-wrap img{width:72px;height:72px;object-fit:contain;display:block;margin:0 auto 6px}.logo-wrap small{color:#7dd3fc}.logo-fallback{width:64px;height:64px;margin:0 auto 6px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(135deg,#60a5fa,#a78bfa);font-weight:900}.brand{text-align:center;margin-bottom:28px}.brand h1{font-size:28px;margin:0}.brand p{margin:4px 0 0;color:var(--muted);font-size:13px}nav a{display:flex;gap:10px;align-items:center;padding:12px 14px;border-radius:12px;color:#e5eefb;margin:6px 0}nav a:hover,nav a.active{background:#1b2740}.side-note{position:absolute;bottom:24px;color:var(--muted);font-size:12px}
+    .content{flex:1;padding:42px;max-width:1760px}.hero-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(360px,1.1fr);gap:28px}.panel{background:linear-gradient(180deg,rgba(17,26,44,.98),rgba(15,23,42,.98));border:1px solid var(--border);border-radius:24px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.18)}.hero h2{font-size:48px;line-height:1.04;margin:10px 0 12px}.lead{font-size:16px;color:#d8e3f0}.pill{display:inline-flex;border:1px solid var(--border);border-radius:999px;padding:6px 14px;color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:.05em}.pill.ok{color:#bbf7d0}.pill.warn{color:#fde68a}.pill.bad{color:#fecaca}.muted{color:var(--muted)}.hero-stats,.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:24px}.summary-grid{grid-template-columns:2fr repeat(3,1fr)}.summary-main{border:1px solid var(--border);border-radius:16px;padding:18px;background:#0d1424}.summary-main h3{margin-top:0}
+    .metric-card{border:1px solid var(--border);border-radius:16px;padding:18px;background:#0d1424}.metric-top{display:flex;gap:8px;color:var(--muted);font-size:13px}.metric-value{font-size:30px;font-weight:900;margin-top:8px}.metric-label{color:#e5eefb}.metric-sub{color:var(--muted);font-size:13px}.health-panel{display:flex;gap:26px;align-items:center}.ring{width:160px;height:160px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--yellow) calc(var(--value)*1%),#253044 0);position:relative;flex:0 0 auto}.ring::before{content:"";position:absolute;inset:18px;border-radius:50%;background:#0f172a}.ring span{position:relative;font-size:44px;font-weight:900}.ring small{position:relative;color:var(--muted);font-size:12px;margin-top:-48px}.section{margin-top:30px}.section-head{margin-bottom:16px}.section h2{margin:0 0 6px;font-size:28px}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}.grid.four{grid-template-columns:repeat(4,minmax(0,1fr))}
     .recommendation{border:1px solid var(--border);border-radius:18px;padding:20px;background:#0d1424;margin-bottom:18px}.action-list{padding-left:0;list-style:none}.action-list li{display:flex;gap:14px;margin:12px 0;padding:14px;border:1px solid var(--border);border-radius:14px;background:#0d1424}.rank{width:28px;height:28px;display:grid;place-items:center;border-radius:999px;background:#243044;color:#fff;font-weight:800;flex:0 0 auto}.action-list p{margin:4px 0 0;color:var(--muted)}
-    .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}.root-card{position:relative;overflow:hidden;background:#111a2c;border:1px solid var(--border);border-radius:22px;padding:24px}.root-card h3{margin:0 0 8px}.severity-line{position:absolute;top:0;left:0;right:0;height:5px;background:var(--purple)}.root-card.critical .severity-line{background:var(--red)}.root-card.warning .severity-line{background:var(--yellow)}.root-card.maintenance .severity-line{background:var(--blue)}.badges{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.badges span{padding:5px 10px;border-radius:999px;background:#253044;color:#dbeafe;font-size:12px}.impact-bar{height:9px;background:#253044;border-radius:999px;overflow:hidden;margin:12px 0 18px}.impact-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--purple))}details{margin-top:14px;color:var(--muted)}details ul{padding-left:20px}.notes li{margin:8px 0}.link-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.link-grid a{border:1px solid var(--border);border-radius:14px;background:#0d1424;padding:16px;color:#7dd3fc}.footer{margin:34px 0 10px;color:var(--muted);font-size:13px}
-    @media(max-width:1100px){.app{display:block}.sidebar{position:relative;width:auto;min-height:auto}.side-note{position:static;margin-top:20px}.hero-grid,.cards,.grid,.grid.four,.link-grid{grid-template-columns:1fr}.content{padding:22px}.hero h2{font-size:34px}}
+    .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}.root-card{position:relative;overflow:hidden;background:#111a2c;border:1px solid var(--border);border-radius:22px;padding:24px}.root-card h3{margin:0 0 8px}.severity-line{position:absolute;top:0;left:0;right:0;height:5px;background:var(--purple)}.root-card.critical .severity-line{background:var(--red)}.root-card.warning .severity-line{background:var(--yellow)}.root-card.maintenance .severity-line{background:var(--blue)}.badges{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.badges span{padding:5px 10px;border-radius:999px;background:#253044;color:#dbeafe;font-size:12px}.impact-bar{height:9px;background:#253044;border-radius:999px;overflow:hidden;margin:12px 0 18px}.impact-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--purple))}details{margin-top:14px;color:var(--muted)}details ul{padding-left:20px;max-height:210px;overflow:auto}.notes li{margin:8px 0}.link-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.link-grid a{border:1px solid var(--border);border-radius:14px;background:#0d1424;padding:16px;color:#7dd3fc}.footer{margin:34px 0 10px;color:var(--muted);font-size:13px}.trend-note{margin-top:18px}
+    @media(max-width:1100px){.app{display:block}.sidebar{position:relative;width:auto;min-height:auto}.side-note{position:static;margin-top:20px}.hero-grid,.cards,.grid,.grid.four,.link-grid,.summary-grid{grid-template-columns:1fr}.content{padding:22px}.hero h2{font-size:34px}}
     """
 
     html_doc = f"""<!doctype html>
@@ -514,6 +565,7 @@ def generate_executive_dashboard(out, project_name, model, executive, health_not
     {render_sidebar()}
     <main class="content">
       {render_hero()}
+      {render_executive()}
       {render_installation()}
       {render_actions()}
       {render_root_cards()}

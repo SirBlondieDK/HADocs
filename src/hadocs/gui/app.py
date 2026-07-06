@@ -440,18 +440,25 @@ class FirstRunWizard(tk.Toplevel):
 
 
 class SettingsDialog(tk.Toplevel):
+
     def __init__(self, master, cfg, on_save):
         super().__init__(master)
         self.title("HADocs Settings")
-        self.geometry("700x500")
+        self.geometry("700x520")
         self.transient(master)
         Theme.apply(self)
 
         self.cfg = dict(cfg)
         self.on_save = on_save
 
+        try:
+            from src.hadocs.security.credential_store import get_home_assistant_token
+            stored_token = get_home_assistant_token() or ""
+        except Exception:
+            stored_token = ""
+
         self.url_var = tk.StringVar(value=self.cfg.get("ha_url", ""))
-        self.token_var = tk.StringVar(value=self.cfg.get("token", ""))
+        self.token_var = tk.StringVar(value=stored_token or self.cfg.get("token", ""))
         self.project_var = tk.StringVar(value=self.cfg.get("project_name", "My Smart Home"))
         self.output_var = tk.StringVar(value=self.cfg.get("output_dir", "output"))
         self.auto_open_var = tk.BooleanVar(value=bool(self.cfg.get("open_dashboard_after_scan", True)))
@@ -460,11 +467,11 @@ class SettingsDialog(tk.Toplevel):
         frame.pack(fill="both", expand=True)
         frame.columnconfigure(1, weight=1)
 
-        ttk.Label(frame, text="Settings", style="Hero.TLabel").grid(row=0, column=0, columnspan=2, sticky="w", pady=(0, 22))
+        ttk.Label(frame, text="Settings", style="Hero.TLabel").grid(row=0, column=0, columnspan=3, sticky="w", pady=(0, 22))
 
         rows = [
             ("Home Assistant URL", self.url_var, False),
-            ("Long-Lived Token", self.token_var, True),
+            ("Home Assistant Token", self.token_var, True),
             ("Project name", self.project_var, False),
             ("Output folder", self.output_var, False),
         ]
@@ -473,24 +480,56 @@ class SettingsDialog(tk.Toplevel):
             ttk.Label(frame, text=label, style="Panel.TLabel").grid(row=idx, column=0, sticky="w", padx=(0, 12), pady=7)
             ttk.Entry(frame, textvariable=var, show="*" if secret else "").grid(row=idx, column=1, sticky="ew", pady=7)
 
-        ttk.Checkbutton(frame, text="Open dashboard after scan", variable=self.auto_open_var).grid(row=5, column=0, columnspan=2, sticky="w", pady=(20, 4))
+        self.token_status = ttk.Label(
+            frame,
+            text="🔒 Stored in Windows Credential Manager" if stored_token else "Token will be stored securely in Windows",
+            style="MutedPanel.TLabel",
+        )
+        self.token_status.grid(row=2, column=2, sticky="w", padx=(12, 0), pady=7)
+
+        ttk.Button(frame, text="Forget token", command=self.forget_token).grid(row=5, column=1, sticky="w", pady=(8, 0))
+
+        ttk.Checkbutton(frame, text="Open dashboard after scan", variable=self.auto_open_var).grid(row=6, column=0, columnspan=3, sticky="w", pady=(20, 4))
 
         buttons = ttk.Frame(frame, style="Panel.TFrame")
-        buttons.grid(row=6, column=0, columnspan=2, sticky="e", pady=(28, 0))
+        buttons.grid(row=7, column=0, columnspan=3, sticky="e", pady=(28, 0))
         ttk.Button(buttons, text="Cancel", command=self.destroy).pack(side="right", padx=(8, 0))
         ttk.Button(buttons, text="Save", style="Accent.TButton", command=self.save).pack(side="right")
 
+
     def save(self):
+        token = self.token_var.get().strip()
+
+        try:
+            from src.hadocs.security.credential_store import set_home_assistant_token
+            if token:
+                set_home_assistant_token(token)
+        except Exception as exc:
+            messagebox.showerror("HADocs", f"Could not save token in Windows Credential Manager:\n{exc}")
+            return
+
         self.cfg["ha_url"] = self.url_var.get().strip()
-        self.cfg["token"] = self.token_var.get().strip()
         self.cfg["project_name"] = self.project_var.get().strip() or "My Smart Home"
         self.cfg["output_dir"] = self.output_var.get().strip() or "output"
         self.cfg["cache_dir"] = self.cfg.get("cache_dir", "cache")
         self.cfg["open_dashboard_after_scan"] = bool(self.auto_open_var.get())
+        self.cfg.pop("token", None)
+        self.cfg.pop("ha_token", None)
+
         save_config(self.cfg)
         self.on_save(self.cfg)
         self.destroy()
 
+    def forget_token(self):
+        try:
+            from src.hadocs.security.credential_store import delete_home_assistant_token
+            delete_home_assistant_token()
+        except Exception as exc:
+            messagebox.showerror("HADocs", f"Could not remove token from Windows Credential Manager:\n{exc}")
+            return
+
+        self.token_var.set("")
+        self.token_status.config(text="Token removed from Windows Credential Manager")
 
 class AboutDialog(tk.Toplevel):
     def __init__(self, master):
@@ -726,10 +765,18 @@ class App(tk.Tk):
 
         ttk.Button(self.connection_card, text="Edit Settings", command=self.open_settings).grid(row=0, column=1, rowspan=2, sticky="e")
 
+
     def connection_summary_text(self):
         url = self.cfg.get("ha_url", "Not configured")
         project = self.cfg.get("project_name", "My Smart Home")
-        token_state = "🟢 Token saved" if self.cfg.get("token") else "🔴 Token missing"
+
+        try:
+            from src.hadocs.security.credential_store import get_home_assistant_token
+            token = get_home_assistant_token()
+        except Exception:
+            token = None
+
+        token_state = "🔒 Token saved" if token else "⚠ Token missing"
         last = f"Last scan: {self.last_scan_time}" if self.last_scan_time else "Last scan: Never"
         return f"{project}\n{url}\n{token_state}\n{last}"
 
@@ -856,15 +903,30 @@ class App(tk.Tk):
         self.hero_title.config(text=self.cfg.get("project_name", "My Smart Home"))
         self.update_connection_summary()
 
+
+
     def get_cfg(self):
-        self.cfg.update({
-            "ha_url": self.cfg.get("ha_url", ""),
-            "token": self.cfg.get("token", ""),
-            "project_name": self.cfg.get("project_name", "My Smart Home"),
-            "output_dir": self.cfg.get("output_dir", "output"),
-            "cache_dir": self.cfg.get("cache_dir", "cache"),
-        })
-        return dict(self.cfg)
+        cfg = dict(self.cfg or {})
+
+        cfg["ha_url"] = cfg.get("ha_url", "")
+        cfg["project_name"] = cfg.get("project_name", "My Smart Home")
+        cfg["output_dir"] = cfg.get("output_dir", "output")
+        cfg["cache_dir"] = cfg.get("cache_dir", "cache")
+        cfg["open_dashboard_after_scan"] = bool(cfg.get("open_dashboard_after_scan", True))
+
+        try:
+            from src.hadocs.security.credential_store import get_home_assistant_token
+            token = get_home_assistant_token()
+        except Exception:
+            token = None
+
+        if token:
+            cfg["token"] = token
+        else:
+            cfg.pop("token", None)
+            cfg.pop("ha_token", None)
+
+        return cfg
 
     def log_msg(self, msg):
         self.log.insert("end", str(msg) + "\n")
@@ -967,8 +1029,8 @@ class App(tk.Tk):
 
             self.refresh_summary_from_disk()
 
-            if self.cfg.get("open_dashboard_after_scan", True):
-                open_dashboard(cfg.get("output_dir", "output"))
+            if cfg.get("open_dashboard_after_scan", True):
+                self.after(250, lambda: open_dashboard(cfg.get("output_dir", "output")))
 
             messagebox.showinfo("HADocs", msg)
         except Exception as exc:
@@ -982,11 +1044,14 @@ class App(tk.Tk):
     def open_settings(self):
         SettingsDialog(self, self.get_cfg(), self.on_settings_saved)
 
+
     def on_settings_saved(self, cfg):
-        self.cfg = dict(cfg)
+        self.cfg = dict(cfg or {})
+        self.cfg.pop("token", None)
+        self.cfg.pop("ha_token", None)
         self.apply_cfg_to_fields()
+        self.update_connection_summary()
         self.status_label.config(text="Settings saved")
-        self.log_msg("Settings saved.")
 
     def open_first_run_wizard(self):
         FirstRunWizard(self, self.cfg, self.on_settings_saved)
