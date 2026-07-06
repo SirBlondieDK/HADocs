@@ -27,3 +27,18 @@ venv/
 Thumbs.db
 .vscode/
 .idea/
+
+# HADocs generated/runtime files
+build/
+dist/
+*.spec
+*.toc
+*.pyz
+*.pkg
+xref-*.html
+# Local config/runtime state
+*.log
+*.py[cod]
+# Release packages
+HADocs-*.zip
+HADocs-*.exe
