@@ -30,6 +30,7 @@ from src.hadocs.utils.text import slugify, write_md
 from src.hadocs.html.explorer import write_explorer
 from src.hadocs.knowledge.exporter import export_knowledge
 from src.hadocs.core.health import apply_health_score_v2
+from src.hadocs.core.intelligence import apply_intelligence_v014
 
 
 def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
@@ -71,6 +72,7 @@ def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
     )
 
     executive = apply_health_score_v2(model, executive, incidents)
+    executive = apply_intelligence_v014(model, executive, incidents)
     generate_index(out, project_name, executive, incidents, now)
     generate_executive_dashboard(out, project_name, model, executive, health_notes, history_comparison, trend_summary, incidents, raw_incidents, now)
     generate_root_causes(out, incidents, now)
@@ -259,6 +261,8 @@ def generate_executive_dashboard(out, project_name, model, executive, health_not
     integrations = as_list(get(model, "integrations", []))
 
     score = clamp(get(executive, "score", 0))
+    health_forecast = get(executive, "health_forecast", [])
+    root_cause_intelligence = get(executive, "root_cause_intelligence", [])
     health_score_v2 = get(executive, "health_score_v2", {})
     score_grade = get(health_score_v2, "grade", "-")
     ignored_disabled = get(health_score_v2, "disabled_ignored", 0)
@@ -435,6 +439,10 @@ def generate_executive_dashboard(out, project_name, model, executive, health_not
     def render_root_cards():
         cards = []
         for incident in visible[:18]:
+            info = intelligence_for(root_of(incident))
+            explanation = get(info, "explain", {})
+            impact_score = get(info, "impact_score", 0)
+            impact_label_text = get(info, "impact_label", "Impact")
             sev = severity_of(incident)
             ents = affected_entities(incident)
             devs = affected_devices(incident)
@@ -471,9 +479,35 @@ def generate_executive_dashboard(out, project_name, model, executive, health_not
                 <span>{child_count} child incidents</span>
                 <span>+{esc(gain)} score</span>
                 <span>~{esc(minutes)} min</span>
+                <span>{esc(impact_label_text)}</span>
+                <span>{esc(impact_score)} impact</span>
               </div>
               <div class="impact-bar"><i style="width:{min(100, max(7, len(ents)))}%"></i></div>
               <p>{esc(reason_of(incident))}</p>
+
+              <details class="explain-box">
+                <summary>Explain this</summary>
+                <div class="explain-grid">
+                  <div class="explain-item">
+                    <h4>Why this happened</h4>
+                    <p>{esc(get(explanation, "why", "HADocs detected that multiple symptoms point to the same root cause."))}</p>
+                  </div>
+                  <div class="explain-item">
+                    <h4>Impact</h4>
+                    <p>{esc(get(explanation, "impact", "This issue affects several Home Assistant entities or devices."))}</p>
+                  </div>
+                  <div class="explain-item">
+                    <h4>How to verify</h4>
+                    <p>{esc(get(explanation, "verify", "Open the related integration or device in Home Assistant and check availability, logs and recent changes."))}</p>
+                  </div>
+                  <div class="explain-item">
+                    <h4>Suggested fix</h4>
+                    <p>{esc(get(explanation, "fix", "Fix the parent integration or device first, then run HADocs again to verify that child incidents disappear."))}</p>
+                  </div>
+                </div>
+                <p class="muted">{esc(get(explanation, "time", f"Estimated repair time: about {minutes} minutes."))}</p>
+              </details>
+
               {child_html}
               {entity_html}
             </article>
@@ -533,6 +567,46 @@ def generate_executive_dashboard(out, project_name, model, executive, health_not
         </section>
         """
 
+
+    def render_health_forecast():
+        rows = []
+        for idx, step in enumerate(health_forecast[:6], 1):
+            after = get(step, "health_after", 0)
+            rows.append(f"""
+            <div class="forecast-step">
+              <div class="forecast-number">{idx}</div>
+              <div class="forecast-body">
+                <strong>{esc(get(step, "root_cause", "Issue"))}</strong>
+                <p class="muted">{esc(get(step, "title", ""))}</p>
+                <div class="badges">
+                  <span>+{esc(get(step, "score_gain", 0))} score</span>
+                  <span>{esc(get(step, "impact_label", "Impact"))}</span>
+                  <span>~{esc(get(step, "repair_minutes", 0))} min</span>
+                </div>
+                <div class="impact-bar"><i style="width:{min(100, max(3, int(after)))}%"></i></div>
+                <p class="muted">Health after this fix: <strong>{esc(after)}/100</strong></p>
+              </div>
+            </div>
+            """)
+        if not rows:
+            rows.append("<p class='muted'>No forecast available yet.</p>")
+        return f"""
+        <section class="section panel" id="forecast">
+          <div class="section-head">
+            <h2>Health Forecast</h2>
+            <p class="muted">A prioritized repair path based on expected health gain and impact.</p>
+          </div>
+          <div class="forecast">{''.join(rows)}</div>
+        </section>
+        """
+
+    def intelligence_for(root):
+        for item in root_cause_intelligence:
+            if get(item, "root_cause", "") == root:
+                return item
+        return {}
+
+
     def render_output_links():
         return """
         <section class="section panel">
@@ -556,7 +630,7 @@ def generate_executive_dashboard(out, project_name, model, executive, health_not
     .content{flex:1;padding:42px;max-width:1760px}.hero-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(360px,1.1fr);gap:28px}.panel{background:linear-gradient(180deg,rgba(17,26,44,.98),rgba(15,23,42,.98));border:1px solid var(--border);border-radius:24px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.18)}.hero h2{font-size:48px;line-height:1.04;margin:10px 0 12px}.lead{font-size:16px;color:#d8e3f0}.pill{display:inline-flex;border:1px solid var(--border);border-radius:999px;padding:6px 14px;color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:.05em}.pill.ok{color:#bbf7d0}.pill.warn{color:#fde68a}.pill.bad{color:#fecaca}.muted{color:var(--muted)}.hero-stats,.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:24px}.summary-grid{grid-template-columns:2fr repeat(3,1fr)}.summary-main{border:1px solid var(--border);border-radius:16px;padding:18px;background:#0d1424}.summary-main h3{margin-top:0}
     .metric-card{border:1px solid var(--border);border-radius:16px;padding:18px;background:#0d1424}.metric-top{display:flex;gap:8px;color:var(--muted);font-size:13px}.metric-value{font-size:30px;font-weight:900;margin-top:8px}.metric-label{color:#e5eefb}.metric-sub{color:var(--muted);font-size:13px}.health-panel{display:flex;gap:26px;align-items:center}.ring{width:160px;height:160px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--yellow) calc(var(--value)*1%),#253044 0);position:relative;flex:0 0 auto}.ring::before{content:"";position:absolute;inset:18px;border-radius:50%;background:#0f172a}.ring span{position:relative;font-size:44px;font-weight:900}.ring small{position:relative;color:var(--muted);font-size:12px;margin-top:-48px}.section{margin-top:30px}.section-head{margin-bottom:16px}.section h2{margin:0 0 6px;font-size:28px}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}.grid.four{grid-template-columns:repeat(4,minmax(0,1fr))}
     .recommendation{border:1px solid var(--border);border-radius:18px;padding:20px;background:#0d1424;margin-bottom:18px}.action-list{padding-left:0;list-style:none}.action-list li{display:flex;gap:14px;margin:12px 0;padding:14px;border:1px solid var(--border);border-radius:14px;background:#0d1424}.rank{width:28px;height:28px;display:grid;place-items:center;border-radius:999px;background:#243044;color:#fff;font-weight:800;flex:0 0 auto}.action-list p{margin:4px 0 0;color:var(--muted)}
-    .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}.root-card{position:relative;overflow:hidden;background:#111a2c;border:1px solid var(--border);border-radius:22px;padding:24px}.root-card h3{margin:0 0 8px}.severity-line{position:absolute;top:0;left:0;right:0;height:5px;background:var(--purple)}.root-card.critical .severity-line{background:var(--red)}.root-card.warning .severity-line{background:var(--yellow)}.root-card.maintenance .severity-line{background:var(--blue)}.badges{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.badges span{padding:5px 10px;border-radius:999px;background:#253044;color:#dbeafe;font-size:12px}.impact-bar{height:9px;background:#253044;border-radius:999px;overflow:hidden;margin:12px 0 18px}.impact-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--purple))}details{margin-top:14px;color:var(--muted)}details ul{padding-left:20px;max-height:210px;overflow:auto}.notes li{margin:8px 0}.link-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.link-grid a{border:1px solid var(--border);border-radius:14px;background:#0d1424;padding:16px;color:#7dd3fc}.footer{margin:34px 0 10px;color:var(--muted);font-size:13px}.trend-note{margin-top:18px}
+    .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}.root-card{position:relative;overflow:hidden;background:#111a2c;border:1px solid var(--border);border-radius:22px;padding:24px}.root-card h3{margin:0 0 8px}.severity-line{position:absolute;top:0;left:0;right:0;height:5px;background:var(--purple)}.root-card.critical .severity-line{background:var(--red)}.root-card.warning .severity-line{background:var(--yellow)}.root-card.maintenance .severity-line{background:var(--blue)}.badges{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.badges span{padding:5px 10px;border-radius:999px;background:#253044;color:#dbeafe;font-size:12px}.impact-bar{height:9px;background:#253044;border-radius:999px;overflow:hidden;margin:12px 0 18px}.impact-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--purple))}details{margin-top:14px;color:var(--muted)}details ul{padding-left:20px;max-height:210px;overflow:auto}.notes li{margin:8px 0}.link-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.link-grid a{border:1px solid var(--border);border-radius:14px;background:#0d1424;padding:16px;color:#7dd3fc}.explain-box{margin-top:16px;border:1px solid var(--border);border-radius:16px;background:#0b1220;padding:14px}.explain-box summary{cursor:pointer;font-weight:900;color:#e5eefb}.explain-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}.explain-item{border:1px solid var(--border);border-radius:14px;background:#0d1424;padding:12px}.explain-item h4{margin:0 0 6px;font-size:12px;color:#9fc2ff;text-transform:uppercase;letter-spacing:.04em}.explain-item p{margin:0;color:#cbd5e1;line-height:1.45}@media(max-width:900px){.explain-grid{grid-template-columns:1fr}}.footer{margin:34px 0 10px;color:var(--muted);font-size:13px}.forecast{display:grid;gap:14px}.forecast-step{display:flex;gap:16px;border:1px solid var(--border);border-radius:18px;background:#0d1424;padding:18px}.forecast-number{width:34px;height:34px;border-radius:999px;background:#243044;display:grid;place-items:center;font-weight:900;flex:0 0 auto}.forecast-body{flex:1}.explain{margin-top:16px;border-top:1px solid var(--border);padding-top:12px}.explain h4{margin:12px 0 4px}.trend-note{margin-top:18px}
     @media(max-width:1100px){.app{display:block}.sidebar{position:relative;width:auto;min-height:auto}.side-note{position:static;margin-top:20px}.hero-grid,.cards,.grid,.grid.four,.link-grid,.summary-grid{grid-template-columns:1fr}.content{padding:22px}.hero h2{font-size:34px}}
     """
 
@@ -588,6 +662,7 @@ def generate_executive_dashboard(out, project_name, model, executive, health_not
         </div>
         <p class="muted">Root-cause penalty: {esc(root_cause_penalty)}. This makes large installations feel fairer while keeping serious issues visible.</p>
       </section>
+      {render_health_forecast()}
       {render_actions()}
       {render_root_cards()}
       {render_health_notes()}
