@@ -31,7 +31,7 @@ from src.hadocs.html.explorer import write_explorer
 from src.hadocs.knowledge.exporter import export_knowledge
 from src.hadocs.core.health import apply_health_score_v2
 from src.hadocs.core.intelligence import apply_intelligence_v014
-from src.hadocs.utils.display import display_area
+from src.hadocs.utils.display import display_area, area_filename
 
 
 def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
@@ -796,7 +796,7 @@ def generate_areas(out, model, now):
     area_dir = out / "04_areas"
     index = ["# 04 Areas", "", f"Generated: {now}", ""]
     for area in sorted(model.areas.values(), key=lambda a: display_area(a.name)):
-        filename = f"{slugify(area.name)}.md"
+        filename = f"{area_filename(area.name, slugify)}.md"
         index.append(f"- [{display_area(area.name)}]({filename}) — {len(area.devices)} devices, {len(area.entities)} entities")
         lines = [f"# {display_area(area.name)}", "", f"Generated: {now}", "", "## Devices", ""]
         for device in sorted(area.devices, key=lambda d: d.name):
