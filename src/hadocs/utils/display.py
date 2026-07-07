@@ -33,3 +33,13 @@ def display_area(value: object) -> str:
 def display_text(value: object) -> str:
     """Small safe display helper for optional values."""
     return "" if value is None else str(value)
+
+
+NO_AREA_FILENAME = "no_area"
+
+
+def area_filename(value: object, slugify_func) -> str:
+    if is_unassigned_area(value):
+        return NO_AREA_FILENAME
+    return slugify_func(display_area(value))
+
