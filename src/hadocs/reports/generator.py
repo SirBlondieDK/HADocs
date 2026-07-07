@@ -71,7 +71,7 @@ def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
         version="0.11.0",
     )
 
-    executive = apply_health_score_v2(model, executive, incidents)
+    # Keep Health Score v2 details available, but do not override the official score yet.
     executive = apply_intelligence_v014(model, executive, incidents)
     generate_index(out, project_name, executive, incidents, now)
     generate_executive_dashboard(out, project_name, model, executive, health_notes, history_comparison, trend_summary, incidents, raw_incidents, now)
