@@ -228,6 +228,16 @@ def _hs_entity_key(entity: Any) -> str:
 
 
 def calculate_health_score_v2(model: Any, incidents: list[Any]) -> HealthScoreBreakdown:
+    """Calculate a size-normalized health score.
+
+    v2.1 calibration notes:
+    - Large Home Assistant installations should not be pushed toward 25/100
+      just because one integration/root cause touches many entities.
+    - Affected entities are still visible in the breakdown, but they are a
+      smaller penalty than severity and root-cause count.
+    - Disabled entities are ignored as problems.
+    """
+
     entities = _hs_list(_hs_get(model, "entities", []))
     enabled_entities = [entity for entity in entities if not is_disabled_entity(entity)]
     disabled_entities = max(0, len(entities) - len(enabled_entities))
@@ -245,9 +255,12 @@ def calculate_health_score_v2(model: Any, incidents: list[Any]) -> HealthScoreBr
 
     affected_count = len(affected_active)
 
-    # Fairer scoring for large installations:
-    # same absolute issue count should hurt less in a 2000 entity install than in a 100 entity install.
-    normalized_penalty = round((affected_count / max(1.0, math.sqrt(enabled_count))) * 2.6)
+    # Large-installation calibration:
+    # Use ratio against enabled entities, not sqrt(enabled_entities).
+    # This prevents large installs with many related entities from being
+    # scored as critical when only a small percentage is actually affected.
+    affected_ratio = affected_count / max(1, enabled_count)
+    normalized_penalty = min(10, round(affected_ratio * 22))
 
     critical = 0
     warning = 0
@@ -262,12 +275,20 @@ def calculate_health_score_v2(model: Any, incidents: list[Any]) -> HealthScoreBr
         else:
             maintenance += 1
 
-    severity_penalty = min(28, critical * 3 + warning * 2 + maintenance)
-    root_cause_penalty = min(18, round(len(incidents or []) * 0.9))
+    # Severity still matters, but it should not dominate the whole score.
+    severity_penalty = min(12, round(critical * 1.2 + warning * 0.8 + maintenance * 0.35))
 
-    total_penalty = min(75, normalized_penalty + severity_penalty + root_cause_penalty)
-    score = max(25, 100 - total_penalty)
-    potential_score = min(100, score + min(30, 6 + critical * 2 + warning))
+    # Root causes indicate cleanup scope. Keep this capped so 15-20 root causes
+    # is "needs attention", not automatically "critical".
+    root_cause_penalty = min(6, round(len(incidents or []) * 0.25))
+
+    total_penalty = min(45, normalized_penalty + severity_penalty + root_cause_penalty)
+    score = max(45, 100 - total_penalty)
+
+    # Potential score is the expected outcome after the top fixes, not a second
+    # full recalculation. Keep it optimistic but bounded.
+    potential_gain = min(18, 8 + critical + max(0, warning // 2))
+    potential_score = min(100, score + potential_gain)
 
     if score >= 90:
         grade, status = "A", "Excellent"
