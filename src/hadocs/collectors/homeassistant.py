@@ -7,8 +7,14 @@ from src.hadocs.api.client import HomeAssistantAPI
 
 def collect_all(cfg: dict, log=print) -> dict:
     api = HomeAssistantAPI(cfg["ha_url"], cfg["token"])
+    save_raw_cache = bool(cfg.get("save_raw_cache", False))
     cache = Path(cfg.get("cache_dir", "cache"))
-    cache.mkdir(exist_ok=True)
+    if save_raw_cache:
+        cache.mkdir(exist_ok=True)
+        log(
+            "WARNING: Raw Home Assistant API responses will be written to disk. "
+            "These files may contain sensitive information."
+    )
 
     data = {}
 
@@ -35,11 +41,12 @@ def collect_all(cfg: dict, log=print) -> dict:
     except Exception as exc:
         log(f"Labels skipped: {exc}")
 
-    for name, value in data.items():
-        (cache / f"{name}.json").write_text(
-            json.dumps(value, indent=2, ensure_ascii=False),
-            encoding="utf-8",
-        )
+    if save_raw_cache:
+        for name, value in data.items():
+            (cache / f"{name}.json").write_text(
+                json.dumps(value, indent=2, ensure_ascii=False),
+                encoding="utf-8",
+            )
 
     return data
 

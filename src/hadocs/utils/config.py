@@ -16,6 +16,7 @@ DEFAULT_CONFIG = {
     "project_name": "My Smart Home",
     "output_dir": "output",
     "cache_dir": "cache",
+    "save_raw_cache": False,
     "open_dashboard_after_scan": True,
 }
 
