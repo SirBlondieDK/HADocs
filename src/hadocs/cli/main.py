@@ -6,7 +6,13 @@ from pathlib import Path
 from src.hadocs.api.client import HomeAssistantAPI
 from src.hadocs.collectors.homeassistant import build_indexes, collect_all
 from src.hadocs.reports.generator import generate_all
-from src.hadocs.utils.config import config_exists, load_config, save_config, validate_config
+from src.hadocs.utils.config import (
+    config_exists,
+    load_config,
+    save_config,
+    validate_config,
+    validate_config_warnings,
+)
 from src.hadocs.utils.security import (
     gitignore_contains_required_entries,
     tracked_generated_files,
@@ -64,6 +70,10 @@ def cmd_doctor():
 
     cfg = load_config()
     problems = validate_config(cfg)
+    warnings = validate_config_warnings(cfg)
+
+    for warning in warnings:
+        print(f"WARNING: {warning}")
 
     if problems:
         ok = False
@@ -133,6 +143,10 @@ def cmd_doctor():
 def cmd_generate():
     cfg = load_config()
     problems = validate_config(cfg)
+    warnings = validate_config_warnings(cfg)
+
+    for warning in warnings:
+        print(f"WARNING: {warning}")
     if problems:
         print("Configuration problems:")
         for problem in problems:
