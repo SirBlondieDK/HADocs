@@ -1,0 +1,13 @@
+﻿services:
+  hadocs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hadocs
+    working_dir: /app
+    command: ["generate"]
+    volumes:
+      - ./docker/config:/config
+      - ./docker/output:/output
+      - ./docker/cache:/cache
+    restart: "no"
