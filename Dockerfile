@@ -1,5 +1,4 @@
-﻿@'
-FROM python:3.11-slim
+﻿FROM python:3.11-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -19,4 +18,3 @@ VOLUME ["/config", "/output", "/cache"]
 
 ENTRYPOINT ["python", "-m", "src.hadocs.cli.main"]
 CMD ["generate"]
-'@ | Set-Content -Encoding utf8NoBOM Dockerfile
