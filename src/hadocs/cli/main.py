@@ -1,5 +1,6 @@
 import argparse
 import sys
+from getpass import getpass
 from pathlib import Path
 
 from src.hadocs.api.client import HomeAssistantAPI
@@ -42,7 +43,7 @@ def cmd_init():
     print("------------")
     cfg = load_config()
     cfg["ha_url"] = input(f"Home Assistant URL [{cfg['ha_url']}]: ").strip() or cfg["ha_url"]
-    cfg["token"] = input("Long-Lived Access Token: ").strip()
+    cfg["token"] = getpass("Long-Lived Access Token: ").strip()
     cfg["project_name"] = input(f"Project name [{cfg['project_name']}]: ").strip() or cfg["project_name"]
     save_config(cfg)
     print("")
