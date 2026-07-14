@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from urllib.parse import urlparse
 
 from src.hadocs.security.credential_store import (
     inject_token_into_runtime_config,
@@ -68,6 +69,38 @@ def validate_config(config):
         problems.append("Token is missing.")
 
     return problems
+
+
+INSECURE_HTTP_WARNING = (
+    "Long-Lived Access Tokens are transmitted in plaintext over HTTP. "
+    "HTTPS is strongly recommended unless you are connecting to localhost."
+)
+
+
+def validate_config_warnings(config):
+    warnings = []
+
+    ha_url = (config.get("ha_url") or "").strip()
+    token = (config.get("token") or "").strip()
+
+    if not ha_url or not token:
+        return warnings
+
+    try:
+        parsed = urlparse(ha_url)
+    except ValueError:
+        return warnings
+
+    hostname = (parsed.hostname or "").lower()
+
+    if parsed.scheme.lower() == "http" and hostname not in {
+        "localhost",
+        "127.0.0.1",
+        "::1",
+    }:
+        warnings.append(INSECURE_HTTP_WARNING)
+
+    return warnings
 
 
 SENSITIVE_CONFIG_FILES = [
