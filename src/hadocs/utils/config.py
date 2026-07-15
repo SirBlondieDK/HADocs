@@ -45,7 +45,18 @@ def apply_environment_overrides(config):
     return result
 
 def config_exists():
-    return CONFIG_FILE.exists()
+    return bool(
+        CONFIG_FILE.exists()
+        or (
+            os.environ.get("HADOCS_HA_URL", "").strip()
+            and os.environ.get("HADOCS_TOKEN", "").strip()
+        )
+    )
+def test_config_exists_with_environment(monkeypatch):
+    monkeypatch.setenv("HADOCS_HA_URL", "http://homeassistant:8123")
+    monkeypatch.setenv("HADOCS_TOKEN", "test-token")
+
+    assert config_module.config_exists() is True
 
 
 def load_config():
