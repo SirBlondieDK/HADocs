@@ -1,20 +1,18 @@
-name: Docker
+﻿name: Docker
 
 on:
   push:
+  pull_request:
 
 jobs:
-
   docker:
-
     runs-on: ubuntu-latest
 
     steps:
-
       - uses: actions/checkout@v4
 
       - name: Build image
-        run: docker build -t hadocs:test .
+        run: docker build -f Dockerfile -t hadocs:test .
 
       - name: Test image
         run: docker run --rm hadocs:test --help
