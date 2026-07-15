@@ -44,3 +44,10 @@ HOME_ASSISTANT_ADDON = ProductVersion(
     version="0.3.0",
     channel="alpha",
 )
+
+# Backwards-compatible application metadata.
+APP_NAME = "HADocs"
+APP_DESCRIPTION = "Home Assistant Documentation & Analysis"
+
+# The current Windows application release remains the public desktop version.
+__version__ = WINDOWS.display_version
