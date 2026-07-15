@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from src.hadocs.api.client import HomeAssistantAPI
+from src.hadocs.providers import HomeAssistantProvider
 from src.hadocs.utils.config import (
     config_exists,
     load_config,
@@ -47,8 +47,8 @@ class DoctorApplication:
             print("✓ Configuration looks valid")
 
         try:
-            api = HomeAssistantAPI(cfg["ha_url"], cfg["token"])
-            api.test_connection()
+            provider = HomeAssistantProvider.from_config(cfg)
+            provider.test_connection()
             print("✓ Home Assistant API reachable")
         except Exception as exc:
             ok = False
