@@ -1,0 +1,12 @@
+services:
+  hadocs:
+    image: sirblondiedk/hadocs:dev
+    container_name: hadocs
+    env_file:
+      - ./docker/hadocs.env
+    volumes:
+      - ./docker/output:/output
+      - ./docker/cache:/cache
+      - ./docker/config:/config
+    command: ["generate"]
+    restart: "no"

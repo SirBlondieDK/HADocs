@@ -42,3 +42,7 @@ xref-*.html
 # Release packages
 HADocs-*.zip
 HADocs-*.exe
+docker/hadocs.env
+docker/output/
+docker/cache/
+docker/config/config.json

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import json
 from pathlib import Path
 from urllib.parse import urlparse
@@ -9,7 +10,9 @@ from src.hadocs.security.credential_store import (
     migrate_plaintext_token_from_config,
 )
 
-CONFIG_FILE = Path("config.json")
+CONFIG_FILE = Path(
+    os.environ.get("HADOCS_CONFIG_FILE", "config.json")
+).expanduser()
 
 DEFAULT_CONFIG = {
     "ha_url": "http://homeassistant.local:8123",
@@ -20,14 +23,47 @@ DEFAULT_CONFIG = {
     "open_dashboard_after_scan": True,
 }
 
+def apply_environment_overrides(config):
+    result = dict(config or {})
+
+    mapping = {
+        "HADOCS_HA_URL": "ha_url",
+        "HADOCS_OUTPUT_DIR": "output_dir",
+        "HADOCS_CACHE_DIR": "cache_dir",
+        "HADOCS_PROJECT_NAME": "project_name",
+    }
+
+    for environment_name, config_name in mapping.items():
+        value = os.environ.get(environment_name)
+        if value:
+            result[config_name] = value.strip()
+
+    token = os.environ.get("HADOCS_TOKEN")
+    if token:
+        result["token"] = token.strip()
+
+    return result
 
 def config_exists():
-    return CONFIG_FILE.exists()
+    return bool(
+        CONFIG_FILE.exists()
+        or (
+            os.environ.get("HADOCS_HA_URL", "").strip()
+            and os.environ.get("HADOCS_TOKEN", "").strip()
+        )
+    )
+def test_config_exists_with_environment(monkeypatch):
+    monkeypatch.setenv("HADOCS_HA_URL", "http://homeassistant:8123")
+    monkeypatch.setenv("HADOCS_TOKEN", "test-token")
+
+    assert config_module.config_exists() is True
 
 
 def load_config():
     if not CONFIG_FILE.exists():
-        return inject_token_into_runtime_config(DEFAULT_CONFIG)
+        return apply_environment_overrides(
+            inject_token_into_runtime_config(DEFAULT_CONFIG)
+)
 
     try:
         with CONFIG_FILE.open("r", encoding="utf-8") as f:
@@ -41,7 +77,9 @@ def load_config():
 
     merged = dict(DEFAULT_CONFIG)
     merged.update(clean or {})
-    return inject_token_into_runtime_config(merged)
+    return apply_environment_overrides(
+        inject_token_into_runtime_config(merged)
+)
 
 
 def save_config(config):
