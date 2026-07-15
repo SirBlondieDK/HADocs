@@ -1,8 +1,16 @@
-ARG BUILD_FROM
-FROM ${BUILD_FROM}
+FROM sirblondiedk/hadocs:dev
 
-COPY rootfs /
+ARG BUILD_VERSION
+ARG BUILD_ARCH
 
-RUN chmod a+x /etc/services.d/hadocs/run
+LABEL \
+    io.hass.version="${BUILD_VERSION}" \
+    io.hass.type="app" \
+    io.hass.arch="${BUILD_ARCH}"
 
-CMD ["/etc/services.d/hadocs/run"]
+COPY run.sh /run.sh
+
+RUN chmod a+x /run.sh
+
+ENTRYPOINT []
+CMD ["/run.sh"]
