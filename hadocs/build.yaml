@@ -1,3 +1,0 @@
-build_from:
-  amd64: sirblondiedk/hadocs:dev
-  aarch64: sirblondiedk/hadocs:dev

@@ -1,20 +1,27 @@
 name: HADocs
-version: "0.1.0"
+version: "0.1.1"
 slug: hadocs
 description: Generate local documentation and health analysis for Home Assistant
 url: https://github.com/SirBlondieDK/HADocs
-startup: application
-boot: manual
-init: false
+stage: experimental
+
+startup: once
+boot: manual_only
+
 arch:
   - amd64
   - aarch64
+
 homeassistant_api: true
+
 map:
-  - share:rw
+  - type: share
+    read_only: false
+
 options:
   project_name: My Smart Home
   output_directory: /share/hadocs
+
 schema:
   project_name: str
   output_directory: str
