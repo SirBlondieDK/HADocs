@@ -18,5 +18,3 @@ RUN pip install --no-cache-dir --upgrade pip \
 RUN mkdir -p /config /output /cache
 
 VOLUME ["/config", "/output", "/cache"]
-
-CMD ["python", "-m", "src.hadocs.cli.main", "gui"]
