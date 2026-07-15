@@ -1,18 +1,21 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
-import os
 import json
+import os
 from pathlib import Path
 from urllib.parse import urlparse
 
+from src.hadocs.runtime import RuntimeEnvironment, detect_runtime
 from src.hadocs.security.credential_store import (
     inject_token_into_runtime_config,
     migrate_plaintext_token_from_config,
 )
 
+
 CONFIG_FILE = Path(
     os.environ.get("HADOCS_CONFIG_FILE", "config.json")
 ).expanduser()
+
 
 DEFAULT_CONFIG = {
     "ha_url": "http://homeassistant.local:8123",
@@ -23,7 +26,9 @@ DEFAULT_CONFIG = {
     "open_dashboard_after_scan": True,
 }
 
-def apply_environment_overrides(config):
+
+def apply_environment_overrides(config: dict | None) -> dict:
+    """Apply optional HADOCS_* environment variables."""
     result = dict(config or {})
 
     mapping = {
@@ -44,56 +49,81 @@ def apply_environment_overrides(config):
 
     return result
 
-def config_exists():
+
+def apply_runtime_overrides(config: dict | None) -> dict:
+    """Apply values that are mandatory for the detected runtime."""
+    result = dict(config or {})
+    runtime = detect_runtime()
+
+    if runtime is RuntimeEnvironment.HOME_ASSISTANT_ADDON:
+        supervisor_token = os.environ.get("SUPERVISOR_TOKEN", "").strip()
+
+        result["ha_url"] = "http://supervisor/core"
+
+        if supervisor_token:
+            result["token"] = supervisor_token
+
+    return result
+
+
+def config_exists() -> bool:
+    """Return True when a usable configuration source is available."""
+    runtime = detect_runtime()
+
+    if runtime is RuntimeEnvironment.HOME_ASSISTANT_ADDON:
+        return bool(os.environ.get("SUPERVISOR_TOKEN", "").strip())
+
+    if CONFIG_FILE.exists():
+        return True
+
     return bool(
-        CONFIG_FILE.exists()
-        or (
-            os.environ.get("HADOCS_HA_URL", "").strip()
-            and os.environ.get("HADOCS_TOKEN", "").strip()
-        )
+        os.environ.get("HADOCS_HA_URL", "").strip()
+        and os.environ.get("HADOCS_TOKEN", "").strip()
     )
-def test_config_exists_with_environment(monkeypatch):
-    monkeypatch.setenv("HADOCS_HA_URL", "http://homeassistant:8123")
-    monkeypatch.setenv("HADOCS_TOKEN", "test-token")
-
-    assert config_module.config_exists() is True
 
 
-def load_config():
-    if not CONFIG_FILE.exists():
-        return apply_environment_overrides(
-            inject_token_into_runtime_config(DEFAULT_CONFIG)
-)
+def load_config() -> dict:
+    """Load and merge configuration for the current runtime."""
+    if CONFIG_FILE.exists():
+        try:
+            with CONFIG_FILE.open("r", encoding="utf-8") as file:
+                stored_config = json.load(file)
+        except (OSError, json.JSONDecodeError):
+            stored_config = {}
+    else:
+        stored_config = {}
 
-    try:
-        with CONFIG_FILE.open("r", encoding="utf-8") as f:
-            config = json.load(f)
-    except Exception:
-        return inject_token_into_runtime_config(DEFAULT_CONFIG)
+    clean_config = migrate_plaintext_token_from_config(stored_config or {})
 
-    clean = migrate_plaintext_token_from_config(config or {})
-    if clean != (config or {}):
-        save_config(clean)
+    if clean_config != (stored_config or {}) and CONFIG_FILE.exists():
+        save_config(clean_config)
 
     merged = dict(DEFAULT_CONFIG)
-    merged.update(clean or {})
-    return apply_environment_overrides(
-        inject_token_into_runtime_config(merged)
-)
+    merged.update(clean_config or {})
+
+    merged = inject_token_into_runtime_config(merged)
+    merged = apply_environment_overrides(merged)
+    merged = apply_runtime_overrides(merged)
+
+    return merged
 
 
-def save_config(config):
+def save_config(config: dict | None) -> None:
+    """Save non-sensitive configuration values."""
     clean = migrate_plaintext_token_from_config(config or {})
     clean = dict(clean or {})
+
     clean.pop("token", None)
     clean.pop("ha_token", None)
 
     CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
-    with CONFIG_FILE.open("w", encoding="utf-8") as f:
-        json.dump(clean, f, indent=2)
+
+    with CONFIG_FILE.open("w", encoding="utf-8") as file:
+        json.dump(clean, file, indent=2)
 
 
-def validate_config(config):
+def validate_config(config: dict) -> list[str]:
+    """Return blocking configuration problems."""
     problems = []
 
     ha_url = (config.get("ha_url") or "").strip()
@@ -102,7 +132,9 @@ def validate_config(config):
     if not ha_url:
         problems.append("Home Assistant URL is missing.")
     elif not ha_url.startswith(("http://", "https://")):
-        problems.append("Home Assistant URL must start with http:// or https://.")
+        problems.append(
+            "Home Assistant URL must start with http:// or https://."
+        )
 
     if not token:
         problems.append("Token is missing.")
@@ -116,7 +148,8 @@ INSECURE_HTTP_WARNING = (
 )
 
 
-def validate_config_warnings(config):
+def validate_config_warnings(config: dict) -> list[str]:
+    """Return non-blocking configuration warnings."""
     warnings = []
 
     ha_url = (config.get("ha_url") or "").strip()
@@ -132,11 +165,17 @@ def validate_config_warnings(config):
 
     hostname = (parsed.hostname or "").lower()
 
-    if parsed.scheme.lower() == "http" and hostname not in {
+    internal_hosts = {
         "localhost",
         "127.0.0.1",
         "::1",
-    }:
+        "supervisor",
+    }
+
+    if (
+        parsed.scheme.lower() == "http"
+        and hostname not in internal_hosts
+    ):
         warnings.append(INSECURE_HTTP_WARNING)
 
     return warnings

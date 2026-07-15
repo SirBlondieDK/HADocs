@@ -1,61 +1,47 @@
-import json
-from pathlib import Path
+﻿from __future__ import annotations
+
 from collections import defaultdict
+from typing import Callable
 
-from src.hadocs.api.client import HomeAssistantAPI
+from src.hadocs.collectors.installation import InstallationCollector
+from src.hadocs.providers import HomeAssistantProvider
 
 
-def collect_all(cfg: dict, log=print) -> dict:
-    api = HomeAssistantAPI(cfg["ha_url"], cfg["token"])
-    save_raw_cache = bool(cfg.get("save_raw_cache", False))
-    cache = Path(cfg.get("cache_dir", "cache"))
-    if save_raw_cache:
-        cache.mkdir(exist_ok=True)
-        log(
-            "WARNING: Raw Home Assistant API responses will be written to disk. "
-            "These files may contain sensitive information."
-    )
+LogFunction = Callable[[str], None]
 
-    data = {}
 
-    for name, endpoint in {
-        "states": "/api/states",
-        "config": "/api/config",
-        "services": "/api/services",
-    }.items():
-        log(f"Collecting {name}...")
-        data[name] = api.rest_get(endpoint)
+def collect_all(
+    cfg: dict,
+    log: LogFunction = print,
+    provider: HomeAssistantProvider | None = None,
+) -> dict:
+    """Compatibility wrapper for complete Home Assistant collection."""
 
-    for name, msg_type in {
-        "entities": "config/entity_registry/list",
-        "devices": "config/device_registry/list",
-        "areas": "config/area_registry/list",
-    }.items():
-        log(f"Collecting {name}...")
-        data[name] = api.ws_call(msg_type)
+    provider = provider or HomeAssistantProvider.from_config(cfg)
 
-    data["labels"] = []
-    try:
-        log("Collecting labels...")
-        data["labels"] = api.ws_call("config/label_registry/list")
-    except Exception as exc:
-        log(f"Labels skipped: {exc}")
-
-    if save_raw_cache:
-        for name, value in data.items():
-            (cache / f"{name}.json").write_text(
-                json.dumps(value, indent=2, ensure_ascii=False),
-                encoding="utf-8",
-            )
-
-    return data
+    return InstallationCollector(
+        provider=provider,
+        config=cfg,
+        log=log,
+    ).collect()
 
 
 def build_indexes(data: dict) -> dict:
+    """Build lookup indexes for collected Home Assistant data."""
+
     idx = {
-        "state_by_entity": {s["entity_id"]: s for s in data["states"]},
-        "device_by_id": {d["id"]: d for d in data["devices"]},
-        "area_by_id": {a["area_id"]: a for a in data["areas"]},
+        "state_by_entity": {
+            state["entity_id"]: state
+            for state in data["states"]
+        },
+        "device_by_id": {
+            device["id"]: device
+            for device in data["devices"]
+        },
+        "area_by_id": {
+            area["area_id"]: area
+            for area in data["areas"]
+        },
     }
 
     by_area = defaultdict(list)
@@ -63,26 +49,33 @@ def build_indexes(data: dict) -> dict:
     by_domain = defaultdict(list)
     by_platform = defaultdict(list)
 
-    for ent in data["entities"]:
-        entity_id = ent["entity_id"]
-        domain = entity_id.split(".")[0]
-        by_domain[domain].append(ent)
+    for entity in data["entities"]:
+        entity_id = entity["entity_id"]
+        domain = entity_id.split(".", maxsplit=1)[0]
 
-        platform = ent.get("platform") or "_unknown"
-        by_platform[platform].append(ent)
+        by_domain[domain].append(entity)
 
-        device_id = ent.get("device_id")
+        platform = entity.get("platform") or "_unknown"
+        by_platform[platform].append(entity)
+
+        device_id = entity.get("device_id")
         if device_id:
-            by_device[device_id].append(ent)
+            by_device[device_id].append(entity)
 
-        area_id = ent.get("area_id")
-        if not area_id and device_id and device_id in idx["device_by_id"]:
+        area_id = entity.get("area_id")
+
+        if (
+            not area_id
+            and device_id
+            and device_id in idx["device_by_id"]
+        ):
             area_id = idx["device_by_id"][device_id].get("area_id")
 
-        by_area[area_id or "_uden_område"].append(ent)
+        by_area[area_id or "_uden_område"].append(entity)
 
     idx["entities_by_area"] = by_area
     idx["entities_by_device"] = by_device
     idx["entities_by_domain"] = by_domain
     idx["entities_by_platform"] = by_platform
+
     return idx
