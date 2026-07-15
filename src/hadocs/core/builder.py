@@ -1,8 +1,13 @@
 from src.hadocs.core.classifiers import classify_device, classify_entity
-from src.hadocs.core.models import AreaModel, DeviceModel, EntityModel, HADocsModel, IntegrationModel
+from src.hadocs.core.models import (
+    AreaModel,
+    DeviceModel,
+    EntityModel,
+    InstallationModel,
+    IntegrationModel,
+)
 
-
-def build_model(data: dict, idx: dict) -> HADocsModel:
+def build_model(data: dict, idx: dict) -> InstallationModel:
     states_by_entity = idx["state_by_entity"]
 
     areas: dict[str, AreaModel] = {}
@@ -86,4 +91,14 @@ def build_model(data: dict, idx: dict) -> HADocsModel:
         for platform in {entity.platform for entity in device.entities}:
             integrations.setdefault(platform, IntegrationModel(platform=platform)).devices.append(device)
 
-    return HADocsModel(areas=areas, devices=devices, entities=entities, integrations=integrations, raw=data)
+    return InstallationModel(
+    areas=areas,
+    devices=devices,
+    entities=entities,
+    integrations=integrations,
+    config=data.get("config", {}),
+    states=data.get("states", []),
+    services=data.get("services", []),
+    labels=data.get("labels", []),
+    raw=data,
+)
