@@ -14,7 +14,13 @@ from src.hadocs.gui.output_actions import (
     open_output_folder,
 )
 from src.hadocs.reports.generator import generate_all
-from src.hadocs.utils.config import config_exists, load_config, save_config, validate_config
+from src.hadocs.utils.config import (
+    config_exists,
+    load_config,
+    save_config,
+    validate_config,
+    validate_config_warnings,
+)
 from src.hadocs.utils.security import (
     gitignore_contains_required_entries,
     tracked_generated_files,
@@ -941,6 +947,10 @@ class App(tk.Tk):
 
         cfg = self.get_cfg()
         problems = validate_config(cfg)
+        warnings = validate_config_warnings(cfg)
+
+        for warning in warnings:
+            self.log_msg(f"WARNING: {warning}")
         if problems:
             self.log_msg("Configuration problems:")
             for problem in problems:
@@ -1001,6 +1011,10 @@ class App(tk.Tk):
         try:
             cfg = self.get_cfg()
             problems = validate_config(cfg)
+            warnings = validate_config_warnings(cfg)
+
+            for warning in warnings:
+                                         self.log_msg(f"WARNING: {warning}")
             if problems:
                 for problem in problems:
                     self.log_msg(f"ERROR: {problem}")

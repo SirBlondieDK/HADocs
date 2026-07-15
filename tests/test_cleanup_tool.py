@@ -13,3 +13,12 @@ def test_cleanup_remove_dir(tmp_path):
 def test_cleanup_missing_dir(tmp_path):
     folder = tmp_path / "missing"
     assert tools_cleanup.remove_dir(folder) is False
+
+def test_cleanup_nested_dir(tmp_path):
+    folder = tmp_path / "nested"
+    (folder / "sub").mkdir(parents=True)
+    (folder / "sub" / "file.txt").write_text("hello")
+
+    assert tools_cleanup.remove_dir(folder) is True
+    assert not folder.exists()
+
