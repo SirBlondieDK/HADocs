@@ -17,6 +17,7 @@ from src.hadocs.utils.security import (
     gitignore_contains_required_entries,
     tracked_generated_files,
     tracked_sensitive_files,
+    is_git_repository,  
 )
 
 
@@ -92,37 +93,40 @@ def cmd_doctor():
         print("✗ Cannot connect to Home Assistant")
         print(f"  {exc}")
 
-    tracked = tracked_sensitive_files()
-    if tracked:
-        ok = False
-        print("✗ Sensitive files are tracked by Git:")
-        for file in tracked:
-            print(f"  - {file}")
-    else:
-        print("✓ No sensitive config files tracked by Git")
+    if is_git_repository():
+        tracked = tracked_sensitive_files()
+        if tracked:
+            ok = False
+            print("✗ Sensitive files are tracked by Git:")
+            for file in tracked:
+                print(f"  - {file}")
+        else:
+            print("✓ No sensitive config files tracked by Git")
 
-    generated = tracked_generated_files()
-    if generated:
-        ok = False
-        print("✗ Generated files are tracked by Git:")
-        for file in generated:
-            print(f"  - {file}")
-        print("  Remove with: git rm --cached <file>")
-    else:
-        print("✓ No generated output files tracked by Git")
+        generated = tracked_generated_files()
+        if generated:
+            ok = False
+            print("✗ Generated files are tracked by Git:")
+            for file in generated:
+                print(f"  - {file}")
+            print("  Remove with: git rm --cached <file>")
+        else:
+            print("✓ No generated output files tracked by Git")
 
-    gitignore_ok, missing = gitignore_contains_required_entries()
-    if not gitignore_ok:
-        ok = False
-        print("✗ .gitignore is missing recommended entries:")
-        for entry in missing:
-            print(f"  - {entry}")
+        gitignore_ok, missing = gitignore_contains_required_entries()
+        if not gitignore_ok:
+            ok = False
+            print("✗ .gitignore is missing recommended entries:")
+            for entry in missing:
+                print(f"  - {entry}")
+        else:
+            print("✓ .gitignore contains safety entries")
     else:
-        print("✓ .gitignore contains safety entries")
+        print("✓ Git repository checks skipped (running outside a Git checkout)")
 
     output_dir = Path(cfg.get("output_dir", "output"))
     try:
-        output_dir.mkdir(exist_ok=True)
+        output_dir.mkdir(parents=True, exist_ok=True)
         test_file = output_dir / ".write_test"
         test_file.write_text("ok", encoding="utf-8")
         test_file.unlink()
@@ -136,9 +140,9 @@ def cmd_doctor():
     if ok:
         print("All checks passed.")
         return 0
+
     print("Some checks failed.")
     return 1
-
 
 def cmd_generate():
     cfg = load_config()
