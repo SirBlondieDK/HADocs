@@ -1,9 +1,6 @@
 services:
   hadocs:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: hadocs:dev
+    image: sirblondiedk/hadocs:dev
     container_name: hadocs
     env_file:
       - ./docker/hadocs.env
