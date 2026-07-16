@@ -109,6 +109,10 @@ def _registry_metadata(entity: EntityModel) -> dict:
     if isinstance(registry, dict):
         return registry
 
+    return {}
+
+
+def _raw_metadata(entity: EntityModel) -> dict:
     raw = getattr(entity, "raw", None)
     if isinstance(raw, dict):
         return raw
@@ -125,21 +129,28 @@ def profile_entity(entity: EntityModel) -> EntityProfile:
 
     attributes = _state_attributes(entity)
     registry = _registry_metadata(entity)
+    raw = _raw_metadata(entity)
 
     entity_category = normalize_text(
         registry.get("entity_category")
         or attributes.get("entity_category")
+        or raw.get("entity_category")
     )
     device_class = normalize_text(
         attributes.get("device_class")
         or registry.get("device_class")
         or registry.get("original_device_class")
+        or raw.get("device_class")
+        or raw.get("original_device_class")
     )
 
     if entity.is_ignored:
         return DIAGNOSTIC_PROFILE
 
-    if normalize_text(registry.get("disabled_by")):
+    if normalize_text(
+        registry.get("disabled_by")
+        or raw.get("disabled_by")
+    ):
         return DIAGNOSTIC_PROFILE
 
     if importance in {"diagnostic", "ignored"}:

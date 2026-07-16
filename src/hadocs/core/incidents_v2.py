@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -18,12 +18,20 @@ from src.hadocs.core.state_interpreter import (
     StateMeaning,
     interpret_entity_state,
 )
+from src.hadocs.intelligence.engine import profile_entity
+from src.hadocs.intelligence.freshness import (
+    FreshnessResult,
+    FreshnessStatus,
+    determine_entity_freshness,
+)
+from src.hadocs.intelligence.profiles import ProfileKind
 
 
 @dataclass(frozen=True, slots=True)
 class EntityEvidence:
     entity: EntityModel
     interpretation: StateInterpretation
+    freshness: FreshnessResult
 
 
 @dataclass(frozen=True, slots=True)
@@ -33,6 +41,8 @@ class DeviceEvidence:
     faults: tuple[EntityEvidence, ...] = ()
     transients: tuple[EntityEvidence, ...] = ()
     expected: tuple[EntityEvidence, ...] = ()
+    stale: tuple[EntityEvidence, ...] = ()
+    very_stale: tuple[EntityEvidence, ...] = ()
 
 
 @dataclass(slots=True)
@@ -53,18 +63,33 @@ class IncidentV2:
 def collect_device_evidence(
     device: DeviceModel,
 ) -> DeviceEvidence:
-    """Collect interpreted state and reachability evidence for one device."""
+    """Collect interpreted state, freshness and reachability evidence."""
 
     faults: list[EntityEvidence] = []
     transients: list[EntityEvidence] = []
     expected: list[EntityEvidence] = []
+    stale: list[EntityEvidence] = []
+    very_stale: list[EntityEvidence] = []
 
     for entity in device.entities:
+        profile = profile_entity(entity)
         interpretation = interpret_entity_state(entity)
+        freshness = determine_entity_freshness(entity)
+
         item = EntityEvidence(
             entity=entity,
             interpretation=interpretation,
+            freshness=freshness,
         )
+
+        if (
+            profile.affects_health
+            and profile.kind is not ProfileKind.DIAGNOSTIC
+        ):
+            if freshness.status is FreshnessStatus.VERY_STALE:
+                very_stale.append(item)
+            elif freshness.status is FreshnessStatus.STALE:
+                stale.append(item)
 
         if interpretation.meaning is StateMeaning.FAULT:
             faults.append(item)
@@ -83,13 +108,15 @@ def collect_device_evidence(
         faults=tuple(faults),
         transients=tuple(transients),
         expected=tuple(expected),
+        stale=tuple(stale),
+        very_stale=tuple(very_stale),
     )
 
 
 def _severity_for_device(
     evidence: DeviceEvidence,
 ) -> str | None:
-    """Determine severity from positive fault evidence, not raw counts."""
+    """Determine severity from positive fault and freshness evidence."""
 
     reachability = evidence.reachability
 
@@ -114,22 +141,67 @@ def _severity_for_device(
     if evidence.faults:
         return "maintenance"
 
+    if evidence.very_stale:
+        return "maintenance"
+
     return None
 
 
 def _device_recommendation(
     evidence: DeviceEvidence,
 ) -> str:
+    if evidence.very_stale:
+        return (
+            "Verify whether this device is still in use. If it has been "
+            "retired, remove or disable its stale Home Assistant entities. "
+            "Otherwise restore connectivity and run HADocs again."
+        )
+
     if evidence.reachability.status is ReachabilityStatus.OFFLINE:
         return (
-            "Check device power, network or radio connectivity, "
-            "and the parent integration."
+            "Check device power, network or radio connectivity, and the "
+            "parent integration."
         )
 
     return (
-        "Check the unavailable primary entities and verify that "
-        "the device still reports through Home Assistant."
+        "Check the unavailable primary entities and verify that the device "
+        "still reports through Home Assistant."
     )
+
+
+def _freshness_evidence_lines(
+    evidence: DeviceEvidence,
+) -> list[str]:
+    lines: list[str] = []
+
+    if evidence.very_stale:
+        lines.append(
+            f"{len(evidence.very_stale)} primary entity report(s) are "
+            "very stale."
+        )
+
+    if evidence.stale:
+        lines.append(
+            f"{len(evidence.stale)} primary entity report(s) are stale."
+        )
+
+    examples = [
+        *evidence.very_stale,
+        *evidence.stale,
+    ][:5]
+
+    for item in examples:
+        age = item.freshness.age_seconds
+        if age is None:
+            continue
+
+        days = age // 86400
+        lines.append(
+            f"{item.entity.entity_id}: "
+            f"{item.freshness.status.value}, about {days} day(s) old."
+        )
+
+    return lines
 
 
 def build_device_incidents_v2(
@@ -149,14 +221,29 @@ def build_device_incidents_v2(
         if severity is None:
             continue
 
-        fault_entities = [
+        fault_entities = {
             item.entity.entity_id
             for item in evidence.faults
-        ]
+        }
+        stale_entities = {
+            item.entity.entity_id
+            for item in [
+                *evidence.very_stale,
+                *evidence.stale,
+            ]
+        }
+        affected_entity_ids = sorted(
+            fault_entities | stale_entities
+        )
 
         platforms = sorted({
             item.entity.platform
-            for item in evidence.faults
+            for item in [
+                *evidence.faults,
+                *evidence.very_stale,
+                *evidence.stale,
+            ]
+            if item.entity.platform
         })
 
         if not platforms:
@@ -169,6 +256,7 @@ def build_device_incidents_v2(
         evidence_lines = [
             evidence.reachability.reason,
             *evidence.reachability.evidence,
+            *_freshness_evidence_lines(evidence),
         ]
 
         if evidence.faults:
@@ -183,8 +271,11 @@ def build_device_incidents_v2(
                 category="physical_device",
                 severity=severity,
                 root_cause=device.name,
-                confidence=evidence.reachability.confidence,
-                affected_entities=sorted(fault_entities),
+                confidence=max(
+                    evidence.reachability.confidence,
+                    95 if evidence.very_stale else 0,
+                ),
+                affected_entities=affected_entity_ids,
                 affected_devices=[device.name],
                 affected_integrations=platforms,
                 evidence=evidence_lines,
@@ -267,8 +358,8 @@ def build_integration_incidents_v2(
                         "evidence-based incidents."
                     ),
                     (
-                        f"{len(integration.entities)} total entities "
-                        "were not used as a severity multiplier."
+                        f"{len(integration.entities)} total entities were "
+                        "not used as a severity multiplier."
                     ),
                 ],
                 recommendation=(
