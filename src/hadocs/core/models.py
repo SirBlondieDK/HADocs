@@ -17,6 +17,18 @@ class EntityModel:
     is_physical: bool
     importance: str = "normal"
     rule_reason: str = ""
+
+    # Current Home Assistant state context.
+    attributes: dict[str, Any] = field(default_factory=dict)
+    last_changed: str | None = None
+    last_updated: str | None = None
+    last_reported: str | None = None
+
+    # Entity Registry metadata and complete state payload.
+    registry: dict[str, Any] = field(default_factory=dict)
+    state_raw: dict[str, Any] = field(default_factory=dict)
+
+    # Backwards-compatible registry data.
     raw: dict[str, Any] = field(default_factory=dict)
 
 

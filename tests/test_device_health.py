@@ -137,7 +137,7 @@ def test_offline_important_device_is_prioritized():
     health = calculate_device_health(installation)
 
     assert health[0].score == 92
-    assert health[0].status == "healthy"
+    assert health[0].status == "warning"
     assert "confirmed unavailable-state faults" in health[0].reasons[0]
 
 
