@@ -24,6 +24,7 @@ from src.hadocs.core.incidents import (
     hidden_incident_count,
     visible_incidents,
 )
+from src.hadocs.core.incidents_v2 import build_incidents_v2
 from src.hadocs.core.relationships import build_relationship_graph
 from src.hadocs.exporters.csv_exporter import export_devices_csv, export_entities_csv
 from src.hadocs.utils.text import slugify, write_md
@@ -46,6 +47,12 @@ def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
     health_score, health_notes = calculate_health_score(model, device_health)
     raw_incidents = build_incidents(model, graph)
     incidents = collapse_incidents(raw_incidents)
+
+    # Run Incidents v2 in parallel while the legacy engine remains official.
+    # This allows real-world comparison without changing the dashboard,
+    # history, executive summary, or existing report contracts yet.
+    incidents_v2 = build_incidents_v2(model)
+
     executive = build_executive_summary_from_incidents(health_score, incidents)
     save_history_snapshot(cfg, model, health_score, executive, incidents=incidents, raw_incidents=raw_incidents)
     history_comparison = compare_last_two(cfg)
@@ -78,6 +85,12 @@ def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
     generate_executive_dashboard(out, project_name, model, executive, health_notes, history_comparison, trend_summary, incidents, raw_incidents, now)
     generate_root_causes(out, incidents, now)
     generate_incidents(out, incidents, raw_incidents, now)
+    generate_incidents_v2_comparison(
+        out,
+        legacy_incidents=raw_incidents,
+        incidents_v2=incidents_v2,
+        now=now,
+    )
     generate_summary(out, model, graph, health_score, health_notes, incidents, raw_incidents, now)
     generate_areas(out, model, now)
     generate_devices(out, model, now)
@@ -158,6 +171,7 @@ def generate_index(out: Path, project_name: str, *args) -> None:
         "- [12 Device Relationships](12_device_relationships.md)",
         "- [13 Integration Relationships](13_integration_relationships.md)",
         "- [17 Architecture](17_architecture.md)",
+        "- [18 Incidents v2 comparison](18_incidents_v2_comparison.md)",
         "- [CSV entities](csv/entities.csv)",
         "- [CSV devices](csv/devices.csv)",
     ]
@@ -758,6 +772,190 @@ def generate_incidents(out, incidents, raw_incidents, now):
         lines.append("")
 
     write_md(out / "02_incidents.md", lines)
+
+
+def generate_incidents_v2_comparison(
+    out,
+    legacy_incidents,
+    incidents_v2,
+    now,
+):
+    """Write a side-by-side comparison of legacy and evidence-based incidents."""
+
+    severity_order = {
+        "critical": 0,
+        "warning": 1,
+        "maintenance": 2,
+        "info": 3,
+    }
+
+    def severity_of(item):
+        return str(getattr(item, "severity", "info") or "info").lower()
+
+    def entity_ids(item):
+        return set(getattr(item, "affected_entities", []) or [])
+
+    legacy_problem_entities = {
+        entity_id
+        for incident in legacy_incidents
+        for entity_id in entity_ids(incident)
+    }
+    v2_problem_entities = {
+        entity_id
+        for incident in incidents_v2
+        for entity_id in entity_ids(incident)
+    }
+
+    suppressed_entities = sorted(
+        legacy_problem_entities - v2_problem_entities
+    )
+    newly_prioritized_entities = sorted(
+        v2_problem_entities - legacy_problem_entities
+    )
+
+    legacy_by_severity = Counter(
+        severity_of(incident)
+        for incident in legacy_incidents
+    )
+    v2_by_severity = Counter(
+        severity_of(incident)
+        for incident in incidents_v2
+    )
+
+    lines = [
+        "# 18 Incidents v2 comparison",
+        "",
+        f"Generated: {now}",
+        "",
+        "This report compares the legacy count-based incident engine with "
+        "the evidence-based Incidents v2 engine.",
+        "",
+        "Incidents v2 is comparison-only at this stage. The existing dashboard, "
+        "history, executive summary, and official Health Score still use the "
+        "legacy incident engine.",
+        "",
+        "## Summary",
+        "",
+        f"- Legacy raw incidents: `{len(legacy_incidents)}`",
+        f"- Incidents v2: `{len(incidents_v2)}`",
+        f"- Legacy affected entities: `{len(legacy_problem_entities)}`",
+        f"- V2 affected entities: `{len(v2_problem_entities)}`",
+        f"- Suppressed legacy-only entities: `{len(suppressed_entities)}`",
+        f"- Newly prioritized by v2: `{len(newly_prioritized_entities)}`",
+        "",
+        "## Severity comparison",
+        "",
+        "| Severity | Legacy | Incidents v2 |",
+        "|---|---:|---:|",
+    ]
+
+    for severity in ("critical", "warning", "maintenance", "info"):
+        lines.append(
+            f"| {severity} | "
+            f"{legacy_by_severity.get(severity, 0)} | "
+            f"{v2_by_severity.get(severity, 0)} |"
+        )
+
+    lines += [
+        "",
+        "## Evidence-based incidents",
+        "",
+    ]
+
+    if not incidents_v2:
+        lines.append("No evidence-based incidents detected.")
+        lines.append("")
+    else:
+        for incident in sorted(
+            incidents_v2,
+            key=lambda item: (
+                severity_order.get(severity_of(item), 9),
+                -int(getattr(item, "confidence", 0) or 0),
+                str(getattr(item, "root_cause", "")).lower(),
+            ),
+        ):
+            evidence = list(getattr(incident, "evidence", []) or [])
+            affected_entities = list(
+                getattr(incident, "affected_entities", []) or []
+            )
+            affected_devices = list(
+                getattr(incident, "affected_devices", []) or []
+            )
+
+            lines += [
+                f"### {getattr(incident, 'root_cause', 'Unknown root cause')}",
+                "",
+                f"- Title: {getattr(incident, 'title', '')}",
+                f"- Category: `{getattr(incident, 'category', '')}`",
+                f"- Severity: `{severity_of(incident)}`",
+                f"- Confidence: `{getattr(incident, 'confidence', 0)}%`",
+                f"- Affected entities: `{len(affected_entities)}`",
+                f"- Affected devices: `{len(affected_devices)}`",
+                f"- Integrations: `{', '.join(getattr(incident, 'affected_integrations', []) or [])}`",
+                "",
+            ]
+
+            if evidence:
+                lines += ["#### Evidence", ""]
+                for item in evidence:
+                    lines.append(f"- {item}")
+                lines.append("")
+
+            recommendation = getattr(incident, "recommendation", "")
+            if recommendation:
+                lines += [
+                    "#### Recommendation",
+                    "",
+                    recommendation,
+                    "",
+                ]
+
+            if affected_entities:
+                lines += ["#### Affected entities", ""]
+                for entity_id in affected_entities[:30]:
+                    lines.append(f"- `{entity_id}`")
+                if len(affected_entities) > 30:
+                    lines.append(
+                        f"- ...and {len(affected_entities) - 30} more"
+                    )
+                lines.append("")
+
+    lines += [
+        "## Suppressed legacy-only entities",
+        "",
+        "These entities were treated as incident symptoms by the legacy engine "
+        "but were not included by Incidents v2.",
+        "",
+    ]
+
+    if suppressed_entities:
+        for entity_id in suppressed_entities[:100]:
+            lines.append(f"- `{entity_id}`")
+        if len(suppressed_entities) > 100:
+            lines.append(
+                f"- ...and {len(suppressed_entities) - 100} more"
+            )
+    else:
+        lines.append("None.")
+
+    lines += [
+        "",
+        "## Newly prioritized by Incidents v2",
+        "",
+    ]
+
+    if newly_prioritized_entities:
+        for entity_id in newly_prioritized_entities[:100]:
+            lines.append(f"- `{entity_id}`")
+        if len(newly_prioritized_entities) > 100:
+            lines.append(
+                f"- ...and {len(newly_prioritized_entities) - 100} more"
+            )
+    else:
+        lines.append("None.")
+
+    lines.append("")
+    write_md(out / "18_incidents_v2_comparison.md", lines)
 
 
 def generate_summary(out, model, graph, health_score, health_notes, incidents, raw_incidents, now):
