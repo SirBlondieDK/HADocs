@@ -93,6 +93,54 @@ class InstallationModel:
     def get_integration(self, platform: str) -> IntegrationModel | None:
         return self.integrations.get(platform)
 
+    def area_for_entity(self, entity_id: str) -> AreaModel | None:
+        """Return the area assigned to an entity, if available."""
+        entity = self.get_entity(entity_id)
+        if entity is None or not entity.area_id:
+            return None
+
+        return self.get_area(entity.area_id)
+
+    def device_for_entity(self, entity_id: str) -> DeviceModel | None:
+        """Return the device assigned to an entity, if available."""
+        entity = self.get_entity(entity_id)
+        if entity is None or not entity.device_id:
+            return None
+
+        return self.get_device(entity.device_id)
+
+    def entities_for_platform(self, platform: str) -> list[EntityModel]:
+        """Return all entities belonging to an integration platform."""
+        integration = self.get_integration(platform)
+        if integration is None:
+            return []
+
+        return list(integration.entities)
+
+    def unavailable_entities(self) -> list[EntityModel]:
+        """Return entities whose current state is unavailable."""
+        return [
+            entity
+            for entity in self.entities.values()
+            if entity.state == "unavailable"
+        ]
+
+    def unknown_entities(self) -> list[EntityModel]:
+        """Return entities whose current state is unknown."""
+        return [
+            entity
+            for entity in self.entities.values()
+            if entity.state == "unknown"
+        ]
+
+    def physical_devices(self) -> list[DeviceModel]:
+        """Return all devices classified as physical."""
+        return [
+            device
+            for device in self.devices.values()
+            if device.is_physical
+        ]
+
 
 # Backwards-compatible alias while the rest of HADocs migrates.
 HADocsModel = InstallationModel
