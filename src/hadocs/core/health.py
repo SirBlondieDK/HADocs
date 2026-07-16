@@ -1,4 +1,8 @@
-from src.hadocs.core.models import DeviceHealth, HADocsModel
+﻿from src.hadocs.core.models import DeviceHealth, HADocsModel
+from src.hadocs.core.state_interpreter import (
+    StateMeaning,
+    interpret_entity_state,
+)
 
 
 CRITICAL_PATTERNS = [
@@ -9,6 +13,8 @@ CRITICAL_PATTERNS = [
 
 
 def calculate_device_health(model: HADocsModel) -> list[DeviceHealth]:
+    """Calculate device health using interpreted entity-state meaning."""
+
     results: list[DeviceHealth] = []
 
     for device in model.devices.values():
@@ -16,56 +22,112 @@ def calculate_device_health(model: HADocsModel) -> list[DeviceHealth]:
             continue
 
         relevant_entities = [
-            entity for entity in device.entities
-            if not entity.is_ignored and entity.is_physical and entity.importance != "diagnostic"
+            entity
+            for entity in device.entities
+            if (
+                not entity.is_ignored
+                and entity.is_physical
+                and entity.importance != "diagnostic"
+            )
         ]
 
         if not relevant_entities:
             continue
 
-        unavailable = [e for e in relevant_entities if e.state == "unavailable"]
-        unknown = [e for e in relevant_entities if e.state == "unknown"]
+        interpretations = [
+            (entity, interpret_entity_state(entity))
+            for entity in relevant_entities
+        ]
+
+        fault_entities = [
+            (entity, interpretation)
+            for entity, interpretation in interpretations
+            if interpretation.meaning is StateMeaning.FAULT
+        ]
+
+        transient_entities = [
+            (entity, interpretation)
+            for entity, interpretation in interpretations
+            if interpretation.meaning is StateMeaning.TRANSIENT
+        ]
 
         score = 100
-        reasons = []
+        reasons: list[str] = []
 
-        if unavailable:
-            important_count = sum(1 for e in unavailable if e.importance == "important")
-            normal_count = len(unavailable) - important_count
-            penalty = min(55, important_count * 10 + normal_count * 3)
+        if fault_entities:
+            penalty = min(
+                55,
+                sum(
+                    interpretation.fault_weight
+                    for _, interpretation in fault_entities
+                ),
+            )
             score -= penalty
-            reasons.append(f"{len(unavailable)} relevant entities unavailable")
+            reasons.append(
+                f"{len(fault_entities)} relevant entities have confirmed "
+                f"unavailable-state faults (-{penalty})"
+            )
 
-        if unknown:
-            important_count = sum(1 for e in unknown if e.importance == "important")
-            normal_count = len(unknown) - important_count
-            penalty = min(25, important_count * 5 + normal_count)
+        if transient_entities:
+            penalty = min(
+                5,
+                sum(
+                    interpretation.fault_weight
+                    for _, interpretation in transient_entities
+                ),
+            )
             score -= penalty
-            reasons.append(f"{len(unknown)} relevant entities unknown")
+            reasons.append(
+                f"{len(transient_entities)} relevant entities have weak "
+                f"unknown-state signals (-{penalty})"
+            )
 
-        battery_entities = [e for e in relevant_entities if "battery" in e.entity_id.lower()]
+        battery_entities = [
+            entity
+            for entity in relevant_entities
+            if "battery" in entity.entity_id.lower()
+        ]
+
         for entity in battery_entities:
             try:
                 value = float(entity.state)
                 if value <= 10:
                     score -= 12
-                    reasons.append(f"{entity.entity_id} battery critical ({value}%)")
+                    reasons.append(
+                        f"{entity.entity_id} battery critical ({value}%)"
+                    )
                 elif value <= 25:
                     score -= 4
-                    reasons.append(f"{entity.entity_id} battery low ({value}%)")
-            except Exception:
+                    reasons.append(
+                        f"{entity.entity_id} battery low ({value}%)"
+                    )
+            except (TypeError, ValueError):
                 pass
 
         score = max(0, min(100, score))
 
-        if score >= 85:
-            status = "healthy"
-        elif score >= 55:
-            status = "warning"
-        else:
-            status = "problem"
+        has_important_fault = any(
+            entity.importance == "important"
+            for entity, _ in fault_entities
+        )
 
-        results.append(DeviceHealth(device=device, status=status, score=score, reasons=reasons))
+        if len(fault_entities) >= 3 or score < 55:
+            status = "problem"
+        elif has_important_fault:
+            status = "warning"
+        elif score >= 85:
+            status = "healthy"
+        else:
+            status = "warning"
+
+        results.append(
+            DeviceHealth(
+                device=device,
+                status=status,
+                score=score,
+                reasons=reasons,
+            )
+        )
 
     return results
 
@@ -89,7 +151,7 @@ def calculate_health_score(model: HADocsModel, device_health: list[DeviceHealth]
 
     physical_without_area = [
         d for d in model.devices.values()
-        if d.is_physical and (not d.area_id or d.area_id == "_uden_område")
+        if d.is_physical and (not d.area_id or d.area_id == "_uden_omrÃ¥de")
     ]
     if physical_without_area:
         penalty = min(6, max(1, len(physical_without_area) // 10))
@@ -342,3 +404,4 @@ def apply_health_score_v2(model: Any, executive: Any, incidents: list[Any]) -> A
             pass
 
     return executive
+
