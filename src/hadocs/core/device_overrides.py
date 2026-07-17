@@ -7,6 +7,8 @@ import json
 from pathlib import Path
 from typing import Iterable, Mapping, Sequence
 
+from src.hadocs.platform import AppPaths
+
 
 OWNERSHIP_VALUES = {"unspecified", "owned", "shared", "external", "unknown"}
 POLICY_TYPES = {"normal", "power_controlled", "seasonal", "temporary", "external"}
@@ -188,6 +190,41 @@ def load_device_overrides_file(path: str | Path) -> tuple[DeviceOverride, ...]:
     return _overrides_from_sequence(raw)
 
 
+APP_PATHS = AppPaths.discover()
+
+
+def _resolve_device_overrides_file(
+    config: Mapping[str, object],
+    *,
+    base_dir: str | Path | None = None,
+) -> Path:
+    """Resolve the dedicated overrides file without breaking legacy installs."""
+    configured_path = config.get("device_overrides_file")
+
+    if configured_path:
+        file_path = Path(str(configured_path)).expanduser()
+        if file_path.is_absolute():
+            return file_path
+
+        root = Path(base_dir) if base_dir is not None else APP_PATHS.root_dir
+        return root / file_path
+
+    # Explicit base directories are primarily used by callers and tests that
+    # manage their own runtime folder. Preserve the historical filename there.
+    if base_dir is not None:
+        return Path(base_dir) / "device_overrides.json"
+
+    # Keep existing installations on the old root-level file until the
+    # migration component moves it into config/.
+    if (
+        APP_PATHS.legacy_overrides_file.exists()
+        and not APP_PATHS.overrides_file.exists()
+    ):
+        return APP_PATHS.legacy_overrides_file
+
+    return APP_PATHS.overrides_file
+
+
 def load_device_overrides(
     config: Mapping[str, object] | None,
     *,
@@ -195,11 +232,7 @@ def load_device_overrides(
 ) -> tuple[DeviceOverride, ...]:
     """Merge dedicated-file overrides with legacy inline overrides."""
     cfg = config if isinstance(config, Mapping) else {}
-    root = Path(base_dir) if base_dir is not None else Path.cwd()
-    configured_path = str(cfg.get("device_overrides_file", "device_overrides.json"))
-    file_path = Path(configured_path)
-    if not file_path.is_absolute():
-        file_path = root / file_path
+    file_path = _resolve_device_overrides_file(cfg, base_dir=base_dir)
     file_overrides = load_device_overrides_file(file_path)
     inline_overrides = _overrides_from_sequence(cfg.get("device_overrides", ()))
     return (*inline_overrides, *file_overrides)

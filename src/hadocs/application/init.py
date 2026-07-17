@@ -2,7 +2,12 @@ from __future__ import annotations
 
 from getpass import getpass
 
-from src.hadocs.utils.config import load_config, save_config
+from src.hadocs.platform import MigrationManager
+from src.hadocs.utils.config import (
+    CONFIG_FILE,
+    load_config,
+    save_config,
+)
 
 
 class InitApplication:
@@ -11,6 +16,12 @@ class InitApplication:
     def run(self) -> int:
         print("HADocs setup")
         print("------------")
+
+        migration = MigrationManager()
+        result = migration.migrate()
+
+        for message in result.messages:
+            print(f"Migration: {message}")
 
         cfg = load_config()
 
@@ -28,8 +39,8 @@ class InitApplication:
 
         save_config(cfg)
 
-        print("")
-        print("Saved config.json")
+        print()
+        print(f"Configuration saved to: {CONFIG_FILE}")
         print("Run: hadocs doctor")
 
         return 0

@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from src.hadocs.platform import AppPaths
 from src.hadocs.providers import HomeAssistantProvider
 from src.hadocs.utils.config import (
+    CONFIG_FILE,
     config_exists,
     load_config,
     validate_config,
@@ -17,6 +19,21 @@ from src.hadocs.utils.security import (
 )
 
 
+APP_PATHS = AppPaths.discover()
+
+
+def _resolve_output_dir(config: dict) -> Path:
+    """Resolve the configured output directory against the HADocs root."""
+    configured = Path(
+        str(config.get("output_dir") or APP_PATHS.output_dir)
+    ).expanduser()
+
+    if configured.is_absolute():
+        return configured
+
+    return APP_PATHS.root_dir / configured
+
+
 class DoctorApplication:
     """Run HADocs configuration, connection, and safety checks."""
 
@@ -27,7 +44,8 @@ class DoctorApplication:
         ok = True
 
         if not config_exists():
-            print("✗ config.json not found")
+            print("✗ No usable HADocs configuration found")
+            print(f"  Expected configuration: {CONFIG_FILE}")
             print("  Run: hadocs init")
             return 1
 
@@ -86,20 +104,20 @@ class DoctorApplication:
         else:
             print("✓ Git repository checks skipped (running outside a Git checkout)")
 
-        output_dir = Path(cfg.get("output_dir", "output"))
+        output_dir = _resolve_output_dir(cfg)
 
         try:
             output_dir.mkdir(parents=True, exist_ok=True)
             test_file = output_dir / ".write_test"
             test_file.write_text("ok", encoding="utf-8")
             test_file.unlink()
-            print("✓ Output folder is writable")
+            print(f"✓ Output folder is writable: {output_dir}")
         except Exception as exc:
             ok = False
-            print("✗ Output folder is not writable")
+            print(f"✗ Output folder is not writable: {output_dir}")
             print(f"  {exc}")
 
-        print("")
+        print()
 
         if ok:
             print("All checks passed.")
