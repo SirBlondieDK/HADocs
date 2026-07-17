@@ -1,19 +1,27 @@
 name: HADocs
-version: "0.1.4"
+version: "0.2.0"
 slug: hadocs
 description: Generate local documentation and health analysis for Home Assistant
 url: https://github.com/SirBlondieDK/HADocs
 stage: experimental
-init: false
 
-startup: once
-boot: manual_only
+startup: application
+boot: auto
+init: false
 
 arch:
   - amd64
   - aarch64
 
 homeassistant_api: true
+
+ingress: true
+ingress_port: 8099
+panel_icon: mdi:file-document-multiple
+panel_title: HADocs
+
+ports:
+  8099/tcp: null
 
 map:
   - type: share

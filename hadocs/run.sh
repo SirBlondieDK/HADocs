@@ -1,11 +1,12 @@
 #!/bin/sh
 set -eu
 
-echo "[HADocs] Starting Home Assistant scan"
+echo "[HADocs] Starting Home Assistant application"
 
-PROJECT_NAME="$(
+eval "$(
 python - <<'PY'
 import json
+import shlex
 from pathlib import Path
 
 path = Path("/data/options.json")
@@ -14,22 +15,11 @@ options = {}
 if path.exists():
     options = json.loads(path.read_text(encoding="utf-8"))
 
-print(options.get("project_name", "My Smart Home"))
-PY
-)"
+project_name = options.get("project_name", "My Smart Home")
+output_directory = options.get("output_directory", "/share/hadocs")
 
-OUTPUT_DIRECTORY="$(
-python - <<'PY'
-import json
-from pathlib import Path
-
-path = Path("/data/options.json")
-options = {}
-
-if path.exists():
-    options = json.loads(path.read_text(encoding="utf-8"))
-
-print(options.get("output_directory", "/share/hadocs"))
+print(f"PROJECT_NAME={shlex.quote(str(project_name))}")
+print(f"OUTPUT_DIRECTORY={shlex.quote(str(output_directory))}")
 PY
 )"
 
@@ -38,8 +28,7 @@ if [ -z "${SUPERVISOR_TOKEN:-}" ]; then
     exit 1
 fi
 
-mkdir -p "${OUTPUT_DIRECTORY}"
-mkdir -p /data/cache
+mkdir -p "${OUTPUT_DIRECTORY}" /data/cache
 
 export HADOCS_HA_URL="http://supervisor/core"
 export HADOCS_TOKEN="${SUPERVISOR_TOKEN}"
@@ -51,7 +40,14 @@ export HADOCS_CONFIG_FILE="/data/config.json"
 echo "[HADocs] Project: ${PROJECT_NAME}"
 echo "[HADocs] Output: ${OUTPUT_DIRECTORY}"
 
-python -m src.hadocs.cli.main generate
+if [ ! -f "${OUTPUT_DIRECTORY}/index.html" ]; then
+    echo "[HADocs] No existing report found; generating initial report"
+    python -m src.hadocs.cli.main generate
+else
+    echo "[HADocs] Existing report found"
+fi
 
-echo "[HADocs] Scan completed successfully"
-echo "[HADocs] Reports written to ${OUTPUT_DIRECTORY}"
+echo "[HADocs] Web interface available on port 8099"
+
+cd "${OUTPUT_DIRECTORY}"
+exec python -m http.server 8099 --bind 0.0.0.0
