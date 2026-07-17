@@ -1,5 +1,5 @@
 name: HADocs
-version: "0.1.3"
+version: "0.1.4"
 slug: hadocs
 description: Generate local documentation and health analysis for Home Assistant
 url: https://github.com/SirBlondieDK/HADocs
