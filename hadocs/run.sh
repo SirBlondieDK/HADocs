@@ -28,7 +28,7 @@ if [ -z "${SUPERVISOR_TOKEN:-}" ]; then
     exit 1
 fi
 
-mkdir -p "${OUTPUT_DIRECTORY}" /data/cache
+mkdir -p "${OUTPUT_DIRECTORY}" /data/cache /config
 
 export HADOCS_HA_URL="http://supervisor/core"
 export HADOCS_TOKEN="${SUPERVISOR_TOKEN}"
@@ -39,15 +39,6 @@ export HADOCS_CONFIG_FILE="/data/config.json"
 
 echo "[HADocs] Project: ${PROJECT_NAME}"
 echo "[HADocs] Output: ${OUTPUT_DIRECTORY}"
+echo "[HADocs] Starting web application on port 8099"
 
-if [ ! -f "${OUTPUT_DIRECTORY}/index.html" ]; then
-    echo "[HADocs] No existing report found; generating initial report"
-    python -m src.hadocs.cli.main generate
-else
-    echo "[HADocs] Existing report found"
-fi
-
-echo "[HADocs] Web interface available on port 8099"
-
-cd "${OUTPUT_DIRECTORY}"
-exec python -m http.server 8099 --bind 0.0.0.0
+exec python -m src.hadocs.web.app
