@@ -1,4 +1,4 @@
-﻿from src.hadocs.core.models import EntityModel
+from src.hadocs.core.models import EntityModel
 from src.hadocs.core.state_interpreter import (
     StateMeaning,
     interpret_entity_state,

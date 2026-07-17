@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections import defaultdict
 from dataclasses import dataclass, field
 
+from src.hadocs.core.device_overrides import DeviceOverride, get_device_policy
 from src.hadocs.core.device_reachability import (
     ReachabilityResult,
     ReachabilityStatus,
@@ -38,6 +39,9 @@ class EntityEvidence:
 class DeviceEvidence:
     device: DeviceModel
     reachability: ReachabilityResult
+    expected_offline: bool = False
+    external: bool = False
+    override_reason: str = ""
     faults: tuple[EntityEvidence, ...] = ()
     transients: tuple[EntityEvidence, ...] = ()
     expected: tuple[EntityEvidence, ...] = ()
@@ -62,8 +66,10 @@ class IncidentV2:
 
 def collect_device_evidence(
     device: DeviceModel,
+    overrides: tuple[DeviceOverride, ...] = (),
 ) -> DeviceEvidence:
     """Collect interpreted state, freshness and reachability evidence."""
+    policy = get_device_policy(device, overrides)
 
     faults: list[EntityEvidence] = []
     transients: list[EntityEvidence] = []
@@ -85,13 +91,20 @@ def collect_device_evidence(
         if (
             profile.affects_health
             and profile.kind is not ProfileKind.DIAGNOSTIC
+            and not policy.ignore_stale
+            and not policy.expected_offline
+            and policy.ownership != "external"
         ):
             if freshness.status is FreshnessStatus.VERY_STALE:
                 very_stale.append(item)
             elif freshness.status is FreshnessStatus.STALE:
                 stale.append(item)
 
-        if interpretation.meaning is StateMeaning.FAULT:
+        if (
+            interpretation.meaning is StateMeaning.FAULT
+            and not policy.expected_offline
+            and policy.ownership != "external"
+        ):
             faults.append(item)
         elif interpretation.meaning is StateMeaning.TRANSIENT:
             transients.append(item)
@@ -104,7 +117,10 @@ def collect_device_evidence(
 
     return DeviceEvidence(
         device=device,
-        reachability=determine_device_reachability(device),
+        reachability=determine_device_reachability(device, overrides),
+        expected_offline=policy.expected_offline,
+        external=policy.ownership == "external",
+        override_reason=policy.reason,
         faults=tuple(faults),
         transients=tuple(transients),
         expected=tuple(expected),
@@ -117,6 +133,11 @@ def _severity_for_device(
     evidence: DeviceEvidence,
 ) -> str | None:
     """Determine severity from positive fault and freshness evidence."""
+    if evidence.external:
+        return None
+
+    if evidence.expected_offline:
+        return "maintenance"
 
     reachability = evidence.reachability
 
@@ -140,6 +161,12 @@ def _severity_for_device(
 
     if evidence.faults:
         return "maintenance"
+
+    if evidence.expected_offline:
+        return (
+            "Device is intentionally offline by user override. "
+            "Disable the override when it should be active again."
+        )
 
     if evidence.very_stale:
         return "maintenance"
@@ -206,6 +233,7 @@ def _freshness_evidence_lines(
 
 def build_device_incidents_v2(
     model: InstallationModel,
+    overrides: tuple[DeviceOverride, ...] = (),
 ) -> list[IncidentV2]:
     """Build evidence-based device incidents."""
 
@@ -215,7 +243,7 @@ def build_device_incidents_v2(
         if not device.is_physical:
             continue
 
-        evidence = collect_device_evidence(device)
+        evidence = collect_device_evidence(device, overrides)
         severity = _severity_for_device(evidence)
 
         if severity is None:
@@ -258,6 +286,11 @@ def build_device_incidents_v2(
             *evidence.reachability.evidence,
             *_freshness_evidence_lines(evidence),
         ]
+
+        if evidence.expected_offline:
+            evidence_lines.append("User override marks this device as intentionally offline.")
+            if evidence.override_reason:
+                evidence_lines.append(f"Override reason: {evidence.override_reason}")
 
         if evidence.faults:
             evidence_lines.append(
@@ -375,10 +408,11 @@ def build_integration_incidents_v2(
 
 def build_incidents_v2(
     model: InstallationModel,
+    overrides: tuple[DeviceOverride, ...] = (),
 ) -> list[IncidentV2]:
     """Build evidence-based device and integration incidents."""
 
-    device_incidents = build_device_incidents_v2(model)
+    device_incidents = build_device_incidents_v2(model, overrides)
     integration_incidents = build_integration_incidents_v2(
         model,
         device_incidents,

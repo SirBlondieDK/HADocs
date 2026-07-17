@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
 
+from src.hadocs.core.device_overrides import DeviceOverride, get_device_policy
 from src.hadocs.core.models import DeviceModel, EntityModel
 from src.hadocs.core.state_interpreter import (
     StateMeaning,
@@ -20,6 +21,8 @@ from src.hadocs.utils.normalize import normalize_text
 class ReachabilityStatus(str, Enum):
     ONLINE = "online"
     OFFLINE = "offline"
+    EXPECTED_OFFLINE = "expected_offline"
+    EXTERNAL = "external"
     SLEEPING = "sleeping"
     UNKNOWN = "unknown"
 
@@ -33,7 +36,10 @@ class ReachabilityResult:
 
     @property
     def is_offline(self) -> bool:
-        return self.status is ReachabilityStatus.OFFLINE
+        return self.status in {
+            ReachabilityStatus.OFFLINE,
+            ReachabilityStatus.EXPECTED_OFFLINE,
+        }
 
 
 _OFFLINE_STATES = {
@@ -149,8 +155,19 @@ def _freshness_evidence(
 
 def determine_device_reachability(
     device: DeviceModel,
+    overrides: tuple[DeviceOverride, ...] = (),
 ) -> ReachabilityResult:
     """Determine device reachability from explicit and supporting evidence."""
+    policy = get_device_policy(device, overrides)
+
+    if policy.ownership == "external":
+        return ReachabilityResult(
+            status=ReachabilityStatus.EXTERNAL,
+            confidence=100,
+            reason="Device is marked as external and is not part of this installation"
+            + (f": {policy.reason}" if policy.reason else "."),
+            evidence=("ownership=external",),
+        )
 
     explicit_online: list[str] = []
     explicit_offline: list[str] = []
@@ -182,6 +199,14 @@ def determine_device_reachability(
                 explicit_online.append(evidence)
 
     if explicit_offline:
+        if policy.expected_offline:
+            return ReachabilityResult(
+                status=ReachabilityStatus.EXPECTED_OFFLINE,
+                confidence=100,
+                reason="Device is intentionally offline by user override"
+                + (f": {policy.reason}" if policy.reason else "."),
+                evidence=tuple(explicit_offline),
+            )
         return ReachabilityResult(
             status=ReachabilityStatus.OFFLINE,
             confidence=95,
@@ -237,6 +262,14 @@ def determine_device_reachability(
             for entity, _ in very_stale_entities[:5]
         )
 
+        if policy.expected_offline:
+            return ReachabilityResult(
+                status=ReachabilityStatus.EXPECTED_OFFLINE,
+                confidence=100,
+                reason="Device is intentionally offline by user override"
+                + (f": {policy.reason}" if policy.reason else "."),
+                evidence=evidence,
+            )
         return ReachabilityResult(
             status=ReachabilityStatus.OFFLINE,
             confidence=85,
@@ -273,6 +306,14 @@ def determine_device_reachability(
     if confirmed_faults and not non_faults:
         confidence = 80 if stale_entities or very_stale_entities else 65
 
+        if policy.expected_offline:
+            return ReachabilityResult(
+                status=ReachabilityStatus.EXPECTED_OFFLINE,
+                confidence=100,
+                reason="Device is intentionally offline by user override"
+                + (f": {policy.reason}" if policy.reason else "."),
+                evidence=(),
+            )
         return ReachabilityResult(
             status=ReachabilityStatus.OFFLINE,
             confidence=confidence,

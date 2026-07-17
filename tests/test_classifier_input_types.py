@@ -1,4 +1,4 @@
-﻿from src.hadocs.core.classifiers import classify_device, classify_entity
+from src.hadocs.core.classifiers import classify_device, classify_entity
 
 
 def test_classify_device_accepts_non_string_registry_values():

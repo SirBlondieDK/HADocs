@@ -1,4 +1,4 @@
-﻿from src.hadocs.core.builder import build_model
+from src.hadocs.core.builder import build_model
 
 
 def test_builder_preserves_entity_state_context():

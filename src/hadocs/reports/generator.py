@@ -24,7 +24,9 @@ from src.hadocs.core.incidents import (
     hidden_incident_count,
     visible_incidents,
 )
+from src.hadocs.core.device_overrides import load_device_overrides
 from src.hadocs.core.incidents_v2 import build_incidents_v2
+from src.hadocs.core.integration_health import calculate_integration_health
 from src.hadocs.core.relationships import build_relationship_graph
 from src.hadocs.exporters.csv_exporter import export_devices_csv, export_entities_csv
 from src.hadocs.utils.text import slugify, write_md
@@ -43,7 +45,12 @@ def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
 
     model = build_model(data, idx)
     graph = build_relationship_graph(model)
-    device_health = calculate_device_health(model)
+    device_overrides = load_device_overrides(cfg)
+    device_health = calculate_device_health(model, device_overrides)
+    integration_health = calculate_integration_health(
+        model,
+        overrides=device_overrides,
+    )
     health_score, health_notes = calculate_health_score(model, device_health)
     raw_incidents = build_incidents(model, graph)
     incidents = collapse_incidents(raw_incidents)
@@ -51,7 +58,7 @@ def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
     # Run Incidents v2 in parallel while the legacy engine remains official.
     # This allows real-world comparison without changing the dashboard,
     # history, executive summary, or existing report contracts yet.
-    incidents_v2 = build_incidents_v2(model)
+    incidents_v2 = build_incidents_v2(model, device_overrides)
 
     executive = build_executive_summary_from_incidents(health_score, incidents)
     save_history_snapshot(cfg, model, health_score, executive, incidents=incidents, raw_incidents=raw_incidents)
@@ -93,8 +100,8 @@ def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
     )
     generate_summary(out, model, graph, health_score, health_notes, incidents, raw_incidents, now)
     generate_areas(out, model, now)
-    generate_devices(out, model, now)
-    generate_integrations(out, model, graph, now)
+    generate_devices(out, model, device_overrides, now)
+    generate_integrations(out, integration_health, now)
     generate_device_health(out, device_health, now)
     generate_maintenance(out, executive, incidents, now)
     generate_problems(out, model, now)
@@ -1006,50 +1013,215 @@ def generate_areas(out, model, now):
     write_md(area_dir / "index.md", index)
 
 
-def generate_devices(out, model, now):
+def generate_devices(out, model, device_overrides, now):
+    """Generate complete per-device reports with override metadata."""
+    from src.hadocs.core.device_overrides import get_device_policy
+    from src.hadocs.core.device_reachability import determine_device_reachability
+
     dev_dir = out / "05_devices"
     index = ["# 05 Devices", "", f"Generated: {now}", ""]
-    for device in sorted(model.devices.values(), key=lambda d: (d.classification, d.name)):
+
+    for device in sorted(model.devices.values(), key=lambda item: (item.classification, item.name)):
         filename = f"{slugify(device.classification)}__{slugify(device.name)}.md"
-        index.append(f"- [{device.name}]({filename}) — `{device.classification}`")
+        policy = get_device_policy(device, device_overrides)
+        reachability = determine_device_reachability(device, device_overrides)
+        platforms = sorted({entity.platform for entity in device.entities if entity.platform})
+        override_label = (
+            "External device" if policy.ownership == "external" else
+            "Expected offline" if policy.expected_offline else
+            "Active override" if policy.matched else
+            "None"
+        )
+        index.append(
+            f"- [{device.name}]({filename}) — `{device.classification}` — "
+            f"`{reachability.status.value}`"
+        )
         lines = [
             f"# {device.name}", "", f"Generated: {now}", "",
+            "## Metadata", "",
+            f"- Device ID: `{device.device_id}`",
             f"- Classification: `{device.classification}`",
             f"- Area ID: `{device.area_id}`",
             f"- Manufacturer: `{device.manufacturer}`",
             f"- Model: `{device.model}`",
+            f"- Software version: `{device.sw_version}`",
+            f"- Hardware version: `{device.hw_version}`",
+            f"- Platforms: `{', '.join(platforms) or 'unknown'}`",
             f"- Entity count: `{len(device.entities)}`",
-            "", "## Entities", "",
+            "", "## Analysis", "",
+            f"- Reachability: `{reachability.status.value}`",
+            f"- Reachability confidence: `{reachability.confidence}%`",
+            f"- Reachability reason: {reachability.reason}",
+            f"- Ownership: `{policy.ownership}`",
+            f"- Health impact: `{'none' if policy.ownership == 'external' else 'normal'}`",
+            f"- Override: `{override_label}`",
         ]
-        for entity in sorted(device.entities, key=lambda e: e.entity_id):
-            lines.append(f"- `{entity.entity_id}` — `{entity.state}` — `{entity.importance}` — {entity.rule_reason}")
+        if policy.matched:
+            lines += [
+                f"- Override match: `{policy.match_source}`",
+                f"- Ownership: `{policy.ownership}`",
+                f"- Purpose: `{policy.purpose}`",
+                f"- Policy type: `{policy.policy_type}`",
+                f"- Expected offline now: `{policy.expected_offline}`",
+                f"- Active months: `{', '.join(str(month) for month in policy.active_months) or 'not configured'}`",
+                f"- In active season: `{policy.in_active_season if policy.in_active_season is not None else 'not applicable'}`",
+                f"- Ignore battery: `{policy.ignore_battery}`",
+                f"- Ignore stale: `{policy.ignore_stale}`",
+                f"- Override reason: {policy.reason or 'No reason supplied.'}",
+            ]
+        else:
+            discovery_platforms = {
+                "bluetooth", "ibeacon", "bluetooth_le_tracker",
+                "esphome", "private_ble_device",
+            }
+            is_discovery_candidate = bool(
+                {platform.lower() for platform in platforms} & discovery_platforms
+            )
+            if is_discovery_candidate:
+                lines += [
+                    "", "## Ownership review recommended", "",
+                    "This device was observed through a discovery-oriented "
+                    "Bluetooth/presence integration. It may belong to a "
+                    "visitor, neighbour or passing vehicle rather than this home.",
+                    "",
+                    "Mark it as `owned`, `shared`, `external`, or `unknown` "
+                    "in `device_overrides.json`.",
+                    "", "```json", "{",
+                    f'  "device_id": "{device.device_id}",',
+                    '  "policy": {',
+                    '    "ownership": "external",',
+                    '    "purpose": "presence",',
+                    '    "type": "external"',
+                    '  },',
+                    '  "reason": "Observed over Bluetooth but not owned by this household"',
+                    "}", "```",
+                ]
+            else:
+                lines += [
+                    "", "## Example override", "",
+                    "Copy this object into the `devices` list in `device_overrides.json`:",
+                    "", "```json", "{",
+                    f'  "device_id": "{device.device_id}",',
+                    '  "policy": {',
+                    '    "ownership": "owned",',
+                    '    "purpose": "automation",',
+                    '    "type": "power_controlled",',
+                    '    "ignore_stale": true',
+                    '  },',
+                    '  "reason": "Explain why physical power control makes offline normal"',
+                    "}", "```",
+                ]
+        lines += ["", "## Entities", ""]
+        for entity in sorted(device.entities, key=lambda item: item.entity_id):
+            lines.append(
+                f"- `{entity.entity_id}` — `{entity.state}` — "
+                f"`{entity.importance}` — {entity.rule_reason}"
+            )
         write_md(dev_dir / filename, lines)
     write_md(dev_dir / "index.md", index)
 
+def generate_integrations(out, integration_health, now):
+    """Render evidence-based integration health without recalculating it."""
 
-def generate_integrations(out, model, graph, now):
-    integrations = []
-    for integration in model.integrations.values():
-        rel = graph.integrations.get(integration.platform)
-        bad = rel.problem_entities if rel else []
-        important = [e for e in integration.entities if e.importance == "important"]
-        score = 100 if not important else max(0, 100 - min(60, len(bad) * 5))
-        integrations.append((score, integration, rel, bad, important))
+    lines = [
+        "# 06 Integrations",
+        "",
+        f"Generated: {now}",
+        "",
+        "Integration health is calculated from device reachability, state "
+        "freshness and explicit fault evidence. Raw unknown/unavailable entity "
+        "counts are not used as a severity multiplier.",
+        "",
+    ]
 
-    lines = ["# 06 Integrations", "", f"Generated: {now}", ""]
-    for score, integration, rel, bad, important in sorted(integrations, key=lambda x: x[0]):
-        diagnostic = [e for e in integration.entities if e.importance == "diagnostic"]
-        ignored = [e for e in integration.entities if e.is_ignored]
+    if not integration_health:
         lines += [
-            f"## {integration.platform}", "",
-            f"- Health: `{score}/100`",
-            f"- Entities: `{len(integration.entities)}`",
-            f"- Devices: `{len(integration.devices)}`",
-            f"- Important: `{len(important)}`",
-            f"- Diagnostic: `{len(diagnostic)}`",
-            f"- Ignored: `{len(ignored)}`",
-            f"- Relevant unknown/unavailable: `{len(bad)}`", "",
+            "No integrations were available for health analysis.",
+            "",
         ]
+
+    for item in integration_health:
+        status = getattr(item.status, "value", str(item.status))
+
+        lines += [
+            f"## {item.platform}",
+            "",
+            f"- Health: `{item.score}/100`",
+            f"- Status: `{status}`",
+            f"- Entities: `{item.total_entities}`",
+            f"- Devices: `{item.total_devices}`",
+            f"- Physical devices: `{item.physical_devices}`",
+            "",
+            "### Reachability",
+            "",
+            f"- Online: `{item.online_devices}`",
+            f"- Offline: `{item.offline_devices}`",
+            f"- Sleeping: `{item.sleeping_devices}`",
+            f"- Unknown: `{item.unknown_devices}`",
+            f"- Expected offline: `{item.expected_offline_devices}`",
+            f"- External / not owned: `{item.external_devices}`",
+            "",
+            "### Freshness",
+            "",
+            f"- Fresh: `{item.fresh_devices}`",
+            f"- Aging: `{item.aging_devices}`",
+            f"- Stale: `{item.stale_devices}`",
+            f"- Very stale: `{item.very_stale_devices}`",
+            f"- Unknown freshness: `{item.unknown_freshness_devices}`",
+            "",
+            "### Evidence",
+            "",
+        ]
+
+        for reason in item.reasons:
+            lines.append(f"- {reason}")
+
+        if not item.reasons:
+            lines.append("- No evidence details were supplied.")
+
+        if item.external_device_names:
+            lines += [
+                "",
+                "### External discovered devices (no health impact)",
+                "",
+            ]
+            for name in item.external_device_names:
+                lines.append(f"- {name}")
+
+        if item.explicit_offline_devices:
+            lines += [
+                "",
+                "### Explicitly offline devices",
+                "",
+            ]
+            for device_name in item.explicit_offline_devices:
+                lines.append(f"- `{device_name}`")
+
+        if item.intentionally_offline_devices:
+            lines += ["", "### Intentionally offline devices", ""]
+            for device_name in item.intentionally_offline_devices:
+                lines.append(f"- `{device_name}`")
+
+        if item.probable_offline_devices:
+            lines += [
+                "",
+                "### Probably offline devices",
+                "",
+            ]
+            for device_name in item.probable_offline_devices:
+                lines.append(f"- `{device_name}`")
+
+        if item.stale_device_names:
+            lines += [
+                "",
+                "### Stale-device maintenance",
+                "",
+            ]
+            for device_name in item.stale_device_names:
+                lines.append(f"- `{device_name}`")
+
+        lines.append("")
+
     write_md(out / "06_integrations.md", lines)
 
 

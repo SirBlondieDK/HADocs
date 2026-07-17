@@ -1,4 +1,4 @@
-﻿from src.hadocs.core.device_reachability import (
+from src.hadocs.core.device_reachability import (
     ReachabilityStatus,
     determine_device_reachability,
 )

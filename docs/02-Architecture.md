@@ -1,4 +1,4 @@
-﻿# HADocs Architecture
+# HADocs Architecture
 
 ## Overview
 

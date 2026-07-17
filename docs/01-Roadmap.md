@@ -1,4 +1,4 @@
-﻿# HADocs Roadmap
+# HADocs Roadmap
 
 This roadmap describes the agreed development direction for HADocs.
 

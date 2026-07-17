@@ -1,4 +1,4 @@
-﻿from src.hadocs.core.models import (
+from src.hadocs.core.models import (
     AreaModel,
     DeviceModel,
     EntityModel,

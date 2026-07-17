@@ -1,4 +1,4 @@
-﻿from src.hadocs.version import (
+from src.hadocs.version import (
     APP_DESCRIPTION,
     APP_NAME,
     CORE,

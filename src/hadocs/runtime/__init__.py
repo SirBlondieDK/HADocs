@@ -1,4 +1,4 @@
-﻿from src.hadocs.runtime.detector import (
+from src.hadocs.runtime.detector import (
     detect_runtime,
     is_container,
     is_home_assistant_addon,

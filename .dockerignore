@@ -1,4 +1,4 @@
-﻿.git
+.git
 .github
 .pytest_cache
 .pytest_tmp
@@ -16,3 +16,20 @@ docs
 *.zip
 config.json
 .env
+
+.git
+.github
+.vscode
+.idea
+
+build
+dist
+output
+cache
+logs
+
+tests
+
+config/config.json
+config/device_overrides.json
+config/device_overrides.local.json

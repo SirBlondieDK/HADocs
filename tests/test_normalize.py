@@ -1,4 +1,4 @@
-﻿from src.hadocs.utils.normalize import (
+from src.hadocs.utils.normalize import (
     normalize_bool,
     normalize_dict,
     normalize_list,

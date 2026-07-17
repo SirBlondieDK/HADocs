@@ -1,4 +1,5 @@
-﻿from src.hadocs.core.models import DeviceHealth, HADocsModel
+from src.hadocs.core.device_overrides import DeviceOverride, get_device_policy
+from src.hadocs.core.models import DeviceHealth, HADocsModel
 from src.hadocs.core.state_interpreter import (
     StateMeaning,
     interpret_entity_state,
@@ -12,13 +13,23 @@ CRITICAL_PATTERNS = [
 ]
 
 
-def calculate_device_health(model: HADocsModel) -> list[DeviceHealth]:
+def calculate_device_health(
+    model: HADocsModel,
+    overrides: tuple[DeviceOverride, ...] = (),
+) -> list[DeviceHealth]:
     """Calculate device health using interpreted entity-state meaning."""
 
     results: list[DeviceHealth] = []
 
     for device in model.devices.values():
         if not device.is_physical:
+            continue
+
+        policy = get_device_policy(device, overrides)
+
+        # External/discovered devices remain documented but must not affect
+        # installation health.
+        if policy.ownership == "external":
             continue
 
         relevant_entities = [
@@ -44,6 +55,9 @@ def calculate_device_health(model: HADocsModel) -> list[DeviceHealth]:
             for entity, interpretation in interpretations
             if interpretation.meaning is StateMeaning.FAULT
         ]
+
+        if policy.expected_offline:
+            fault_entities = []
 
         transient_entities = [
             (entity, interpretation)
@@ -82,7 +96,7 @@ def calculate_device_health(model: HADocsModel) -> list[DeviceHealth]:
                 f"unknown-state signals (-{penalty})"
             )
 
-        battery_entities = [
+        battery_entities = [] if policy.ignore_battery else [
             entity
             for entity in relevant_entities
             if "battery" in entity.entity_id.lower()
@@ -103,6 +117,12 @@ def calculate_device_health(model: HADocsModel) -> list[DeviceHealth]:
                     )
             except (TypeError, ValueError):
                 pass
+
+        if policy.expected_offline:
+            reasons.append(
+                "Device is intentionally offline by user override"
+                + (f": {policy.reason}" if policy.reason else ".")
+            )
 
         score = max(0, min(100, score))
 
