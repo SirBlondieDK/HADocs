@@ -1,4 +1,4 @@
-﻿from src.hadocs.collectors.areas import AreasCollector
+from src.hadocs.collectors.areas import AreasCollector
 from src.hadocs.collectors.config import ConfigCollector
 from src.hadocs.collectors.devices import DevicesCollector
 from src.hadocs.collectors.entities import EntitiesCollector

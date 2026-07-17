@@ -1,0 +1,34 @@
+{
+  "version": 2,
+  "devices": [
+    {
+      "device_id": "EXTERNAL_BLUETOOTH_DEVICE_ID",
+      "policy": {
+        "ownership": "external",
+        "purpose": "presence",
+        "type": "external"
+      },
+      "reason": "Bluetooth device observed nearby but not owned by this household"
+    },
+    {
+      "device_id": "POWER_CONTROLLED_LIGHT_ID",
+      "policy": {
+        "ownership": "owned",
+        "purpose": "automation",
+        "type": "power_controlled",
+        "ignore_stale": true
+      },
+      "reason": "Mains power is physically switched, so offline is expected"
+    },
+    {
+      "device_id": "SEASONAL_POOL_ID",
+      "policy": {
+        "ownership": "owned",
+        "purpose": "seasonal",
+        "type": "seasonal",
+        "active_months": [5, 6, 7, 8, 9]
+      },
+      "reason": "Pool equipment is normally active only during the summer season"
+    }
+  ]
+}

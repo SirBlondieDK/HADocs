@@ -1,4 +1,4 @@
-﻿# HADocs Vision
+# HADocs Vision
 
 HADocs is a documentation and analysis platform for Home Assistant installations.
 

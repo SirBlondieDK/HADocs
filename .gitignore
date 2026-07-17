@@ -46,3 +46,23 @@ docker/hadocs.env
 docker/output/
 docker/cache/
 docker/config/config.json
+
+# Runtime
+cache/
+output/
+logs/
+
+# User configuration
+config/config.json
+config/device_overrides.json
+config/device_overrides.local.json
+
+# Legacy 
+config.json
+device_overrides.json
+device_overrides.local.json
+
+# Build
+build/
+dist/
+*.zip

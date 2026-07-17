@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from src.hadocs.collectors.homeassistant import build_indexes, collect_all
 from src.hadocs.reports.generator import generate_all

@@ -24,6 +24,9 @@ from src.hadocs.core.incidents import (
     hidden_incident_count,
     visible_incidents,
 )
+from src.hadocs.core.device_overrides import load_device_overrides
+from src.hadocs.core.incidents_v2 import build_incidents_v2
+from src.hadocs.core.integration_health import calculate_integration_health
 from src.hadocs.core.relationships import build_relationship_graph
 from src.hadocs.exporters.csv_exporter import export_devices_csv, export_entities_csv
 from src.hadocs.utils.text import slugify, write_md
@@ -42,10 +45,21 @@ def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
 
     model = build_model(data, idx)
     graph = build_relationship_graph(model)
-    device_health = calculate_device_health(model)
+    device_overrides = load_device_overrides(cfg)
+    device_health = calculate_device_health(model, device_overrides)
+    integration_health = calculate_integration_health(
+        model,
+        overrides=device_overrides,
+    )
     health_score, health_notes = calculate_health_score(model, device_health)
     raw_incidents = build_incidents(model, graph)
     incidents = collapse_incidents(raw_incidents)
+
+    # Run Incidents v2 in parallel while the legacy engine remains official.
+    # This allows real-world comparison without changing the dashboard,
+    # history, executive summary, or existing report contracts yet.
+    incidents_v2 = build_incidents_v2(model, device_overrides)
+
     executive = build_executive_summary_from_incidents(health_score, incidents)
     save_history_snapshot(cfg, model, health_score, executive, incidents=incidents, raw_incidents=raw_incidents)
     history_comparison = compare_last_two(cfg)
@@ -78,10 +92,16 @@ def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
     generate_executive_dashboard(out, project_name, model, executive, health_notes, history_comparison, trend_summary, incidents, raw_incidents, now)
     generate_root_causes(out, incidents, now)
     generate_incidents(out, incidents, raw_incidents, now)
+    generate_incidents_v2_comparison(
+        out,
+        legacy_incidents=raw_incidents,
+        incidents_v2=incidents_v2,
+        now=now,
+    )
     generate_summary(out, model, graph, health_score, health_notes, incidents, raw_incidents, now)
     generate_areas(out, model, now)
-    generate_devices(out, model, now)
-    generate_integrations(out, model, graph, now)
+    generate_devices(out, model, device_overrides, now)
+    generate_integrations(out, integration_health, now)
     generate_device_health(out, device_health, now)
     generate_maintenance(out, executive, incidents, now)
     generate_problems(out, model, now)
@@ -158,6 +178,7 @@ def generate_index(out: Path, project_name: str, *args) -> None:
         "- [12 Device Relationships](12_device_relationships.md)",
         "- [13 Integration Relationships](13_integration_relationships.md)",
         "- [17 Architecture](17_architecture.md)",
+        "- [18 Incidents v2 comparison](18_incidents_v2_comparison.md)",
         "- [CSV entities](csv/entities.csv)",
         "- [CSV devices](csv/devices.csv)",
     ]
@@ -760,6 +781,190 @@ def generate_incidents(out, incidents, raw_incidents, now):
     write_md(out / "02_incidents.md", lines)
 
 
+def generate_incidents_v2_comparison(
+    out,
+    legacy_incidents,
+    incidents_v2,
+    now,
+):
+    """Write a side-by-side comparison of legacy and evidence-based incidents."""
+
+    severity_order = {
+        "critical": 0,
+        "warning": 1,
+        "maintenance": 2,
+        "info": 3,
+    }
+
+    def severity_of(item):
+        return str(getattr(item, "severity", "info") or "info").lower()
+
+    def entity_ids(item):
+        return set(getattr(item, "affected_entities", []) or [])
+
+    legacy_problem_entities = {
+        entity_id
+        for incident in legacy_incidents
+        for entity_id in entity_ids(incident)
+    }
+    v2_problem_entities = {
+        entity_id
+        for incident in incidents_v2
+        for entity_id in entity_ids(incident)
+    }
+
+    suppressed_entities = sorted(
+        legacy_problem_entities - v2_problem_entities
+    )
+    newly_prioritized_entities = sorted(
+        v2_problem_entities - legacy_problem_entities
+    )
+
+    legacy_by_severity = Counter(
+        severity_of(incident)
+        for incident in legacy_incidents
+    )
+    v2_by_severity = Counter(
+        severity_of(incident)
+        for incident in incidents_v2
+    )
+
+    lines = [
+        "# 18 Incidents v2 comparison",
+        "",
+        f"Generated: {now}",
+        "",
+        "This report compares the legacy count-based incident engine with "
+        "the evidence-based Incidents v2 engine.",
+        "",
+        "Incidents v2 is comparison-only at this stage. The existing dashboard, "
+        "history, executive summary, and official Health Score still use the "
+        "legacy incident engine.",
+        "",
+        "## Summary",
+        "",
+        f"- Legacy raw incidents: `{len(legacy_incidents)}`",
+        f"- Incidents v2: `{len(incidents_v2)}`",
+        f"- Legacy affected entities: `{len(legacy_problem_entities)}`",
+        f"- V2 affected entities: `{len(v2_problem_entities)}`",
+        f"- Suppressed legacy-only entities: `{len(suppressed_entities)}`",
+        f"- Newly prioritized by v2: `{len(newly_prioritized_entities)}`",
+        "",
+        "## Severity comparison",
+        "",
+        "| Severity | Legacy | Incidents v2 |",
+        "|---|---:|---:|",
+    ]
+
+    for severity in ("critical", "warning", "maintenance", "info"):
+        lines.append(
+            f"| {severity} | "
+            f"{legacy_by_severity.get(severity, 0)} | "
+            f"{v2_by_severity.get(severity, 0)} |"
+        )
+
+    lines += [
+        "",
+        "## Evidence-based incidents",
+        "",
+    ]
+
+    if not incidents_v2:
+        lines.append("No evidence-based incidents detected.")
+        lines.append("")
+    else:
+        for incident in sorted(
+            incidents_v2,
+            key=lambda item: (
+                severity_order.get(severity_of(item), 9),
+                -int(getattr(item, "confidence", 0) or 0),
+                str(getattr(item, "root_cause", "")).lower(),
+            ),
+        ):
+            evidence = list(getattr(incident, "evidence", []) or [])
+            affected_entities = list(
+                getattr(incident, "affected_entities", []) or []
+            )
+            affected_devices = list(
+                getattr(incident, "affected_devices", []) or []
+            )
+
+            lines += [
+                f"### {getattr(incident, 'root_cause', 'Unknown root cause')}",
+                "",
+                f"- Title: {getattr(incident, 'title', '')}",
+                f"- Category: `{getattr(incident, 'category', '')}`",
+                f"- Severity: `{severity_of(incident)}`",
+                f"- Confidence: `{getattr(incident, 'confidence', 0)}%`",
+                f"- Affected entities: `{len(affected_entities)}`",
+                f"- Affected devices: `{len(affected_devices)}`",
+                f"- Integrations: `{', '.join(getattr(incident, 'affected_integrations', []) or [])}`",
+                "",
+            ]
+
+            if evidence:
+                lines += ["#### Evidence", ""]
+                for item in evidence:
+                    lines.append(f"- {item}")
+                lines.append("")
+
+            recommendation = getattr(incident, "recommendation", "")
+            if recommendation:
+                lines += [
+                    "#### Recommendation",
+                    "",
+                    recommendation,
+                    "",
+                ]
+
+            if affected_entities:
+                lines += ["#### Affected entities", ""]
+                for entity_id in affected_entities[:30]:
+                    lines.append(f"- `{entity_id}`")
+                if len(affected_entities) > 30:
+                    lines.append(
+                        f"- ...and {len(affected_entities) - 30} more"
+                    )
+                lines.append("")
+
+    lines += [
+        "## Suppressed legacy-only entities",
+        "",
+        "These entities were treated as incident symptoms by the legacy engine "
+        "but were not included by Incidents v2.",
+        "",
+    ]
+
+    if suppressed_entities:
+        for entity_id in suppressed_entities[:100]:
+            lines.append(f"- `{entity_id}`")
+        if len(suppressed_entities) > 100:
+            lines.append(
+                f"- ...and {len(suppressed_entities) - 100} more"
+            )
+    else:
+        lines.append("None.")
+
+    lines += [
+        "",
+        "## Newly prioritized by Incidents v2",
+        "",
+    ]
+
+    if newly_prioritized_entities:
+        for entity_id in newly_prioritized_entities[:100]:
+            lines.append(f"- `{entity_id}`")
+        if len(newly_prioritized_entities) > 100:
+            lines.append(
+                f"- ...and {len(newly_prioritized_entities) - 100} more"
+            )
+    else:
+        lines.append("None.")
+
+    lines.append("")
+    write_md(out / "18_incidents_v2_comparison.md", lines)
+
+
 def generate_summary(out, model, graph, health_score, health_notes, incidents, raw_incidents, now):
     physical_devices = [d for d in model.devices.values() if d.is_physical]
     ignored_entities = [e for e in model.entities.values() if e.is_ignored]
@@ -808,50 +1013,215 @@ def generate_areas(out, model, now):
     write_md(area_dir / "index.md", index)
 
 
-def generate_devices(out, model, now):
+def generate_devices(out, model, device_overrides, now):
+    """Generate complete per-device reports with override metadata."""
+    from src.hadocs.core.device_overrides import get_device_policy
+    from src.hadocs.core.device_reachability import determine_device_reachability
+
     dev_dir = out / "05_devices"
     index = ["# 05 Devices", "", f"Generated: {now}", ""]
-    for device in sorted(model.devices.values(), key=lambda d: (d.classification, d.name)):
+
+    for device in sorted(model.devices.values(), key=lambda item: (item.classification, item.name)):
         filename = f"{slugify(device.classification)}__{slugify(device.name)}.md"
-        index.append(f"- [{device.name}]({filename}) — `{device.classification}`")
+        policy = get_device_policy(device, device_overrides)
+        reachability = determine_device_reachability(device, device_overrides)
+        platforms = sorted({entity.platform for entity in device.entities if entity.platform})
+        override_label = (
+            "External device" if policy.ownership == "external" else
+            "Expected offline" if policy.expected_offline else
+            "Active override" if policy.matched else
+            "None"
+        )
+        index.append(
+            f"- [{device.name}]({filename}) — `{device.classification}` — "
+            f"`{reachability.status.value}`"
+        )
         lines = [
             f"# {device.name}", "", f"Generated: {now}", "",
+            "## Metadata", "",
+            f"- Device ID: `{device.device_id}`",
             f"- Classification: `{device.classification}`",
             f"- Area ID: `{device.area_id}`",
             f"- Manufacturer: `{device.manufacturer}`",
             f"- Model: `{device.model}`",
+            f"- Software version: `{device.sw_version}`",
+            f"- Hardware version: `{device.hw_version}`",
+            f"- Platforms: `{', '.join(platforms) or 'unknown'}`",
             f"- Entity count: `{len(device.entities)}`",
-            "", "## Entities", "",
+            "", "## Analysis", "",
+            f"- Reachability: `{reachability.status.value}`",
+            f"- Reachability confidence: `{reachability.confidence}%`",
+            f"- Reachability reason: {reachability.reason}",
+            f"- Ownership: `{policy.ownership}`",
+            f"- Health impact: `{'none' if policy.ownership == 'external' else 'normal'}`",
+            f"- Override: `{override_label}`",
         ]
-        for entity in sorted(device.entities, key=lambda e: e.entity_id):
-            lines.append(f"- `{entity.entity_id}` — `{entity.state}` — `{entity.importance}` — {entity.rule_reason}")
+        if policy.matched:
+            lines += [
+                f"- Override match: `{policy.match_source}`",
+                f"- Ownership: `{policy.ownership}`",
+                f"- Purpose: `{policy.purpose}`",
+                f"- Policy type: `{policy.policy_type}`",
+                f"- Expected offline now: `{policy.expected_offline}`",
+                f"- Active months: `{', '.join(str(month) for month in policy.active_months) or 'not configured'}`",
+                f"- In active season: `{policy.in_active_season if policy.in_active_season is not None else 'not applicable'}`",
+                f"- Ignore battery: `{policy.ignore_battery}`",
+                f"- Ignore stale: `{policy.ignore_stale}`",
+                f"- Override reason: {policy.reason or 'No reason supplied.'}",
+            ]
+        else:
+            discovery_platforms = {
+                "bluetooth", "ibeacon", "bluetooth_le_tracker",
+                "esphome", "private_ble_device",
+            }
+            is_discovery_candidate = bool(
+                {platform.lower() for platform in platforms} & discovery_platforms
+            )
+            if is_discovery_candidate:
+                lines += [
+                    "", "## Ownership review recommended", "",
+                    "This device was observed through a discovery-oriented "
+                    "Bluetooth/presence integration. It may belong to a "
+                    "visitor, neighbour or passing vehicle rather than this home.",
+                    "",
+                    "Mark it as `owned`, `shared`, `external`, or `unknown` "
+                    "in `device_overrides.json`.",
+                    "", "```json", "{",
+                    f'  "device_id": "{device.device_id}",',
+                    '  "policy": {',
+                    '    "ownership": "external",',
+                    '    "purpose": "presence",',
+                    '    "type": "external"',
+                    '  },',
+                    '  "reason": "Observed over Bluetooth but not owned by this household"',
+                    "}", "```",
+                ]
+            else:
+                lines += [
+                    "", "## Example override", "",
+                    "Copy this object into the `devices` list in `device_overrides.json`:",
+                    "", "```json", "{",
+                    f'  "device_id": "{device.device_id}",',
+                    '  "policy": {',
+                    '    "ownership": "owned",',
+                    '    "purpose": "automation",',
+                    '    "type": "power_controlled",',
+                    '    "ignore_stale": true',
+                    '  },',
+                    '  "reason": "Explain why physical power control makes offline normal"',
+                    "}", "```",
+                ]
+        lines += ["", "## Entities", ""]
+        for entity in sorted(device.entities, key=lambda item: item.entity_id):
+            lines.append(
+                f"- `{entity.entity_id}` — `{entity.state}` — "
+                f"`{entity.importance}` — {entity.rule_reason}"
+            )
         write_md(dev_dir / filename, lines)
     write_md(dev_dir / "index.md", index)
 
+def generate_integrations(out, integration_health, now):
+    """Render evidence-based integration health without recalculating it."""
 
-def generate_integrations(out, model, graph, now):
-    integrations = []
-    for integration in model.integrations.values():
-        rel = graph.integrations.get(integration.platform)
-        bad = rel.problem_entities if rel else []
-        important = [e for e in integration.entities if e.importance == "important"]
-        score = 100 if not important else max(0, 100 - min(60, len(bad) * 5))
-        integrations.append((score, integration, rel, bad, important))
+    lines = [
+        "# 06 Integrations",
+        "",
+        f"Generated: {now}",
+        "",
+        "Integration health is calculated from device reachability, state "
+        "freshness and explicit fault evidence. Raw unknown/unavailable entity "
+        "counts are not used as a severity multiplier.",
+        "",
+    ]
 
-    lines = ["# 06 Integrations", "", f"Generated: {now}", ""]
-    for score, integration, rel, bad, important in sorted(integrations, key=lambda x: x[0]):
-        diagnostic = [e for e in integration.entities if e.importance == "diagnostic"]
-        ignored = [e for e in integration.entities if e.is_ignored]
+    if not integration_health:
         lines += [
-            f"## {integration.platform}", "",
-            f"- Health: `{score}/100`",
-            f"- Entities: `{len(integration.entities)}`",
-            f"- Devices: `{len(integration.devices)}`",
-            f"- Important: `{len(important)}`",
-            f"- Diagnostic: `{len(diagnostic)}`",
-            f"- Ignored: `{len(ignored)}`",
-            f"- Relevant unknown/unavailable: `{len(bad)}`", "",
+            "No integrations were available for health analysis.",
+            "",
         ]
+
+    for item in integration_health:
+        status = getattr(item.status, "value", str(item.status))
+
+        lines += [
+            f"## {item.platform}",
+            "",
+            f"- Health: `{item.score}/100`",
+            f"- Status: `{status}`",
+            f"- Entities: `{item.total_entities}`",
+            f"- Devices: `{item.total_devices}`",
+            f"- Physical devices: `{item.physical_devices}`",
+            "",
+            "### Reachability",
+            "",
+            f"- Online: `{item.online_devices}`",
+            f"- Offline: `{item.offline_devices}`",
+            f"- Sleeping: `{item.sleeping_devices}`",
+            f"- Unknown: `{item.unknown_devices}`",
+            f"- Expected offline: `{item.expected_offline_devices}`",
+            f"- External / not owned: `{item.external_devices}`",
+            "",
+            "### Freshness",
+            "",
+            f"- Fresh: `{item.fresh_devices}`",
+            f"- Aging: `{item.aging_devices}`",
+            f"- Stale: `{item.stale_devices}`",
+            f"- Very stale: `{item.very_stale_devices}`",
+            f"- Unknown freshness: `{item.unknown_freshness_devices}`",
+            "",
+            "### Evidence",
+            "",
+        ]
+
+        for reason in item.reasons:
+            lines.append(f"- {reason}")
+
+        if not item.reasons:
+            lines.append("- No evidence details were supplied.")
+
+        if item.external_device_names:
+            lines += [
+                "",
+                "### External discovered devices (no health impact)",
+                "",
+            ]
+            for name in item.external_device_names:
+                lines.append(f"- {name}")
+
+        if item.explicit_offline_devices:
+            lines += [
+                "",
+                "### Explicitly offline devices",
+                "",
+            ]
+            for device_name in item.explicit_offline_devices:
+                lines.append(f"- `{device_name}`")
+
+        if item.intentionally_offline_devices:
+            lines += ["", "### Intentionally offline devices", ""]
+            for device_name in item.intentionally_offline_devices:
+                lines.append(f"- `{device_name}`")
+
+        if item.probable_offline_devices:
+            lines += [
+                "",
+                "### Probably offline devices",
+                "",
+            ]
+            for device_name in item.probable_offline_devices:
+                lines.append(f"- `{device_name}`")
+
+        if item.stale_device_names:
+            lines += [
+                "",
+                "### Stale-device maintenance",
+                "",
+            ]
+            for device_name in item.stale_device_names:
+                lines.append(f"- `{device_name}`")
+
+        lines.append("")
+
     write_md(out / "06_integrations.md", lines)
 
 
