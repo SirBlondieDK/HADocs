@@ -66,3 +66,4 @@ device_overrides.local.json
 build/
 dist/
 *.zip
+*.bak

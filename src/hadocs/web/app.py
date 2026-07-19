@@ -22,6 +22,7 @@ from src.hadocs.core.device_overrides import (
     upsert_device_override,
 )
 from src.hadocs.utils.config import load_config
+from src.hadocs.web.api.devices import load_device_summaries
 
 HOST = "0.0.0.0"
 PORT = 8099
@@ -162,7 +163,7 @@ SCAN_MANAGER = ScanManager()
 
 
 class HadocsRequestHandler(BaseHTTPRequestHandler):
-    server_version = "HADocsWeb/0.2.6"
+    server_version = "HADocsWeb/0.4.0"
 
     def do_GET(self) -> None:
         path = self._request_path()
@@ -374,36 +375,10 @@ class HadocsRequestHandler(BaseHTTPRequestHandler):
             raise ValueError("JSON body must be an object")
         return payload
 
-    def _load_devices(self) -> list[dict[str, str]]:
-        """Return devices from the generated Explorer index for the editor."""
+    def _load_devices(self) -> list[dict[str, Any]]:
+        """Return devices using the stable DeviceSummary API contract."""
         index_path = OUTPUT_DIRECTORY / "explorer" / "search_index.json"
-        if not index_path.is_file():
-            return []
-
-        try:
-            payload = json.loads(index_path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError):
-            return []
-
-        if not isinstance(payload, list):
-            return []
-
-        devices: list[dict[str, str]] = []
-        for item in payload:
-            if not isinstance(item, dict) or item.get("type") != "device":
-                continue
-            device_id = str(item.get("id") or "").strip()
-            name = str(item.get("title") or "").strip()
-            subtitle = str(item.get("subtitle") or "").strip()
-            if device_id:
-                devices.append({
-                    "device_id": device_id,
-                    "device_name": name or device_id,
-                    "subtitle": subtitle,
-                })
-
-        devices.sort(key=lambda item: item["device_name"].casefold())
-        return devices
+        return load_device_summaries(index_path)
 
     def _load_device_overrides(self) -> dict[str, Any]:
         """Load overrides and enrich device IDs with names from the latest scan."""

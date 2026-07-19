@@ -13,12 +13,12 @@
         <div class="brand-icon">▣</div>
         <div><h1>HADocs</h1><p>Home Assistant documentation and health analysis</p></div>
       </div>
-      <div class="version">v0.2.6</div>
+      <div class="version">v0.4.0</div>
     </header>
 
     <nav class="navigation" aria-label="HADocs navigation">
       <button class="nav-button active" data-view="overview">Overview</button>
-      <button class="nav-button" data-view="report">Report</button>
+      <button class="nav-button" data-view="report">Analysis</button>
       <button class="nav-button" data-view="explorer">Explorer</button>
       <button class="nav-button" data-view="overrides">Device Overrides</button>
       <button class="nav-button" data-view="logs">Logs</button>
@@ -55,9 +55,54 @@
       </section>
 
       <section id="view-report" class="view">
-        <div class="section-header report-header"><div><span class="card-label">Generated documentation</span><h2>HADocs Report</h2></div><button id="reload-report-button" class="secondary-button" type="button">Reload report</button></div>
-        <div id="report-empty" class="card empty-state hidden"><h2>No report available</h2><p>Run a scan to generate the first report.</p><button class="primary-button" type="button" data-open-view="overview">Go to overview</button></div>
-        <iframe id="report-frame" class="report-frame" src="./report/index.html" title="HADocs generated report"></iframe>
+        <div class="section-header report-header">
+          <div>
+            <span class="card-label">Live analysis</span>
+            <h2>HADocs Analysis</h2>
+            <p class="section-description">The current scan rendered directly from HADocs data — no embedded report.</p>
+          </div>
+          <div class="analysis-header-actions">
+            <button id="refresh-analysis-button" class="secondary-button" type="button">Refresh analysis</button>
+            <a id="export-html-link" class="secondary-button button-link" href="./report/index.html" target="_blank" rel="noopener">Open HTML export</a>
+          </div>
+        </div>
+
+        <div id="report-empty" class="card empty-state hidden">
+          <h2>No analysis available</h2>
+          <p>Run a scan to create the first analysis.</p>
+          <button class="primary-button" type="button" data-open-view="overview">Go to overview</button>
+        </div>
+
+        <div id="analysis-dashboard" class="analysis-dashboard hidden">
+          <section class="analysis-hero">
+            <article class="card analysis-health-card">
+              <span class="card-label">Health score</span>
+              <div class="analysis-score-row">
+                <strong id="analysis-health-score" class="analysis-score">—</strong>
+                <div><strong id="analysis-health-status">No scan</strong><span id="analysis-health-detail" class="card-detail">Run a scan to calculate health.</span></div>
+              </div>
+            </article>
+            <article class="card analysis-metric-card"><span class="card-label">Potential score</span><strong id="analysis-potential-score" class="large-value">—</strong><span id="analysis-potential-detail" class="card-detail">After effective fixes</span></article>
+            <article class="card analysis-metric-card"><span class="card-label">Active root causes</span><strong id="analysis-root-count" class="large-value">—</strong><span class="card-detail">After overrides and filtering</span></article>
+            <article class="card analysis-metric-card"><span class="card-label">Suppressed noise</span><strong id="analysis-suppressed-count" class="large-value">—</strong><span class="card-detail">Ignored by policy or filtering</span></article>
+          </section>
+
+          <section class="card analysis-section">
+            <div class="section-header"><div><span class="card-label">Priority</span><h2>Top recommendation</h2></div></div>
+            <div id="analysis-top-recommendation" class="analysis-primary-recommendation"></div>
+            <div id="analysis-recommendations" class="analysis-list"></div>
+          </section>
+
+          <section class="card analysis-section">
+            <div class="section-header"><div><span class="card-label">Evidence</span><h2>Root causes</h2></div><span id="analysis-root-summary" class="card-detail"></span></div>
+            <div id="analysis-root-causes" class="analysis-root-grid"></div>
+          </section>
+
+          <section class="card analysis-section">
+            <div class="section-header"><div><span class="card-label">Installation</span><h2>Inventory overview</h2></div></div>
+            <div id="analysis-inventory" class="analysis-inventory-grid"></div>
+          </section>
+        </div>
       </section>
 
       <section id="view-explorer" class="view">
@@ -127,10 +172,24 @@
 
           <form id="override-form">
             <div class="editor-grid">
-              <label class="form-field editor-device-field">
+              <div class="form-field editor-device-field">
                 <span>Device</span>
-                <select id="override-device" required></select>
-              </label>
+                <input id="override-device" type="hidden" required>
+                <div id="device-picker" class="device-picker">
+                  <button id="device-picker-trigger" class="device-picker-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+                    <span id="device-picker-trigger-content" class="device-picker-placeholder">Choose a device…</span>
+                    <span class="device-picker-chevron" aria-hidden="true">⌄</span>
+                  </button>
+                  <div id="device-picker-panel" class="device-picker-panel hidden">
+                    <label class="device-picker-search" for="device-picker-search">
+                      <span aria-hidden="true">⌕</span>
+                      <input id="device-picker-search" type="search" autocomplete="off" placeholder="Search name, integration, area, model or entity…">
+                    </label>
+                    <div id="device-picker-results" class="device-picker-results" role="listbox" aria-label="Home Assistant devices"></div>
+                    <div id="device-picker-empty" class="device-picker-empty hidden">No matching devices found.</div>
+                  </div>
+                </div>
+              </div>
 
               <label class="form-field">
                 <span>Policy</span>

@@ -1,4 +1,19 @@
-const state = { status: null, logs: [], summary: null, overrides: [], devices: [], overrideFile: "", overrideQuery: "", overrideFilter: "all", editingDeviceId: null };
+const state = {
+  status: null,
+  logs: [],
+  summary: null,
+  overrides: [],
+  devices: [],
+  overrideFile: "",
+  overrideQuery: "",
+  overrideFilter: "all",
+  editingDeviceId: null,
+  devicePickerQuery: "",
+  devicePickerOpen: false,
+  devicePickerHighlight: 0,
+  expandedRootCauses: new Set(),
+  expandedRecommendations: new Set(),
+};
 
 const elements = {
   statusValue: document.getElementById("status-value"),
@@ -12,9 +27,21 @@ const elements = {
   progressBar: document.getElementById("progress-bar"),
   overviewLog: document.getElementById("overview-log"),
   fullLog: document.getElementById("full-log"),
-  reportFrame: document.getElementById("report-frame"),
   reportEmpty: document.getElementById("report-empty"),
-  reloadReportButton: document.getElementById("reload-report-button"),
+  analysisDashboard: document.getElementById("analysis-dashboard"),
+  refreshAnalysisButton: document.getElementById("refresh-analysis-button"),
+  analysisHealthScore: document.getElementById("analysis-health-score"),
+  analysisHealthStatus: document.getElementById("analysis-health-status"),
+  analysisHealthDetail: document.getElementById("analysis-health-detail"),
+  analysisPotentialScore: document.getElementById("analysis-potential-score"),
+  analysisPotentialDetail: document.getElementById("analysis-potential-detail"),
+  analysisRootCount: document.getElementById("analysis-root-count"),
+  analysisSuppressedCount: document.getElementById("analysis-suppressed-count"),
+  analysisTopRecommendation: document.getElementById("analysis-top-recommendation"),
+  analysisRecommendations: document.getElementById("analysis-recommendations"),
+  analysisRootCauses: document.getElementById("analysis-root-causes"),
+  analysisRootSummary: document.getElementById("analysis-root-summary"),
+  analysisInventory: document.getElementById("analysis-inventory"),
   explorerFrame: document.getElementById("explorer-frame"),
   explorerEmpty: document.getElementById("explorer-empty"),
   reloadExplorerButton: document.getElementById("reload-explorer-button"),
@@ -39,6 +66,13 @@ const elements = {
   overrideEditorTitle: document.getElementById("override-editor-title"),
   overrideForm: document.getElementById("override-form"),
   overrideDevice: document.getElementById("override-device"),
+  devicePicker: document.getElementById("device-picker"),
+  devicePickerTrigger: document.getElementById("device-picker-trigger"),
+  devicePickerTriggerContent: document.getElementById("device-picker-trigger-content"),
+  devicePickerPanel: document.getElementById("device-picker-panel"),
+  devicePickerSearch: document.getElementById("device-picker-search"),
+  devicePickerResults: document.getElementById("device-picker-results"),
+  devicePickerEmpty: document.getElementById("device-picker-empty"),
   overridePolicy: document.getElementById("override-policy"),
   overrideOwnership: document.getElementById("override-ownership"),
   overridePurpose: document.getElementById("override-purpose"),
@@ -98,6 +132,10 @@ function openView(name) {
       elements.overrideError.classList.remove("hidden");
     });
   }
+
+  if (name === "report") {
+    refresh();
+  }
 }
 
 function inferProgress(logs) {
@@ -136,6 +174,265 @@ function renderSummary() {
     elements.recommendationDetail.textContent =
       `+${gain} health · about ${minutes} min${top.reason ? ` · ${top.reason}` : ""}`;
   }
+}
+
+
+function numberValue(value, fallback = 0) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function firstValue(object, keys, fallback = null) {
+  for (const key of keys) {
+    if (object && object[key] != null) return object[key];
+  }
+  return fallback;
+}
+
+function titleForIssue(item) {
+  return firstValue(item, ["title", "root_cause", "key", "name"], "Untitled issue");
+}
+
+function issueArray(item, keys) {
+  for (const key of keys) {
+    const value = item?.[key];
+    if (Array.isArray(value)) return value;
+  }
+  return [];
+}
+
+function issueCounts(item) {
+  return {
+    entities: issueArray(item, ["affected_entities", "entities"]),
+    devices: issueArray(item, ["affected_devices", "devices"]),
+    integrations: issueArray(item, ["affected_integrations", "integrations"]),
+    children: issueArray(item, ["child_incidents", "children"]),
+  };
+}
+
+
+function isHassioIssue(item) {
+  const root = String(firstValue(item, ["root_cause", "key", "title"], "")).toLowerCase();
+  const integrations = issueArray(item, ["affected_integrations", "integrations"]).map(value => String(value).toLowerCase());
+  return integrations.some(value => ["hassio", "supervisor", "home_assistant_supervisor"].includes(value))
+    || root.includes("supervisor")
+    || root === "hassio";
+}
+
+function hassioEvidenceHtml(item) {
+  if (!isHassioIssue(item)) return "";
+
+  const entityIds = issueArray(item, ["affected_entities", "entities"]).map(value => String(value));
+  const centralMarkers = [
+    "supervisor",
+    "home_assistant_host",
+    "home_assistant_core",
+    "home_assistant_operating_system",
+  ];
+  const centralSignals = entityIds.filter(entityId => {
+    const lowered = entityId.toLowerCase();
+    return centralMarkers.some(marker => lowered.includes(marker));
+  });
+  const addonSignals = Math.max(0, entityIds.length - centralSignals.length);
+  const severity = String(firstValue(item, ["severity"], "maintenance")).toLowerCase();
+  const confirmedOutage = severity === "critical";
+  const runtimeReview = severity === "warning";
+  const assessment = confirmedOutage
+    ? "Confirmed central outage signal"
+    : runtimeReview
+      ? "Central runtime signal unavailable"
+      : "No confirmed central outage";
+  const confidence = confirmedOutage ? "High" : runtimeReview ? "Medium" : "Low-risk maintenance";
+
+  return `
+    <div class="analysis-platform-evidence">
+      <div class="analysis-platform-heading">
+        <div><span class="card-label">Supervisor assessment</span><strong>${escapeHtml(assessment)}</strong></div>
+        <span class="analysis-confidence confidence-${escapeHtml(severity)}">${escapeHtml(confidence)}</span>
+      </div>
+      <div class="analysis-platform-grid">
+        <article><span>Core / Supervisor / Host</span><strong>${confirmedOutage ? "Outage detected" : runtimeReview ? "Review required" : "No confirmed outage"}</strong></article>
+        <article><span>Central status signals</span><strong>${centralSignals.length}</strong></article>
+        <article><span>Add-on/helper sensors</span><strong>${addonSignals}</strong></article>
+        <article><span>Assessment</span><strong>${escapeHtml(displayValue(severity))}</strong></article>
+      </div>
+      <p>${confirmedOutage
+        ? "At least one central Home Assistant runtime signal is unavailable."
+        : runtimeReview
+          ? "A central status signal is unavailable, but HADocs did not confirm a hard Core, Supervisor, or Host outage."
+          : "This finding is based on unknown helper or add-on status sensors. Unknown alone is not treated as a service outage."}</p>
+    </div>
+  `;
+}
+
+function issueDetailHtml(item) {
+  const counts = issueCounts(item);
+  const recommendation = firstValue(item, ["recommendation", "reason", "description"], "No recommended action documented.");
+  const sections = [];
+
+  const listSection = (title, values) => {
+    if (!values.length) return;
+    const items = values.slice(0, 12).map(value => {
+      const label = typeof value === "string" ? value : titleForIssue(value);
+      return `<li>${escapeHtml(label)}</li>`;
+    }).join("");
+    const more = values.length > 12 ? `<li class="muted-text">…and ${values.length - 12} more</li>` : "";
+    sections.push(`<div class="analysis-detail-group"><strong>${escapeHtml(title)}</strong><ul>${items}${more}</ul></div>`);
+  };
+
+  listSection("Affected devices", counts.devices);
+  listSection("Affected entities", counts.entities);
+  listSection("Affected integrations", counts.integrations);
+  listSection("Child incidents", counts.children);
+
+  return `
+    ${hassioEvidenceHtml(item)}
+    <div class="analysis-detail-grid">
+      <div class="analysis-detail-group"><strong>Recommended action</strong><p>${escapeHtml(recommendation)}</p></div>
+      ${sections.join("") || '<div class="analysis-detail-group"><strong>Evidence</strong><p>No additional affected items were included in this scan output.</p></div>'}
+    </div>
+  `;
+}
+
+
+function stableAnalysisKey(item, prefix = "item") {
+  const raw = firstValue(
+    item,
+    ["incident_id", "recommendation_id", "id", "key", "root_cause", "title", "name"],
+    prefix,
+  );
+  return `${prefix}:${String(raw)}`;
+}
+
+function bindAnalysisDisclosureState() {
+  document.querySelectorAll("details[data-analysis-kind][data-analysis-key]").forEach(detail => {
+    detail.addEventListener("toggle", () => {
+      const targetSet = detail.dataset.analysisKind === "root"
+        ? state.expandedRootCauses
+        : state.expandedRecommendations;
+      const key = detail.dataset.analysisKey;
+      if (detail.open) targetSet.add(key);
+      else targetSet.delete(key);
+
+      const label = detail.querySelector(".analysis-open-label");
+      if (label) label.textContent = detail.open ? "Hide evidence" : "View evidence";
+    });
+  });
+}
+
+function recommendationCard(item, rank, potentialGain, primary = false) {
+  const claimedGain = numberValue(firstValue(item, ["estimated_score_gain", "score_gain"], 0));
+  const gain = Math.min(claimedGain, potentialGain);
+  const minutes = numberValue(firstValue(item, ["estimated_repair_minutes", "repair_minutes"], 0));
+  const counts = issueCounts(item);
+  const title = titleForIssue(item);
+  const summary = firstValue(item, ["reason", "recommendation", "description"], "Active recommendation");
+  const countParts = [];
+  const disclosureKey = stableAnalysisKey(item, primary ? "top-recommendation" : "recommendation");
+  const isOpen = state.expandedRecommendations.has(disclosureKey);
+  if (counts.devices.length) countParts.push(`${counts.devices.length} device${counts.devices.length === 1 ? "" : "s"}`);
+  if (counts.entities.length) countParts.push(`${counts.entities.length} entit${counts.entities.length === 1 ? "y" : "ies"}`);
+
+  return `
+    <details class="${primary ? "analysis-primary-recommendation" : "analysis-list-item analysis-action-item"}" data-analysis-kind="recommendation" data-analysis-key="${escapeHtml(disclosureKey)}"${isOpen ? " open" : ""}>
+      <summary>
+        ${primary ? "" : `<span class="analysis-rank">${rank}</span>`}
+        <div class="analysis-action-copy">
+          <strong>${escapeHtml(title)}</strong>
+          <span>${escapeHtml(summary)}</span>
+          <small>${escapeHtml(countParts.join(" · ") || "Active finding")}${minutes ? ` · ~${minutes} min` : ""}</small>
+        </div>
+        <b>${gain ? `+${gain}` : "—"}</b>
+        <span class="analysis-chevron" aria-hidden="true">⌄</span>
+      </summary>
+      ${issueDetailHtml(item)}
+    </details>
+  `;
+}
+
+function renderAnalysis() {
+  const summary = state.summary || {};
+  const available = Boolean(summary.available);
+  elements.reportEmpty.classList.toggle("hidden", available);
+  elements.analysisDashboard.classList.toggle("hidden", !available);
+  if (!available) return;
+
+  const health = summary.health || {};
+  const inventory = summary.inventory || {};
+  const incidents = Array.isArray(summary.incidents) ? summary.incidents : [];
+  const recommendations = Array.isArray(summary.recommendations) ? summary.recommendations : [];
+
+  const score = numberValue(firstValue(health, ["health_score", "score"], 0));
+  const potential = Math.max(score, numberValue(firstValue(health, ["potential_score"], score), score));
+  const potentialGain = Math.max(0, potential - score);
+  const suppressed = numberValue(firstValue(health, ["suppressed_incident_count", "suppressed_incidents", "filtered_noise", "hidden_noise"], 0));
+
+  elements.analysisHealthScore.textContent = `${score}`;
+  elements.analysisHealthStatus.textContent = firstValue(health, ["status", "grade"], score >= 85 ? "Healthy" : "Needs attention");
+  elements.analysisHealthDetail.textContent = `${potentialGain} achievable point${potentialGain === 1 ? "" : "s"} remain after active fixes.`;
+  elements.analysisPotentialScore.textContent = `${potential}/100`;
+  elements.analysisPotentialDetail.textContent = potentialGain ? `+${potentialGain} available` : "No score gain currently available";
+  elements.analysisRootCount.textContent = String(incidents.length);
+  elements.analysisSuppressedCount.textContent = String(suppressed);
+
+  const top = recommendations[0];
+  // Keep the permanent container from index.html. Replacing it with outerHTML
+  // detached the cached element reference and caused the next refresh to fail.
+  elements.analysisTopRecommendation.innerHTML = top
+    ? recommendationCard(top, 1, potentialGain, true)
+    : '<div class="analysis-empty-recommendation"><strong>No active recommendation</strong><span>The current scan has no effective fixes to prioritise.</span></div>';
+
+  elements.analysisRecommendations.innerHTML = recommendations.slice(1, 8).map((item, index) =>
+    recommendationCard(item, index + 2, potentialGain)
+  ).join("");
+
+  const categoryCounts = incidents.reduce((result, item) => {
+    const category = String(firstValue(item, ["category", "type"], "issue")).toLowerCase();
+    result[category] = (result[category] || 0) + 1;
+    return result;
+  }, {});
+  const categorySummary = Object.entries(categoryCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 4)
+    .map(([category, count]) => `${count} ${displayValue(category)}`)
+    .join(" · ");
+  elements.analysisRootSummary.textContent = categorySummary || `${incidents.length} active after overrides`;
+
+  elements.analysisRootCauses.innerHTML = incidents.slice(0, 16).map(item => {
+    const severity = String(firstValue(item, ["severity"], "maintenance")).toLowerCase();
+    const counts = issueCounts(item);
+    const category = firstValue(item, ["category", "type"], "issue");
+    const disclosureKey = stableAnalysisKey(item, "root");
+    const isOpen = state.expandedRootCauses.has(disclosureKey);
+    return `
+      <details class="analysis-root-card severity-${escapeHtml(severity)}" data-analysis-kind="root" data-analysis-key="${escapeHtml(disclosureKey)}"${isOpen ? " open" : ""}>
+        <summary>
+          <div class="analysis-root-heading"><strong>${escapeHtml(titleForIssue(item))}</strong><span>${escapeHtml(severity)}</span></div>
+          <p>${escapeHtml(firstValue(item, ["title", "reason", "description"], `${displayValue(category)} issue`))}</p>
+          <div class="analysis-root-meta">
+            <span>${escapeHtml(displayValue(category))}</span>
+            <span>${counts.devices.length} device${counts.devices.length === 1 ? "" : "s"}</span>
+            <span>${counts.entities.length} entit${counts.entities.length === 1 ? "y" : "ies"}</span>
+            <span class="analysis-open-label">${isOpen ? "Hide evidence" : "View evidence"}</span>
+          </div>
+        </summary>
+        ${issueDetailHtml(item)}
+      </details>
+    `;
+  }).join("") || '<p class="muted-text">No active root causes.</p>';
+
+  const inventoryItems = [
+    ["Areas", firstValue(inventory, ["areas"], 0)],
+    ["Devices", firstValue(inventory, ["devices", "physical_devices"], 0)],
+    ["Physical", firstValue(inventory, ["physical_devices"], 0)],
+    ["Virtual", firstValue(inventory, ["virtual_devices"], 0)],
+    ["System", firstValue(inventory, ["system_devices"], 0)],
+    ["Integrations", firstValue(inventory, ["integrations"], 0)],
+    ["Entities", firstValue(inventory, ["entities"], 0)],
+    ["Labels", firstValue(inventory, ["labels"], 0)],
+  ];
+  elements.analysisInventory.innerHTML = inventoryItems.map(([label, value]) => `<article><span>${escapeHtml(label)}</span><strong>${escapeHtml(value ?? 0)}</strong></article>`).join("");
+  bindAnalysisDisclosureState();
 }
 
 function overrideFlags(policy) {
@@ -290,21 +587,197 @@ async function loadDevices() {
   renderDeviceOptions();
 }
 
-function renderDeviceOptions(selectedDeviceId = "") {
+function deviceIntegration(device) {
+  return device.integration || device.subtitle || "Unknown integration";
+}
+
+function deviceMeta(device) {
+  return [device.manufacturer, device.model].filter(Boolean).join(" ");
+}
+
+function deviceIcon(device) {
+  const classification = String(device.classification || "").toLowerCase();
+  if (["container", "server", "service"].includes(classification)) return "▦";
+
+  const domain = String(device.primary_domain || device.domains?.[0] || "").toLowerCase();
+  const icons = {
+    light: "💡",
+    switch: "⌁",
+    sensor: "◉",
+    binary_sensor: "◇",
+    media_player: "▶",
+    camera: "◉",
+    climate: "♨",
+    lock: "▣",
+    cover: "▤",
+    vacuum: "◒",
+    lawn_mower: "✦",
+    device_tracker: "⌖",
+    person: "●",
+    button: "◎",
+    update: "↻",
+  };
+  return icons[domain] || "▣";
+}
+
+function deviceCardMarkup(device, { selected = false, highlighted = false } = {}) {
+  const integration = deviceIntegration(device);
+  const metadata = deviceMeta(device);
+  const count = Number(device.entity_count || 0);
+  const entityLabel = count === 1 ? "1 entity" : `${count} entities`;
+  const healthLabel = deviceHealthLabel(device);
+  const classes = ["device-card"];
+  if (selected) classes.push("selected");
+  if (highlighted) classes.push("highlighted");
+
+  return `
+    <span class="device-card-icon" aria-hidden="true">${deviceIcon(device)}</span>
+    <span class="device-card-content">
+      <span class="device-card-title">${escapeHtml(device.device_name)}</span>
+      <span class="device-card-context">
+        <span class="integration-badge ${integrationClass(device)}">${escapeHtml(integration)}</span>
+        ${device.area ? `<span class="area-badge">⌂ ${escapeHtml(device.area)}</span>` : '<span class="area-badge area-unassigned">⌂ No area</span>'}
+      </span>
+      <span class="device-card-details">
+        ${metadata ? `<span>${escapeHtml(metadata)}</span>` : ""}
+        ${device.classification ? `<span>${escapeHtml(displayValue(device.classification))}</span>` : ""}
+        <span>${escapeHtml(entityLabel)}</span>
+        ${healthLabel ? `<span class="device-health${device.online === false ? " offline" : " warning"}">${escapeHtml(healthLabel)}</span>` : ""}
+      </span>
+    </span>
+    ${selected ? '<span class="device-card-check" aria-hidden="true">✓</span>' : ""}
+  `;
+}
+
+function integrationClass(device) {
+  const value = String(device.platform || device.integration || "unknown")
+    .toLowerCase()
+    .replaceAll(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+  return `integration-${value || "unknown"}`;
+}
+
+function deviceHealthLabel(device) {
+  if (device.online === false) return "Offline";
+  if (Number(device.unavailable_count || 0) > 0) return `${device.unavailable_count} unavailable`;
+  if (Number(device.unknown_count || 0) > 0) return `${device.unknown_count} unknown`;
+  return "";
+}
+
+function deviceSearchText(device) {
+  return [
+    device.device_name,
+    device.device_id,
+    device.integration,
+    device.area,
+    device.manufacturer,
+    device.model,
+    device.subtitle,
+    device.classification,
+    ...(Array.isArray(device.entity_ids) ? device.entity_ids : []),
+    ...(Array.isArray(device.domains) ? device.domains : []),
+    ...(Array.isArray(device.platforms) ? device.platforms : []),
+  ].filter(Boolean).join(" ").toLowerCase();
+}
+
+function selectedDevice() {
+  return state.devices.find(device => device.device_id === elements.overrideDevice.value);
+}
+
+function renderDeviceTrigger() {
+  const device = selectedDevice();
+  if (!device) {
+    elements.devicePickerTriggerContent.className = "device-picker-placeholder";
+    elements.devicePickerTriggerContent.textContent = "Choose a device…";
+    return;
+  }
+
+  const detail = [deviceIntegration(device), device.area].filter(Boolean).join(" · ");
+  elements.devicePickerTriggerContent.className = "device-picker-selected";
+  elements.devicePickerTriggerContent.innerHTML = `
+    <strong>${escapeHtml(device.device_name)}</strong>
+    <span>${escapeHtml(detail || device.device_id)}</span>
+  `;
+}
+
+function filteredPickerDevices() {
   const overrideIds = new Set(state.overrides.map(item => item.device_id).filter(Boolean));
-  const options = ['<option value="">Choose a device…</option>'];
-
-  state.devices.forEach(device => {
-    const selected = device.device_id === selectedDeviceId ? " selected" : "";
+  const query = state.devicePickerQuery.trim().toLowerCase();
+  return state.devices.filter(device => {
     const alreadyConfigured = overrideIds.has(device.device_id) && device.device_id !== state.editingDeviceId;
-    const disabled = alreadyConfigured ? " disabled" : "";
-    const suffix = alreadyConfigured ? " — already configured" : "";
-    options.push(
-      `<option value="${escapeHtml(device.device_id)}"${selected}${disabled}>${escapeHtml(device.device_name + suffix)}</option>`
-    );
+    return !alreadyConfigured && (!query || deviceSearchText(device).includes(query));
   });
+}
 
-  elements.overrideDevice.innerHTML = options.join("");
+function renderDevicePicker() {
+  const devices = filteredPickerDevices();
+  state.devicePickerHighlight = Math.min(
+    Math.max(state.devicePickerHighlight, 0),
+    Math.max(devices.length - 1, 0),
+  );
+
+  elements.devicePickerResults.innerHTML = devices.map((device, index) => {
+    const selected = device.device_id === elements.overrideDevice.value;
+    const highlighted = index === state.devicePickerHighlight;
+    return `
+      <button class="device-picker-option device-card${selected ? " selected" : ""}${highlighted ? " highlighted" : ""}"
+              type="button"
+              role="option"
+              aria-selected="${selected}"
+              aria-label="${escapeHtml(device.device_name)}, ${escapeHtml(deviceIntegration(device))}"
+              data-picker-device-id="${escapeHtml(device.device_id)}">
+        ${deviceCardMarkup(device, { selected, highlighted })}
+      </button>
+    `;
+  }).join("");
+
+  elements.devicePickerEmpty.classList.toggle("hidden", devices.length !== 0);
+  elements.devicePickerResults.classList.toggle("hidden", devices.length === 0);
+
+  document.querySelectorAll("[data-picker-device-id]").forEach(button => {
+    button.addEventListener("click", () => selectPickerDevice(button.dataset.pickerDeviceId));
+  });
+  renderDeviceTrigger();
+}
+
+function renderDeviceOptions(selectedDeviceId = "") {
+  elements.overrideDevice.value = selectedDeviceId || "";
+  renderDevicePicker();
+}
+
+function openDevicePicker() {
+  if (elements.devicePickerTrigger.disabled) return;
+  state.devicePickerOpen = true;
+  state.devicePickerHighlight = 0;
+  elements.devicePickerPanel.classList.remove("hidden");
+  elements.devicePickerTrigger.setAttribute("aria-expanded", "true");
+  elements.devicePickerSearch.value = state.devicePickerQuery;
+  renderDevicePicker();
+  window.setTimeout(() => elements.devicePickerSearch.focus(), 0);
+}
+
+function closeDevicePicker() {
+  state.devicePickerOpen = false;
+  elements.devicePickerPanel.classList.add("hidden");
+  elements.devicePickerTrigger.setAttribute("aria-expanded", "false");
+}
+
+function selectPickerDevice(deviceId) {
+  elements.overrideDevice.value = deviceId || "";
+  const device = selectedDevice();
+  elements.overrideEditorTitle.textContent = device?.device_name || "Choose a device";
+  state.devicePickerQuery = "";
+  elements.devicePickerSearch.value = "";
+  closeDevicePicker();
+  renderDevicePicker();
+}
+
+function movePickerHighlight(direction) {
+  const devices = filteredPickerDevices();
+  if (!devices.length) return;
+  state.devicePickerHighlight = (state.devicePickerHighlight + direction + devices.length) % devices.length;
+  renderDevicePicker();
+  elements.devicePickerResults.children[state.devicePickerHighlight]?.scrollIntoView({ block: "nearest" });
 }
 
 function setEditorMessage(message = "", isError = false) {
@@ -339,7 +812,7 @@ function openOverrideEditor(deviceId = null) {
 
   elements.overrideEditorLabel.textContent = item ? "Edit Device Override" : "New Device Override";
   elements.overrideEditorTitle.textContent = item?.device_name || "Choose a device";
-  elements.overrideDevice.disabled = Boolean(item);
+  elements.devicePickerTrigger.disabled = Boolean(item);
   renderDeviceOptions(deviceId || "");
   elements.overridePolicy.value = policy.type || "normal";
   elements.overrideOwnership.value = policy.ownership || "unspecified";
@@ -358,6 +831,8 @@ function openOverrideEditor(deviceId = null) {
 
 function closeOverrideEditor() {
   state.editingDeviceId = null;
+  closeDevicePicker();
+  elements.devicePickerTrigger.disabled = false;
   elements.overrideEditor.classList.add("hidden");
   elements.overrideForm.reset();
   setSelectedMonths([]);
@@ -477,8 +952,7 @@ function render() {
   elements.lastScanValue.textContent = formatDate(status.finished_at || status.started_at);
   elements.reportValue.textContent = status.report_available ? "Available" : "Not generated";
   elements.reportValue.className = status.report_available ? "card-value success" : "card-value";
-  elements.reportFrame.classList.toggle("hidden", !status.report_available);
-  elements.reportEmpty.classList.toggle("hidden", status.report_available);
+  renderAnalysis();
   elements.explorerFrame.classList.toggle("hidden", !status.report_available);
   elements.explorerEmpty.classList.toggle("hidden", status.report_available);
 
@@ -546,7 +1020,7 @@ document.querySelectorAll("[data-open-view]").forEach(button => {
 });
 
 elements.scanButton.addEventListener("click", startScan);
-elements.reloadReportButton.addEventListener("click", () => reloadFrame(elements.reportFrame, "./report/index.html"));
+elements.refreshAnalysisButton.addEventListener("click", refresh);
 elements.reloadExplorerButton.addEventListener("click", () => reloadFrame(elements.explorerFrame, "./report/explorer/index.html"));
 elements.scrollButton.addEventListener("click", () => {
   elements.fullLog.scrollTop = elements.fullLog.scrollHeight;
@@ -568,6 +1042,40 @@ document.querySelectorAll("[data-override-filter]").forEach(button => {
 
 elements.addOverrideButton.addEventListener("click", () => openOverrideEditor());
 elements.overrideForm.addEventListener("submit", saveOverride);
+elements.devicePickerTrigger.addEventListener("click", () => {
+  state.devicePickerOpen ? closeDevicePicker() : openDevicePicker();
+});
+
+elements.devicePickerSearch.addEventListener("input", event => {
+  state.devicePickerQuery = event.target.value;
+  state.devicePickerHighlight = 0;
+  renderDevicePicker();
+});
+
+elements.devicePickerSearch.addEventListener("keydown", event => {
+  if (event.key === "ArrowDown") {
+    event.preventDefault();
+    movePickerHighlight(1);
+  } else if (event.key === "ArrowUp") {
+    event.preventDefault();
+    movePickerHighlight(-1);
+  } else if (event.key === "Enter") {
+    event.preventDefault();
+    const device = filteredPickerDevices()[state.devicePickerHighlight];
+    if (device) selectPickerDevice(device.device_id);
+  } else if (event.key === "Escape") {
+    event.preventDefault();
+    closeDevicePicker();
+    elements.devicePickerTrigger.focus();
+  }
+});
+
+document.addEventListener("click", event => {
+  if (state.devicePickerOpen && !elements.devicePicker.contains(event.target)) {
+    closeDevicePicker();
+  }
+});
+
 elements.overridePolicy.addEventListener("change", updateMonthVisibility);
 elements.deleteOverrideButton.addEventListener("click", deleteOverride);
 elements.cancelOverrideButton.addEventListener("click", closeOverrideEditor);

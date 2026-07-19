@@ -1,11 +1,22 @@
-import json
 import threading
 from datetime import datetime
-from pathlib import Path
 import tkinter as tk
 from tkinter import ttk, messagebox
-
+from src.hadocs.gui.assets import app_path, load_logo_image
+from src.hadocs.gui.data import read_latest_summary, safe_read_json
+from src.hadocs.gui.theme import Theme
+from src.hadocs.gui.dialogs.about_dialog import AboutDialog
+from src.hadocs.gui.dialogs.first_run import FirstRunWizard
+from src.hadocs.gui.dialogs.settings_dialog import SettingsDialog
+from src.hadocs.gui.widgets.health_gauge import HealthGauge
 from src.hadocs.collectors.homeassistant import build_indexes, collect_all
+from src.hadocs.gui.assets import LOGO_DEBUG, find_logo_file, load_logo_image
+from src.hadocs.gui.data import read_latest_summary
+from src.hadocs.gui.dialogs.about_dialog import AboutDialog
+from src.hadocs.gui.dialogs.device_override_manager import DeviceOverrideManager
+from src.hadocs.gui.dialogs.first_run import FirstRunWizard
+from src.hadocs.gui.dialogs.log_window import LogWindow
+from src.hadocs.gui.dialogs.settings_dialog import SettingsDialog
 from src.hadocs.gui.output_actions import (
     completion_message,
     open_dashboard,
@@ -13,6 +24,8 @@ from src.hadocs.gui.output_actions import (
     open_markdown,
     open_output_folder,
 )
+from src.hadocs.gui.theme import COLORS, Theme
+from src.hadocs.gui.widgets.health_gauge import HealthGauge
 from src.hadocs.reports.generator import generate_all
 from src.hadocs.utils.config import (
     config_exists,
@@ -26,549 +39,6 @@ from src.hadocs.utils.security import (
     tracked_generated_files,
     tracked_sensitive_files,
 )
-
-
-COLORS = {
-    "bg": "#0b1020",
-    "panel": "#111827",
-    "panel2": "#172033",
-    "card": "#0f172a",
-    "border": "#263244",
-    "text": "#e5e7eb",
-    "muted": "#9ca3af",
-    "blue": "#38bdf8",
-    "green": "#22c55e",
-    "yellow": "#facc15",
-    "red": "#ef4444",
-    "purple": "#a78bfa",
-}
-
-
-
-
-LOGO_DEBUG = []
-
-
-def _project_roots():
-    import sys
-
-    roots = [
-        Path(getattr(sys, "_MEIPASS", Path.cwd())),
-        Path.cwd(),
-    ]
-
-    try:
-        here = Path(__file__).resolve()
-        roots.extend(here.parents)
-    except Exception:
-        pass
-
-    unique = []
-    seen = set()
-    for root in roots:
-        try:
-            resolved = root.resolve()
-        except Exception:
-            resolved = root
-        if resolved not in seen:
-            unique.append(root)
-            seen.add(resolved)
-
-    return unique
-
-
-def app_path(*parts):
-    for root in _project_roots():
-        candidate = root.joinpath(*parts)
-        if candidate.exists():
-            return candidate
-    return Path.cwd().joinpath(*parts)
-
-
-def find_logo_file():
-    names = [
-        "logo.png",
-        "Logo.png",
-        "HADocs.png",
-        "hadocs.png",
-        "logo.svg",
-        "icon.png",
-        "Icon.png",
-    ]
-
-    for root in _project_roots():
-        for name in names:
-            candidate = root / "docs" / "images" / name
-            if candidate.exists():
-                return candidate
-
-    for root in _project_roots():
-        images = root / "docs" / "images"
-        if not images.exists():
-            continue
-        try:
-            matches = sorted(
-                [
-                    p
-                    for p in images.iterdir()
-                    if p.is_file()
-                    and "logo" in p.name.lower()
-                    and p.suffix.lower() in {".png", ".svg", ".gif"}
-                ]
-            )
-            if matches:
-                return matches[0]
-        except Exception:
-            continue
-
-    return None
-
-
-
-
-def safe_read_json(path):
-    path = Path(path)
-    if not path.exists():
-        return {}
-    try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except Exception:
-        return {}
-
-
-def read_latest_summary(output_dir):
-    output = Path(output_dir)
-    recommendations = safe_read_json(output / "knowledge" / "recommendations.json")
-    incidents = safe_read_json(output / "knowledge" / "incidents.json")
-
-    return {
-        "health": safe_read_json(output / "knowledge" / "health.json"),
-        "inventory": safe_read_json(output / "knowledge" / "inventory.json"),
-        "recommendations": recommendations if isinstance(recommendations, list) else [],
-        "incidents": incidents if isinstance(incidents, list) else [],
-        "latest": safe_read_json(output / "history" / "latest.json"),
-        "summary": safe_read_json(output / "history" / "summary.json"),
-    }
-
-
-class Theme:
-    @staticmethod
-    def apply(root):
-        style = ttk.Style(root)
-        try:
-            style.theme_use("clam")
-        except tk.TclError:
-            pass
-
-        root.configure(bg=COLORS["bg"])
-
-        style.configure(".", background=COLORS["bg"], foreground=COLORS["text"], font=("Segoe UI", 10))
-        style.configure("TFrame", background=COLORS["bg"])
-        style.configure("Panel.TFrame", background=COLORS["panel"])
-        style.configure("Card.TFrame", background=COLORS["card"])
-        style.configure("TLabel", background=COLORS["bg"], foreground=COLORS["text"])
-        style.configure("Panel.TLabel", background=COLORS["panel"], foreground=COLORS["text"])
-        style.configure("MutedPanel.TLabel", background=COLORS["panel"], foreground=COLORS["muted"])
-        style.configure("Card.TLabel", background=COLORS["card"], foreground=COLORS["text"])
-        style.configure("MutedCard.TLabel", background=COLORS["card"], foreground=COLORS["muted"])
-        style.configure("Hero.TLabel", background=COLORS["panel"], foreground=COLORS["text"], font=("Segoe UI", 30, "bold"))
-        style.configure("HeroSub.TLabel", background=COLORS["panel"], foreground=COLORS["muted"], font=("Segoe UI", 11))
-        style.configure("MetricValue.TLabel", background=COLORS["card"], foreground=COLORS["text"], font=("Segoe UI", 28, "bold"))
-        style.configure("MetricLabel.TLabel", background=COLORS["card"], foreground=COLORS["muted"], font=("Segoe UI", 9))
-        style.configure("TLabelframe", background=COLORS["bg"], foreground=COLORS["text"], bordercolor=COLORS["border"])
-        style.configure("TLabelframe.Label", background=COLORS["bg"], foreground=COLORS["text"], font=("Segoe UI", 10, "bold"))
-        style.configure("TEntry", fieldbackground="#020617", foreground=COLORS["text"], insertcolor=COLORS["text"], bordercolor=COLORS["border"])
-        style.configure("TButton", background=COLORS["panel2"], foreground=COLORS["text"], bordercolor=COLORS["border"], focusthickness=0, padding=(12, 7))
-        style.map("TButton", background=[("active", "#1f2a44")])
-        style.configure("Accent.TButton", background=COLORS["blue"], foreground="#020617", bordercolor=COLORS["blue"], font=("Segoe UI", 10, "bold"), padding=(14, 8))
-        style.map("Accent.TButton", background=[("active", "#7dd3fc")])
-        style.configure("Horizontal.TProgressbar", troughcolor="#020617", background=COLORS["green"], bordercolor=COLORS["border"])
-
-
-
-def find_logo_file():
-    direct = [
-        app_path("docs", "images", "logo.png"),
-        app_path("docs", "images", "Logo.png"),
-        app_path("docs", "images", "logo.svg"),
-        app_path("docs", "images", "icon.png"),
-    ]
-
-    for path in direct:
-        if path.exists():
-            return path
-
-    roots = [Path.cwd()]
-    try:
-        roots.append(Path(__file__).resolve().parents[3])
-    except Exception:
-        pass
-
-    wanted = {"logo.png", "Logo.png", "logo.svg", "icon.png"}
-    for root in roots:
-        try:
-            for candidate in root.rglob("*"):
-                if candidate.name in wanted and "docs" in candidate.parts and "images" in candidate.parts:
-                    return candidate
-        except Exception:
-            continue
-
-    return None
-
-
-def load_logo_image(max_size=170):
-    path = find_logo_file()
-    if path is None:
-        return None
-
-    try:
-        from PIL import Image, ImageTk
-
-        if path.suffix.lower() == ".svg":
-            try:
-                import io
-                import cairosvg
-
-                png_bytes = cairosvg.svg2png(url=str(path))
-                img = Image.open(io.BytesIO(png_bytes)).convert("RGBA")
-            except Exception:
-                return None
-        else:
-            img = Image.open(path).convert("RGBA")
-
-        img.thumbnail((max_size, max_size))
-        canvas = Image.new("RGBA", (max_size, max_size), (0, 0, 0, 0))
-        x = (max_size - img.width) // 2
-        y = (max_size - img.height) // 2
-        canvas.alpha_composite(img, (x, y))
-        return ImageTk.PhotoImage(canvas)
-    except Exception:
-        pass
-
-    if path.suffix.lower() == ".png":
-        try:
-            image = tk.PhotoImage(file=str(path))
-            factor = max(1, int(max(image.width(), image.height()) / max_size))
-            if factor > 1:
-                image = image.subsample(factor, factor)
-            return image
-        except Exception:
-            return None
-
-    return None
-
-class HealthGauge(tk.Canvas):
-    def __init__(self, master, size=184):
-        super().__init__(master, width=size, height=size, bg=COLORS["card"], highlightthickness=0, bd=0)
-        self.size = size
-        self.score = None
-        self.message = "CLICK SCAN"
-        self.draw()
-
-    def set_score(self, score):
-        try:
-            self.score = int(score)
-            self.message = "HEALTH"
-        except Exception:
-            self.score = None
-            self.message = "CLICK SCAN"
-        self.draw()
-
-    def draw(self):
-        self.delete("all")
-        pad = 18
-        box = (pad, pad, self.size - pad, self.size - pad)
-        self.create_arc(box, start=90, extent=-359.9, style="arc", width=16, outline="#263244")
-
-        if self.score is not None:
-            extent = -359.9 * max(0, min(100, self.score)) / 100
-            color = COLORS["green"] if self.score >= 85 else COLORS["yellow"] if self.score >= 60 else COLORS["red"]
-            self.create_arc(box, start=90, extent=extent, style="arc", width=16, outline=color)
-
-        text = "—" if self.score is None else str(self.score)
-        self.create_text(self.size / 2, self.size / 2 - 8, text=text, fill=COLORS["text"], font=("Segoe UI", 38, "bold"))
-        self.create_text(self.size / 2, self.size / 2 + 31, text=self.message, fill=COLORS["muted"], font=("Segoe UI", 9, "bold"))
-
-
-
-class LogWindow(tk.Toplevel):
-    def __init__(self, master, source_text):
-        super().__init__(master)
-        self.title("HADocs Developer Log")
-        self.geometry("950x600")
-        self.transient(master)
-        Theme.apply(self)
-
-        frame = ttk.Frame(self, style="Panel.TFrame", padding=14)
-        frame.pack(fill="both", expand=True)
-        frame.columnconfigure(0, weight=1)
-        frame.rowconfigure(0, weight=1)
-
-        self.text = tk.Text(
-            frame,
-            wrap="none",
-            bg="#020617",
-            fg=COLORS["text"],
-            insertbackground=COLORS["text"],
-            relief="flat",
-            font=("Cascadia Mono", 10),
-        )
-        self.text.grid(row=0, column=0, sticky="nsew")
-
-        yscroll = ttk.Scrollbar(frame, orient="vertical", command=self.text.yview)
-        yscroll.grid(row=0, column=1, sticky="ns")
-
-        xscroll = ttk.Scrollbar(frame, orient="horizontal", command=self.text.xview)
-        xscroll.grid(row=1, column=0, sticky="ew")
-
-        self.text.configure(yscrollcommand=yscroll.set, xscrollcommand=xscroll.set)
-        self.text.insert("1.0", source_text.get("1.0", "end-1c"))
-        self.text.configure(state="disabled")
-
-        buttons = ttk.Frame(frame, style="Panel.TFrame")
-        buttons.grid(row=2, column=0, columnspan=2, sticky="e", pady=(12, 0))
-
-        ttk.Button(buttons, text="Copy", command=self.copy_log).pack(side="left", padx=(0, 8))
-        ttk.Button(buttons, text="Close", command=self.destroy).pack(side="left")
-
-    def copy_log(self):
-        self.clipboard_clear()
-        self.clipboard_append(self.text.get("1.0", "end-1c"))
-
-class FirstRunWizard(tk.Toplevel):
-    def __init__(self, master, cfg, on_finish):
-        super().__init__(master)
-        self.title("Welcome to HADocs")
-        self.geometry("760x540")
-        self.resizable(False, False)
-        self.transient(master)
-        self.grab_set()
-        Theme.apply(self)
-
-        self.cfg = dict(cfg)
-        self.on_finish = on_finish
-        self.step = 0
-
-        self.url_var = tk.StringVar(value=self.cfg.get("ha_url", "http://homeassistant.local:8123"))
-        self.token_var = tk.StringVar(value=self.cfg.get("token", ""))
-        self.project_var = tk.StringVar(value=self.cfg.get("project_name", "My Smart Home"))
-
-        container = ttk.Frame(self, style="Panel.TFrame", padding=28)
-        container.pack(fill="both", expand=True)
-
-        self.body = ttk.Frame(container, style="Panel.TFrame")
-        self.body.pack(fill="both", expand=True)
-
-        self.buttons = ttk.Frame(container, style="Panel.TFrame")
-        self.buttons.pack(fill="x", pady=(20, 0))
-
-        self.back_btn = ttk.Button(self.buttons, text="Back", command=self.back)
-        self.back_btn.pack(side="left")
-
-        self.next_btn = ttk.Button(self.buttons, text="Get Started", style="Accent.TButton", command=self.next)
-        self.next_btn.pack(side="right")
-
-        self.render()
-
-    def clear(self):
-        for widget in self.body.winfo_children():
-            widget.destroy()
-
-    def render(self):
-        self.clear()
-        self.back_btn.config(state="normal" if self.step > 0 else "disabled")
-
-        if self.step == 0:
-            logo = load_logo_image(180)
-            if logo is not None:
-                label = ttk.Label(self.body, image=logo, style="Panel.TLabel")
-                label.image = logo
-                label.pack(anchor="center", pady=(0, 12))
-
-            ttk.Label(self.body, text="Welcome to HADocs", style="Hero.TLabel").pack(anchor="center")
-            ttk.Label(self.body, text="Understand your Home Assistant like never before.", style="MutedPanel.TLabel").pack(anchor="center", pady=(8, 22))
-
-            features = [
-                "✓ Health Score",
-                "✓ Root Cause Analysis",
-                "✓ AI-compatible Knowledge Pack",
-                "✓ Local-first",
-                "✓ No cloud upload",
-                "✓ 100% private",
-            ]
-            ttk.Label(self.body, text="\n".join(features), style="Panel.TLabel", font=("Segoe UI", 12)).pack(anchor="center")
-            self.next_btn.config(text="Get Started")
-
-        elif self.step == 1:
-            ttk.Label(self.body, text="Connect to Home Assistant", style="Hero.TLabel").pack(anchor="w")
-            ttk.Label(self.body, text="Enter your URL and Long-Lived Access Token.", style="MutedPanel.TLabel").pack(anchor="w", pady=(8, 20))
-
-            form = ttk.Frame(self.body, style="Panel.TFrame")
-            form.pack(fill="x")
-            form.columnconfigure(1, weight=1)
-
-            ttk.Label(form, text="Home Assistant URL", style="Panel.TLabel").grid(row=0, column=0, sticky="w", padx=(0, 12), pady=8)
-            ttk.Entry(form, textvariable=self.url_var).grid(row=0, column=1, sticky="ew", pady=8)
-
-            ttk.Label(form, text="Long-Lived Token", style="Panel.TLabel").grid(row=1, column=0, sticky="w", padx=(0, 12), pady=8)
-            ttk.Entry(form, textvariable=self.token_var, show="*").grid(row=1, column=1, sticky="ew", pady=8)
-            self.next_btn.config(text="Next")
-
-        else:
-            ttk.Label(self.body, text="Name your smart home", style="Hero.TLabel").pack(anchor="w")
-            ttk.Label(self.body, text="Choose the name shown in generated reports.", style="MutedPanel.TLabel").pack(anchor="w", pady=(8, 20))
-
-            form = ttk.Frame(self.body, style="Panel.TFrame")
-            form.pack(fill="x")
-            form.columnconfigure(1, weight=1)
-
-            ttk.Label(form, text="Project name", style="Panel.TLabel").grid(row=0, column=0, sticky="w", padx=(0, 12), pady=8)
-            ttk.Entry(form, textvariable=self.project_var).grid(row=0, column=1, sticky="ew", pady=8)
-            self.next_btn.config(text="Finish")
-
-    def back(self):
-        if self.step > 0:
-            self.step -= 1
-            self.render()
-
-    def next(self):
-        if self.step < 2:
-            self.step += 1
-            self.render()
-            return
-
-        self.cfg["ha_url"] = self.url_var.get().strip()
-        self.cfg["token"] = self.token_var.get().strip()
-        self.cfg["project_name"] = self.project_var.get().strip() or "My Smart Home"
-        save_config(self.cfg)
-        self.on_finish(self.cfg)
-        self.destroy()
-
-
-class SettingsDialog(tk.Toplevel):
-
-    def __init__(self, master, cfg, on_save):
-        super().__init__(master)
-        self.title("HADocs Settings")
-        self.geometry("700x520")
-        self.transient(master)
-        Theme.apply(self)
-
-        self.cfg = dict(cfg)
-        self.on_save = on_save
-
-        try:
-            from src.hadocs.security.credential_store import get_home_assistant_token
-            stored_token = get_home_assistant_token() or ""
-        except Exception:
-            stored_token = ""
-
-        self.url_var = tk.StringVar(value=self.cfg.get("ha_url", ""))
-        self.token_var = tk.StringVar(value=stored_token or self.cfg.get("token", ""))
-        self.project_var = tk.StringVar(value=self.cfg.get("project_name", "My Smart Home"))
-        self.output_var = tk.StringVar(value=self.cfg.get("output_dir", "output"))
-        self.auto_open_var = tk.BooleanVar(value=bool(self.cfg.get("open_dashboard_after_scan", True)))
-
-        frame = ttk.Frame(self, style="Panel.TFrame", padding=22)
-        frame.pack(fill="both", expand=True)
-        frame.columnconfigure(1, weight=1)
-
-        ttk.Label(frame, text="Settings", style="Hero.TLabel").grid(row=0, column=0, columnspan=3, sticky="w", pady=(0, 22))
-
-        rows = [
-            ("Home Assistant URL", self.url_var, False),
-            ("Home Assistant Token", self.token_var, True),
-            ("Project name", self.project_var, False),
-            ("Output folder", self.output_var, False),
-        ]
-
-        for idx, (label, var, secret) in enumerate(rows, start=1):
-            ttk.Label(frame, text=label, style="Panel.TLabel").grid(row=idx, column=0, sticky="w", padx=(0, 12), pady=7)
-            ttk.Entry(frame, textvariable=var, show="*" if secret else "").grid(row=idx, column=1, sticky="ew", pady=7)
-
-        self.token_status = ttk.Label(
-            frame,
-            text="🔒 Stored in Windows Credential Manager" if stored_token else "Token will be stored securely in Windows",
-            style="MutedPanel.TLabel",
-        )
-        self.token_status.grid(row=2, column=2, sticky="w", padx=(12, 0), pady=7)
-
-        ttk.Button(frame, text="Forget token", command=self.forget_token).grid(row=5, column=1, sticky="w", pady=(8, 0))
-
-        ttk.Checkbutton(frame, text="Open dashboard after scan", variable=self.auto_open_var).grid(row=6, column=0, columnspan=3, sticky="w", pady=(20, 4))
-
-        buttons = ttk.Frame(frame, style="Panel.TFrame")
-        buttons.grid(row=7, column=0, columnspan=3, sticky="e", pady=(28, 0))
-        ttk.Button(buttons, text="Cancel", command=self.destroy).pack(side="right", padx=(8, 0))
-        ttk.Button(buttons, text="Save", style="Accent.TButton", command=self.save).pack(side="right")
-
-
-    def save(self):
-        token = self.token_var.get().strip()
-
-        try:
-            from src.hadocs.security.credential_store import set_home_assistant_token
-            if token:
-                set_home_assistant_token(token)
-        except Exception as exc:
-            messagebox.showerror("HADocs", f"Could not save token in Windows Credential Manager:\n{exc}")
-            return
-
-        self.cfg["ha_url"] = self.url_var.get().strip()
-        self.cfg["project_name"] = self.project_var.get().strip() or "My Smart Home"
-        self.cfg["output_dir"] = self.output_var.get().strip() or "output"
-        self.cfg["cache_dir"] = self.cfg.get("cache_dir", "cache")
-        self.cfg["open_dashboard_after_scan"] = bool(self.auto_open_var.get())
-        self.cfg.pop("token", None)
-        self.cfg.pop("ha_token", None)
-
-        save_config(self.cfg)
-        self.on_save(self.cfg)
-        self.destroy()
-
-    def forget_token(self):
-        try:
-            from src.hadocs.security.credential_store import delete_home_assistant_token
-            delete_home_assistant_token()
-        except Exception as exc:
-            messagebox.showerror("HADocs", f"Could not remove token from Windows Credential Manager:\n{exc}")
-            return
-
-        self.token_var.set("")
-        self.token_status.config(text="Token removed from Windows Credential Manager")
-
-class AboutDialog(tk.Toplevel):
-    def __init__(self, master):
-        super().__init__(master)
-        self.title("About HADocs")
-        self.geometry("540x450")
-        self.resizable(False, False)
-        self.transient(master)
-        Theme.apply(self)
-
-        try:
-            from src.hadocs.version import __version__
-        except Exception:
-            __version__ = "unknown"
-
-        frame = ttk.Frame(self, style="Panel.TFrame", padding=24)
-        frame.pack(fill="both", expand=True)
-
-        logo = load_logo_image(175)
-        if logo is not None:
-            label = ttk.Label(frame, image=logo, style="Panel.TLabel")
-            label.image = logo
-            label.pack(anchor="center", pady=(0, 10))
-
-        ttk.Label(frame, text="HADocs", style="Hero.TLabel").pack(anchor="center")
-        ttk.Label(frame, text="Smart Home Intelligence for Home Assistant", style="MutedPanel.TLabel").pack(anchor="center", pady=(4, 18))
-        ttk.Label(frame, text=f"Version {__version__}", style="Panel.TLabel").pack(anchor="center")
-        ttk.Label(frame, text="Local-first • Privacy-first • AI-compatible", style="Panel.TLabel").pack(anchor="center", pady=(16, 0))
-        ttk.Label(frame, text="Built with ❤️ for the Home Assistant community.", style="MutedPanel.TLabel").pack(anchor="center", pady=(12, 0))
-        ttk.Label(frame, text="MIT License", style="MutedPanel.TLabel").pack(anchor="center", pady=(12, 0))
-        ttk.Label(frame, text="https://github.com/SirBlondieDK/HADocs", style="MutedPanel.TLabel", wraplength=450).pack(anchor="center", pady=(12, 0))
-        ttk.Button(frame, text="Close", command=self.destroy).pack(anchor="center", pady=(18, 0))
-
 
 class App(tk.Tk):
     def __init__(self):
@@ -631,6 +101,7 @@ class App(tk.Tk):
             ("🚀 Scan Home Assistant", self.run, "Accent.TButton"),
             ("📊 Dashboard", lambda: open_dashboard(self.cfg.get("output_dir", "output")), None),
             ("🧭 Explorer", lambda: open_explorer(self.cfg.get("output_dir", "output")), None),
+            ("🧩 Device Overrides", self.open_device_overrides, None),
             ("📄 Markdown", lambda: open_markdown(self.cfg.get("output_dir", "output")), None),
             ("📁 Output Folder", lambda: open_output_folder(self.cfg.get("output_dir", "output")), None),
             ("🩺 Doctor", self.run_doctor, None),
@@ -650,6 +121,9 @@ class App(tk.Tk):
         ttk.Label(self.sidebar, text="Local only • No cloud", style="MutedPanel.TLabel").pack(
             anchor="w", side="bottom", pady=(30, 0)
         )
+
+    def open_device_overrides(self):
+        DeviceOverrideManager(self, self.cfg)
 
     def build_main(self):
         self.main = ttk.Frame(self.root_frame, style="Panel.TFrame", padding=24)
@@ -833,9 +307,6 @@ class App(tk.Tk):
     def open_log_window(self):
         LogWindow(self, self.log)
 
-    def open_log_window(self):
-        LogWindow(self, self.log)
-
 
     def build_output_buttons(self):
         output = ttk.LabelFrame(self.main, text="Generated output", padding=14)
@@ -1014,7 +485,7 @@ class App(tk.Tk):
             warnings = validate_config_warnings(cfg)
 
             for warning in warnings:
-                                         self.log_msg(f"WARNING: {warning}")
+                self.log_msg(f"WARNING: {warning}")
             if problems:
                 for problem in problems:
                     self.log_msg(f"ERROR: {problem}")
@@ -1073,3 +544,9 @@ class App(tk.Tk):
 
 def run_gui():
     App().mainloop()
+
+# Backward-compatible public names used by modern_app.py and existing launchers.
+HADocsModernApp = App
+run_modern_gui = run_gui
+HADocsDesktopApp = App
+run_desktop_gui = run_gui
