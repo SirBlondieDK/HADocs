@@ -176,42 +176,203 @@ HADocs is built for local analysis.
 
 ---
 
+---
+
 ## 🖥️ Installation
+
+HADocs can run in three supported ways:
+
+1. Home Assistant Add-on
+2. Docker
+3. Windows
+
+All three use the same HADocs analysis engine and web interface.
+
+### Home Assistant Add-on
+
+The add-on is the easiest option when HADocs should run directly inside Home Assistant.
+
+1. Add the HADocs add-on repository to Home Assistant.
+2. Install **HADocs** from the Add-on Store.
+3. Configure the Home Assistant URL and Long-Lived Access Token in the add-on options.
+4. Start the add-on.
+5. Open the HADocs web interface from the add-on page.
+6. Run a scan from **Overview**.
+
+When a new `sirblondiedk/hadocs:dev` image has been published, rebuild or reinstall the add-on to pull the updated image.
+
+The add-on stores persistent data in its mapped `/config`, `/cache`, and `/output` directories.
+
+### Docker
+
+Docker is recommended for a dedicated server, NAS, VM, or LXC host.
+
+Create `docker-compose.yml`:
+
+```yaml
+services:
+  hadocs:
+    image: sirblondiedk/hadocs:dev
+    container_name: hadocs
+
+    env_file:
+      - ./docker/hadocs.env
+
+    environment:
+      HADOCS_OUTPUT_DIR: /output
+
+    volumes:
+      - ./docker/output:/output
+      - ./docker/cache:/cache
+      - ./docker/config:/config
+
+    ports:
+      - "8099:8099"
+
+    entrypoint: ["python", "-m", "src.hadocs.web.app"]
+
+    restart: unless-stopped
+```
+
+Create the persistent folders:
+
+```bash
+mkdir -p docker/output docker/cache docker/config
+```
+
+Create `docker/hadocs.env` with your runtime configuration. Do not commit private tokens.
+
+Start HADocs:
+
+```bash
+docker compose pull
+docker compose up -d
+```
+
+Open:
+
+```text
+http://SERVER-IP:8099
+```
+
+View logs:
+
+```bash
+docker compose logs -f hadocs
+```
+
+Update to the newest published image:
+
+```bash
+docker compose pull
+docker compose up -d --force-recreate
+```
+
+Check status:
+
+```bash
+docker compose ps
+```
+
+The container should remain **Up** because Docker starts the HADocs web application, not the one-shot `generate` command.
 
 ### Windows
 
-1. Download the latest release from GitHub Releases.
-2. Extract `HADocs-v0.13.0-win64.zip`.
+The Windows release does not require a separate Python installation.
+
+1. Download the latest Windows release from GitHub Releases.
+2. Extract the ZIP archive.
 3. Run `HADocs.exe`.
-4. Enter your Home Assistant URL and Long-Lived Access Token.
-5. Click **Scan Home Assistant**.
+4. Enter the Home Assistant URL and Long-Lived Access Token.
+5. Start the HADocs web interface or run a scan.
+6. Open the local address shown by HADocs.
 
-Python is not required for the Windows release.
-
-### From source
+For development from source:
 
 ```powershell
 git clone https://github.com/SirBlondieDK/HADocs.git
 cd HADocs
 py -3.14 -m pip install -e .
-py -3.14 main.py
+$env:HADOCS_OUTPUT_DIR = Join-Path (Get-Location) "output"
+py -3.14 -m src.hadocs.web.app
 ```
+
+---
+
+## 🌐 Web interface
+
+The web interface is the primary HADocs experience.
+
+It includes:
+
+- Overview
+- Native Analysis
+- Interactive Root Cause evidence
+- Explorer
+- Device Overrides
+- Scan logs
+- HTML export
+
+The Analysis page reads directly from the HADocs data API. The generated `output/index.html` file remains available as an export and is no longer embedded as the main interface.
+
+---
+
+## 📦 Persistent data
+
+HADocs uses these locations inside containers:
+
+```text
+/config
+/cache
+/output
+```
+
+Recommended Docker mappings:
+
+```text
+./docker/config:/config
+./docker/cache:/cache
+./docker/output:/output
+```
+
+Keep `docker/hadocs.env`, tokens, generated private reports, and local override files out of public commits.
 
 ---
 
 ## 🧪 Development
 
-Run tests:
+Run the complete test suite:
 
 ```powershell
-py -3.14 -m pytest
+Remove-Item Env:HADOCS_OUTPUT_DIR -ErrorAction SilentlyContinue
+py -3.14 -m pytest -q
 ```
 
-Build Windows package:
+Start the web application:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File installer/build_windows.ps1
-Compress-Archive -Path dist\HADocs\* -DestinationPath HADocs-v0.13.0-win64.zip -Force
+$env:HADOCS_OUTPUT_DIR = Join-Path (Get-Location) "output"
+py -3.14 -m src.hadocs.web.app
+```
+
+Build the Docker image locally:
+
+```bash
+docker build -t hadocs:local .
+```
+
+Run the local image:
+
+```bash
+docker run --rm -p 8099:8099 \
+  --env-file ./docker/hadocs.env \
+  -e HADOCS_OUTPUT_DIR=/output \
+  -v "$(pwd)/docker/output:/output" \
+  -v "$(pwd)/docker/cache:/cache" \
+  -v "$(pwd)/docker/config:/config" \
+  --entrypoint python \
+  hadocs:local \
+  -m src.hadocs.web.app
 ```
 
 ---
@@ -220,11 +381,12 @@ Compress-Archive -Path dist\HADocs\* -DestinationPath HADocs-v0.13.0-win64.zip -
 
 See [ROADMAP.md](ROADMAP.md).
 
-Next milestones:
+Current priorities include:
 
-- v0.14: Explain This, deeper repair guidance, dependency graph
-- v0.15: Automation Intelligence, Lovelace review, Zigbee health
-- v1.0: stable public release, localization, installer and automatic updates
+- More precise evidence-based integration assessments
+- Better navigation between root causes, devices, entities, and integrations
+- Continued web interface polish
+- Stable releases for Add-on, Docker, and Windows
 
 ---
 
@@ -232,10 +394,19 @@ Next milestones:
 
 Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
+Before opening a pull request:
+
+```powershell
+Remove-Item Env:HADOCS_OUTPUT_DIR -ErrorAction SilentlyContinue
+py -3.14 -m pytest -q
+```
+
+Please do not include tokens, private Home Assistant URLs, private generated reports, or local override data.
+
 ---
 
 ## ❤️ Built for the Home Assistant community
 
-HADocs was created by a Home Assistant user to make troubleshooting faster, clearer and more enjoyable.
+HADocs was created by a Home Assistant user to make troubleshooting faster, clearer, and more enjoyable.
 
 If HADocs saves you time, consider giving the project a ⭐ on GitHub.

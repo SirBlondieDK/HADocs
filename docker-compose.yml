@@ -2,11 +2,21 @@ services:
   hadocs:
     image: sirblondiedk/hadocs:dev
     container_name: hadocs
+
     env_file:
       - ./docker/hadocs.env
+
+    environment:
+      HADOCS_OUTPUT_DIR: /output
+
     volumes:
       - ./docker/output:/output
       - ./docker/cache:/cache
       - ./docker/config:/config
-    command: ["generate"]
-    restart: "no"
+
+    ports:
+      - "8099:8099"
+
+    entrypoint: ["python", "-m", "src.hadocs.web.app"]
+
+    restart: unless-stopped
