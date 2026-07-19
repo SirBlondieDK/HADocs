@@ -61,7 +61,21 @@ def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
     incidents_v2 = build_incidents_v2(model, device_overrides)
 
     executive = build_executive_summary_from_incidents(health_score, incidents)
-    save_history_snapshot(cfg, model, health_score, executive, incidents=incidents, raw_incidents=raw_incidents)
+
+    # Apply intelligence first, then make Health Score v2 the official score.
+    # This ensures later intelligence enrichment cannot overwrite the v2 score.
+    executive = apply_intelligence_v014(model, executive, incidents)
+    executive = apply_health_score_v2(model, executive, incidents)
+    health_score = executive.score
+
+    save_history_snapshot(
+        cfg,
+        model,
+        health_score,
+        executive,
+        incidents=incidents,
+        raw_incidents=raw_incidents,
+    )
     history_comparison = compare_last_two(cfg)
     history = load_history(cfg)
     trend_summary = build_trend_summary(history)
@@ -86,8 +100,6 @@ def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
         version="0.11.0",
     )
 
-    # Keep Health Score v2 details available, but do not override the official score yet.
-    executive = apply_intelligence_v014(model, executive, incidents)
     generate_index(out, project_name, executive, incidents, now)
     generate_executive_dashboard(out, project_name, model, executive, health_notes, history_comparison, trend_summary, incidents, raw_incidents, now)
     generate_root_causes(out, incidents, now)

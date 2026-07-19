@@ -22,6 +22,9 @@ OUTPUT_DIRECTORY = Path(
 
 OPTIONS_FILE = Path("/data/options.json")
 
+WEB_DIRECTORY = Path(__file__).resolve().parent
+STATIC_DIRECTORY = WEB_DIRECTORY / "static"
+
 
 def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -148,288 +151,6 @@ class ScanManager:
 SCAN_MANAGER = ScanManager()
 
 
-INDEX_HTML = """<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1"
-    >
-    <title>HADocs</title>
-    <style>
-        :root {
-            color-scheme: light dark;
-            font-family:
-                system-ui,
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                sans-serif;
-        }
-
-        body {
-            margin: 0;
-            padding: 24px;
-            background: var(--primary-background-color, #111827);
-            color: var(--primary-text-color, #f3f4f6);
-        }
-
-        main {
-            width: min(900px, 100%);
-            margin: 0 auto;
-        }
-
-        .header {
-            margin-bottom: 24px;
-        }
-
-        .header h1 {
-            margin: 0 0 6px;
-        }
-
-        .muted {
-            opacity: 0.72;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns:
-                repeat(auto-fit, minmax(220px, 1fr));
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-
-        .card {
-            padding: 18px;
-            border: 1px solid rgba(127, 127, 127, 0.3);
-            border-radius: 14px;
-            background: rgba(127, 127, 127, 0.08);
-        }
-
-        .card h2 {
-            margin-top: 0;
-            font-size: 1rem;
-        }
-
-        .value {
-            margin: 8px 0 0;
-            font-size: 1.25rem;
-            font-weight: 700;
-        }
-
-        .actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        button,
-        .button {
-            box-sizing: border-box;
-            min-height: 44px;
-            padding: 11px 18px;
-            border: 0;
-            border-radius: 10px;
-            background: var(--primary-color, #03a9f4);
-            color: white;
-            font: inherit;
-            font-weight: 650;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        button:disabled,
-        .button.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
-
-        pre {
-            min-height: 220px;
-            max-height: 420px;
-            overflow: auto;
-            padding: 16px;
-            border-radius: 12px;
-            background: #090d14;
-            color: #d1fae5;
-            white-space: pre-wrap;
-            word-break: break-word;
-        }
-
-        .success {
-            color: #4ade80;
-        }
-
-        .error {
-            color: #fb7185;
-        }
-    </style>
-</head>
-<body>
-<main>
-    <header class="header">
-        <h1>📘 HADocs</h1>
-        <div class="muted">
-            Home Assistant documentation and health analysis
-        </div>
-    </header>
-
-    <section class="grid">
-        <article class="card">
-            <h2>Status</h2>
-            <p id="status" class="value">Loading…</p>
-        </article>
-
-        <article class="card">
-            <h2>Last scan</h2>
-            <p id="last-scan" class="value">—</p>
-        </article>
-
-        <article class="card">
-            <h2>Report</h2>
-            <p id="report-status" class="value">Checking…</p>
-        </article>
-    </section>
-
-    <section class="actions">
-        <button id="scan-button" type="button">
-            Start new scan
-        </button>
-
-        <a
-            id="report-button"
-            class="button disabled"
-            href="./report/index.html"
-            target="_blank"
-            rel="noopener"
-        >
-            Open report
-        </a>
-    </section>
-
-    <section class="card">
-        <h2>Scan log</h2>
-        <pre id="logs">No scan log available.</pre>
-    </section>
-</main>
-
-<script>
-    const statusElement = document.getElementById("status");
-    const lastScanElement = document.getElementById("last-scan");
-    const reportStatusElement = document.getElementById("report-status");
-    const scanButton = document.getElementById("scan-button");
-    const reportButton = document.getElementById("report-button");
-    const logsElement = document.getElementById("logs");
-
-    function formatDate(value) {
-        if (!value) {
-            return "—";
-        }
-
-        const date = new Date(value);
-
-        if (Number.isNaN(date.getTime())) {
-            return value;
-        }
-
-        return date.toLocaleString();
-    }
-
-    async function fetchJson(relativeUrl, options = undefined) {
-        const response = await fetch(relativeUrl, options);
-        const body = await response.json();
-
-        if (!response.ok) {
-            throw new Error(body.error || `HTTP ${response.status}`);
-        }
-
-        return body;
-    }
-
-    async function refresh() {
-        try {
-            const [status, logData] = await Promise.all([
-                fetchJson("./api/status"),
-                fetchJson("./api/logs"),
-            ]);
-
-            scanButton.disabled = status.running;
-
-            if (status.running) {
-                statusElement.textContent = "Scanning…";
-                statusElement.className = "value";
-                scanButton.textContent = "Scan running…";
-            } else if (status.exit_code === 0) {
-                statusElement.textContent = "Ready";
-                statusElement.className = "value success";
-                scanButton.textContent = "Start new scan";
-            } else if (status.exit_code !== null) {
-                statusElement.textContent = "Last scan failed";
-                statusElement.className = "value error";
-                scanButton.textContent = "Start new scan";
-            } else {
-                statusElement.textContent = "Ready";
-                statusElement.className = "value";
-                scanButton.textContent = "Start new scan";
-            }
-
-            lastScanElement.textContent = formatDate(
-                status.finished_at || status.started_at
-            );
-
-            if (status.report_available) {
-                reportStatusElement.textContent = "Available";
-                reportStatusElement.className = "value success";
-                reportButton.classList.remove("disabled");
-            } else {
-                reportStatusElement.textContent = "Not generated";
-                reportStatusElement.className = "value";
-                reportButton.classList.add("disabled");
-            }
-
-            logsElement.textContent = logData.logs.length
-                ? logData.logs.join("\\n")
-                : "No scan log available.";
-
-            if (status.running) {
-                logsElement.scrollTop = logsElement.scrollHeight;
-            }
-        } catch (error) {
-            statusElement.textContent = "Connection error";
-            statusElement.className = "value error";
-            logsElement.textContent = String(error);
-        }
-    }
-
-    scanButton.addEventListener("click", async () => {
-        scanButton.disabled = true;
-
-        try {
-            await fetchJson("./api/scan", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: "{}",
-            });
-        } catch (error) {
-            alert(String(error));
-        }
-
-        await refresh();
-    });
-
-    refresh();
-    window.setInterval(refresh, 1500);
-</script>
-</body>
-</html>
-"""
-
-
 class HadocsRequestHandler(BaseHTTPRequestHandler):
     server_version = "HADocsWeb/0.2.1"
 
@@ -437,7 +158,12 @@ class HadocsRequestHandler(BaseHTTPRequestHandler):
         path = self._request_path()
 
         if path in {"", "/"}:
-            self._send_html(INDEX_HTML)
+            self._serve_web_file("index.html")
+            return
+
+        if path.startswith("/static/"):
+            relative_name = path.removeprefix("/static/")
+            self._serve_web_file(relative_name)
             return
 
         if path == "/api/status":
@@ -506,6 +232,43 @@ class HadocsRequestHandler(BaseHTTPRequestHandler):
         path = urlparse(self.path).path
         return unquote(path).rstrip("/") or "/"
 
+    def _serve_web_file(self, relative_name: str) -> None:
+        requested_file = (STATIC_DIRECTORY / relative_name).resolve()
+
+        try:
+            requested_file.relative_to(STATIC_DIRECTORY)
+        except ValueError:
+            self._send_json(
+                {"error": "Invalid static file path"},
+                status=HTTPStatus.BAD_REQUEST,
+            )
+            return
+
+        if not requested_file.is_file():
+            self._send_json(
+                {"error": "Static file not found"},
+                status=HTTPStatus.NOT_FOUND,
+            )
+            return
+
+        try:
+            content = requested_file.read_bytes()
+        except OSError as exc:
+            self._send_json(
+                {"error": f"Unable to read static file: {exc}"},
+                status=HTTPStatus.INTERNAL_SERVER_ERROR,
+            )
+            return
+
+        content_type = self._content_type(requested_file.suffix.lower())
+
+        self.send_response(HTTPStatus.OK)
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", str(len(content)))
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+        self.wfile.write(content)
+
     def _serve_report_file(self, request_path: str) -> None:
         relative_name = request_path.removeprefix("/report/")
         requested_file = (OUTPUT_DIRECTORY / relative_name).resolve()
@@ -563,20 +326,6 @@ class HadocsRequestHandler(BaseHTTPRequestHandler):
             ".gif": "image/gif",
             ".ico": "image/x-icon",
         }.get(suffix, "application/octet-stream")
-
-    def _send_html(
-        self,
-        content: str,
-        status: HTTPStatus = HTTPStatus.OK,
-    ) -> None:
-        encoded = content.encode("utf-8")
-
-        self.send_response(status)
-        self.send_header("Content-Type", "text/html; charset=utf-8")
-        self.send_header("Content-Length", str(len(encoded)))
-        self.send_header("Cache-Control", "no-store")
-        self.end_headers()
-        self.wfile.write(encoded)
 
     def _send_json(
         self,

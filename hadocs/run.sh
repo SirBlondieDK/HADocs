@@ -36,6 +36,7 @@ export HADOCS_PROJECT_NAME="${PROJECT_NAME}"
 export HADOCS_OUTPUT_DIR="${OUTPUT_DIRECTORY}"
 export HADOCS_CACHE_DIR="/data/cache"
 export HADOCS_CONFIG_FILE="/data/config.json"
+export HADOCS_DATABASE_FILE="/config/hadocs.db"
 
 echo "[HADocs] Project: ${PROJECT_NAME}"
 echo "[HADocs] Output: ${OUTPUT_DIRECTORY}"

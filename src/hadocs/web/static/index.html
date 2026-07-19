@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+  <title>HADocs</title>
+  <link rel="stylesheet" href="./static/style.css">
+</head>
+
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon">▣</div>
+
+        <div>
+          <h1>HADocs</h1>
+          <p>Home Assistant documentation and health analysis</p>
+        </div>
+      </div>
+
+      <div class="version">v0.2.1</div>
+    </header>
+
+    <nav class="navigation" aria-label="HADocs navigation">
+      <button class="nav-button active" data-view="overview">
+        Overview
+      </button>
+
+      <button class="nav-button" data-view="report">
+        Report
+      </button>
+
+      <button class="nav-button" data-view="logs">
+        Logs
+      </button>
+    </nav>
+
+    <main>
+      <section id="view-overview" class="view active">
+        <div class="status-grid">
+          <article class="card status-card">
+            <span class="card-label">Status</span>
+            <strong id="status-value" class="card-value">
+              Loading…
+            </strong>
+            <span id="status-detail" class="card-detail">
+              Connecting to HADocs
+            </span>
+          </article>
+
+          <article class="card">
+            <span class="card-label">Last scan</span>
+            <strong id="last-scan-value" class="card-value">
+              —
+            </strong>
+            <span class="card-detail">
+              Most recent completed scan
+            </span>
+          </article>
+
+          <article class="card">
+            <span class="card-label">Report</span>
+            <strong id="report-value" class="card-value">
+              Checking…
+            </strong>
+            <span class="card-detail">
+              Generated documentation
+            </span>
+          </article>
+        </div>
+
+        <section class="card action-card">
+          <div>
+            <span class="card-label">Documentation scan</span>
+            <h2>Generate a fresh Home Assistant report</h2>
+            <p>
+              HADocs collects Home Assistant configuration, devices,
+              entities, integrations and health information.
+            </p>
+          </div>
+
+          <button id="scan-button" class="primary-button" type="button">
+            Start new scan
+          </button>
+        </section>
+
+        <section id="scan-progress-card" class="card progress-card hidden">
+          <div class="progress-header">
+            <div>
+              <span class="card-label">Current scan</span>
+              <strong id="progress-label">Starting…</strong>
+            </div>
+
+            <span id="progress-percent">0%</span>
+          </div>
+
+          <div class="progress-track">
+            <div id="progress-bar" class="progress-bar"></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="section-header">
+            <div>
+              <span class="card-label">Latest output</span>
+              <h2>Scan log</h2>
+            </div>
+
+            <button
+              class="secondary-button"
+              type="button"
+              data-open-view="logs"
+            >
+              Open full log
+            </button>
+          </div>
+
+          <pre id="overview-log" class="log-box small-log">
+No scan log available.
+          </pre>
+        </section>
+      </section>
+
+      <section id="view-report" class="view">
+        <div class="section-header report-header">
+          <div>
+            <span class="card-label">Generated documentation</span>
+            <h2>HADocs Report</h2>
+          </div>
+
+          <button
+            id="reload-report-button"
+            class="secondary-button"
+            type="button"
+          >
+            Reload report
+          </button>
+        </div>
+
+        <div id="report-empty" class="card empty-state hidden">
+          <h2>No report available</h2>
+          <p>Run a scan to generate the first report.</p>
+
+          <button
+            class="primary-button"
+            type="button"
+            data-open-view="overview"
+          >
+            Go to overview
+          </button>
+        </div>
+
+        <iframe
+          id="report-frame"
+          class="report-frame"
+          src="./report/index.html"
+          title="HADocs generated report"
+        ></iframe>
+      </section>
+
+      <section id="view-logs" class="view">
+        <div class="section-header">
+          <div>
+            <span class="card-label">Scan activity</span>
+            <h2>Live log</h2>
+          </div>
+
+          <button
+            id="clear-view-button"
+            class="secondary-button"
+            type="button"
+          >
+            Scroll to bottom
+          </button>
+        </div>
+
+        <pre id="full-log" class="log-box full-log">
+No scan log available.
+        </pre>
+      </section>
+    </main>
+  </div>
+
+  <script src="./static/app.js"></script>
+</body>
+</html>
