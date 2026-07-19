@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HADocs</title>
+  <link rel="stylesheet" href="./static/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon">▣</div>
+        <div><h1>HADocs</h1><p>Home Assistant documentation and health analysis</p></div>
+      </div>
+      <div class="version">v0.2.6</div>
+    </header>
+
+    <nav class="navigation" aria-label="HADocs navigation">
+      <button class="nav-button active" data-view="overview">Overview</button>
+      <button class="nav-button" data-view="report">Report</button>
+      <button class="nav-button" data-view="explorer">Explorer</button>
+      <button class="nav-button" data-view="overrides">Device Overrides</button>
+      <button class="nav-button" data-view="logs">Logs</button>
+    </nav>
+
+    <main>
+      <section id="view-overview" class="view active">
+        <div class="status-grid">
+          <article class="card status-card"><span class="card-label">Status</span><strong id="status-value" class="card-value">Loading…</strong><span id="status-detail" class="card-detail">Connecting to HADocs</span></article>
+          <article class="card"><span class="card-label">Last scan</span><strong id="last-scan-value" class="card-value">—</strong><span class="card-detail">Most recent completed scan</span></article>
+          <article class="card"><span class="card-label">Report</span><strong id="report-value" class="card-value">Checking…</strong><span class="card-detail">Generated documentation</span></article>
+        </div>
+
+        <div class="insight-grid">
+          <article class="card"><span class="card-label">Health score</span><strong id="health-score" class="large-value">—</strong><span id="health-status" class="card-detail">Run a scan to calculate health</span></article>
+          <article class="card"><span class="card-label">Inventory</span><strong id="inventory-value" class="large-value">—</strong><span id="inventory-detail" class="card-detail">Entities and devices</span></article>
+          <article class="card recommendation-card"><span class="card-label">Top recommendation</span><strong id="recommendation-title" class="recommendation-title">No recommendation yet</strong><span id="recommendation-detail" class="card-detail">HADocs will show the highest-impact action here.</span></article>
+        </div>
+
+        <section class="card action-card">
+          <div><span class="card-label">Documentation scan</span><h2>Generate a fresh Home Assistant report</h2><p>HADocs collects Home Assistant configuration, devices, entities, integrations and health information.</p></div>
+          <button id="scan-button" class="primary-button" type="button">Start new scan</button>
+        </section>
+
+        <section id="scan-progress-card" class="card progress-card hidden">
+          <div class="progress-header"><div><span class="card-label">Current scan</span><strong id="progress-label">Starting…</strong></div><span id="progress-percent">0%</span></div>
+          <div class="progress-track"><div id="progress-bar" class="progress-bar"></div></div>
+        </section>
+
+        <section class="card">
+          <div class="section-header"><div><span class="card-label">Latest output</span><h2>Scan log</h2></div><button class="secondary-button" type="button" data-open-view="logs">Open full log</button></div>
+          <pre id="overview-log" class="log-box small-log">No scan log available.</pre>
+        </section>
+      </section>
+
+      <section id="view-report" class="view">
+        <div class="section-header report-header"><div><span class="card-label">Generated documentation</span><h2>HADocs Report</h2></div><button id="reload-report-button" class="secondary-button" type="button">Reload report</button></div>
+        <div id="report-empty" class="card empty-state hidden"><h2>No report available</h2><p>Run a scan to generate the first report.</p><button class="primary-button" type="button" data-open-view="overview">Go to overview</button></div>
+        <iframe id="report-frame" class="report-frame" src="./report/index.html" title="HADocs generated report"></iframe>
+      </section>
+
+      <section id="view-explorer" class="view">
+        <div class="section-header report-header"><div><span class="card-label">Installation model</span><h2>HADocs Explorer</h2></div><button id="reload-explorer-button" class="secondary-button" type="button">Reload Explorer</button></div>
+        <div id="explorer-empty" class="card empty-state hidden"><h2>No Explorer available</h2><p>Run a scan to build the installation model.</p></div>
+        <iframe id="explorer-frame" class="report-frame" src="./report/explorer/index.html" title="HADocs Explorer"></iframe>
+      </section>
+
+
+      <section id="view-overrides" class="view">
+        <div class="section-header report-header">
+          <div>
+            <span class="card-label">Health score context</span>
+            <h2>Device Overrides</h2>
+            <p class="section-description">
+              Explain why selected devices should be assessed differently by HADocs.
+            </p>
+          </div>
+          <button id="add-override-button" class="primary-button" type="button">Add Device Override</button>
+        </div>
+
+        <div class="override-stats">
+          <article class="card override-stat">
+            <span class="card-label">Total</span>
+            <strong id="override-count">0</strong>
+            <span>configured overrides</span>
+          </article>
+          <article class="card override-stat">
+            <span class="card-label">External</span>
+            <strong id="override-external-count">0</strong>
+            <span>not part of the installation</span>
+          </article>
+          <article class="card override-stat">
+            <span class="card-label">Power controlled</span>
+            <strong id="override-power-count">0</strong>
+            <span>normally lose power</span>
+          </article>
+          <article class="card override-stat">
+            <span class="card-label">Seasonal</span>
+            <strong id="override-seasonal-count">0</strong>
+            <span>active only in selected months</span>
+          </article>
+        </div>
+
+        <section class="card override-toolbar">
+          <label class="search-field" for="override-search">
+            <span>Search overrides</span>
+            <input id="override-search" type="search" placeholder="Search by device, policy or reason">
+          </label>
+          <div class="override-filters" role="group" aria-label="Filter Device Overrides">
+            <button class="filter-button active" type="button" data-override-filter="all">All</button>
+            <button class="filter-button" type="button" data-override-filter="external">External</button>
+            <button class="filter-button" type="button" data-override-filter="power_controlled">Power</button>
+            <button class="filter-button" type="button" data-override-filter="seasonal">Seasonal</button>
+          </div>
+        </section>
+
+
+        <section id="override-editor" class="card override-editor hidden">
+          <div class="section-header">
+            <div>
+              <span id="override-editor-label" class="card-label">New Device Override</span>
+              <h2 id="override-editor-title">Choose a device</h2>
+            </div>
+            <button id="cancel-override-button" class="secondary-button" type="button">Cancel</button>
+          </div>
+
+          <form id="override-form">
+            <div class="editor-grid">
+              <label class="form-field editor-device-field">
+                <span>Device</span>
+                <select id="override-device" required></select>
+              </label>
+
+              <label class="form-field">
+                <span>Policy</span>
+                <select id="override-policy">
+                  <option value="normal">Normal / custom</option>
+                  <option value="power_controlled">Power controlled</option>
+                  <option value="seasonal">Seasonal</option>
+                  <option value="temporary">Temporary</option>
+                  <option value="external">External</option>
+                </select>
+              </label>
+
+              <label class="form-field">
+                <span>Ownership</span>
+                <select id="override-ownership">
+                  <option value="unspecified">Unspecified</option>
+                  <option value="owned">Owned</option>
+                  <option value="shared">Shared</option>
+                  <option value="external">External</option>
+                  <option value="unknown">Unknown</option>
+                </select>
+              </label>
+
+              <label class="form-field">
+                <span>Purpose</span>
+                <select id="override-purpose">
+                  <option value="unspecified">Unspecified</option>
+                  <option value="infrastructure">Infrastructure</option>
+                  <option value="automation">Automation</option>
+                  <option value="presence">Presence</option>
+                  <option value="media">Media</option>
+                  <option value="testing">Testing</option>
+                  <option value="temporary">Temporary</option>
+                  <option value="seasonal">Seasonal</option>
+                </select>
+              </label>
+            </div>
+
+            <fieldset class="editor-flags">
+              <legend>Assessment exceptions</legend>
+              <label><input id="override-expected-offline" type="checkbox"> Expected offline</label>
+              <label><input id="override-ignore-battery" type="checkbox"> Ignore battery</label>
+              <label><input id="override-ignore-stale" type="checkbox"> Ignore stale</label>
+            </fieldset>
+
+            <div id="override-months-group" class="form-field months-field hidden">
+              <span>Active months</span>
+              <div class="month-grid">
+                <label><input type="checkbox" name="active-month" value="1"> Jan</label>
+                <label><input type="checkbox" name="active-month" value="2"> Feb</label>
+                <label><input type="checkbox" name="active-month" value="3"> Mar</label>
+                <label><input type="checkbox" name="active-month" value="4"> Apr</label>
+                <label><input type="checkbox" name="active-month" value="5"> May</label>
+                <label><input type="checkbox" name="active-month" value="6"> Jun</label>
+                <label><input type="checkbox" name="active-month" value="7"> Jul</label>
+                <label><input type="checkbox" name="active-month" value="8"> Aug</label>
+                <label><input type="checkbox" name="active-month" value="9"> Sep</label>
+                <label><input type="checkbox" name="active-month" value="10"> Oct</label>
+                <label><input type="checkbox" name="active-month" value="11"> Nov</label>
+                <label><input type="checkbox" name="active-month" value="12"> Dec</label>
+              </div>
+            </div>
+
+            <label class="form-field">
+              <span>Reason</span>
+              <textarea id="override-reason" rows="3" placeholder="Explain why this device should be assessed differently"></textarea>
+            </label>
+
+            <div id="override-form-message" class="form-message hidden"></div>
+
+            <div class="editor-actions">
+              <button id="delete-override-button" class="danger-button hidden" type="button">Delete Override</button>
+              <div class="editor-actions-right">
+                <button id="cancel-override-button-bottom" class="secondary-button" type="button">Cancel</button>
+                <button id="save-override-button" class="primary-button" type="submit">Save Override</button>
+              </div>
+            </div>
+          </form>
+        </section>
+
+        <div id="override-error" class="card error-state hidden"></div>
+        <div id="override-empty" class="card empty-state hidden">
+          <h2>No Device Overrides configured</h2>
+          <p>The active override file contains no entries.</p>
+        </div>
+        <div id="override-list" class="override-list" aria-live="polite"></div>
+      </section>
+
+      <section id="view-logs" class="view">
+        <div class="section-header"><div><span class="card-label">Scan activity</span><h2>Live log</h2></div><button id="clear-view-button" class="secondary-button" type="button">Scroll to bottom</button></div>
+        <pre id="full-log" class="log-box full-log">No scan log available.</pre>
+      </section>
+    </main>
+  </div>
+  <script src="./static/app.js"></script>
+</body>
+</html>

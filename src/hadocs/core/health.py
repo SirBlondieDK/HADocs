@@ -404,6 +404,7 @@ def apply_health_score_v2(model: Any, executive: Any, incidents: list[Any]) -> A
     if isinstance(executive, dict):
         executive["score"] = breakdown.score
         executive["potential_score"] = breakdown.potential_score
+        executive["status"] = breakdown.status
         executive["health_score_v2"] = data
         executive["health_grade"] = breakdown.grade
         executive["health_status_v2"] = breakdown.status
@@ -412,6 +413,7 @@ def apply_health_score_v2(model: Any, executive: Any, incidents: list[Any]) -> A
     values = {
         "score": breakdown.score,
         "potential_score": breakdown.potential_score,
+        "status": breakdown.status,
         "health_score_v2": data,
         "health_grade": breakdown.grade,
         "health_status_v2": breakdown.status,

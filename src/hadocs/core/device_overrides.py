@@ -5,6 +5,8 @@ from datetime import UTC, datetime
 from fnmatch import fnmatch
 import json
 from pathlib import Path
+import os
+import shutil
 from typing import Iterable, Mapping, Sequence
 
 from src.hadocs.platform import AppPaths
@@ -297,3 +299,111 @@ def get_device_policy(
         matched=True,
         match_source=source,
     )
+
+
+def resolve_device_overrides_file(
+    config: Mapping[str, object] | None = None,
+    *,
+    base_dir: str | Path | None = None,
+) -> Path:
+    """Return the active device-overrides file used by HADocs."""
+    cfg = config if isinstance(config, Mapping) else {}
+    return _resolve_device_overrides_file(cfg, base_dir=base_dir)
+
+
+def device_override_to_mapping(override: DeviceOverride) -> dict[str, object]:
+    """Serialize an override using the canonical nested policy format."""
+    policy: dict[str, object] = {
+        "ownership": override.ownership,
+        "purpose": override.purpose,
+        "type": override.policy_type,
+        "expected_offline": override.expected_offline,
+        "ignore_battery": override.ignore_battery,
+        "ignore_stale": override.ignore_stale,
+    }
+    if override.active_months:
+        policy["active_months"] = list(override.active_months)
+
+    result: dict[str, object] = {"policy": policy}
+    if override.device_id:
+        result["device_id"] = override.device_id
+    if override.device_name:
+        result["device_name"] = override.device_name
+    if override.entity_globs:
+        result["entity_globs"] = list(override.entity_globs)
+    if override.reason:
+        result["reason"] = override.reason
+    if override.expires_at is not None:
+        result["expires_at"] = override.expires_at.isoformat()
+    return result
+
+
+def save_device_overrides_file(
+    path: str | Path, overrides: Iterable[DeviceOverride]
+) -> Path:
+    """Validate and atomically save overrides, keeping a one-file backup."""
+    override_path = Path(path)
+    override_path.parent.mkdir(parents=True, exist_ok=True)
+    normalized = tuple(overrides)
+
+    seen_ids: set[str] = set()
+    for item in normalized:
+        if not isinstance(item, DeviceOverride):
+            raise TypeError("All overrides must be DeviceOverride instances")
+        if not (item.device_id or item.device_name or item.entity_globs):
+            raise ValueError(
+                "An override must target a device ID, device name, or entity glob"
+            )
+        if item.device_id:
+            if item.device_id in seen_ids:
+                raise ValueError(f"Duplicate override for device ID: {item.device_id}")
+            seen_ids.add(item.device_id)
+
+    payload = {
+        "devices": [device_override_to_mapping(item) for item in normalized]
+    }
+    temp_path = override_path.with_name(override_path.name + ".tmp")
+    backup_path = override_path.with_name(override_path.name + ".bak")
+    temp_path.write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+    try:
+        if override_path.exists():
+            shutil.copy2(override_path, backup_path)
+        os.replace(temp_path, override_path)
+    finally:
+        if temp_path.exists():
+            temp_path.unlink(missing_ok=True)
+    return override_path
+
+
+def upsert_device_override(
+    path: str | Path, override: DeviceOverride
+) -> tuple[DeviceOverride, ...]:
+    """Add or replace an override by device ID, then save it safely."""
+    current = list(load_device_overrides_file(path))
+    replaced = False
+    if override.device_id:
+        for index, existing in enumerate(current):
+            if existing.device_id == override.device_id:
+                current[index] = override
+                replaced = True
+                break
+    if not replaced:
+        current.append(override)
+    save_device_overrides_file(path, current)
+    return tuple(current)
+
+
+def remove_device_override(
+    path: str | Path, device_id: str
+) -> tuple[DeviceOverride, ...]:
+    """Remove a device-ID override and save the remaining entries safely."""
+    target = str(device_id or "").strip()
+    current = [
+        item for item in load_device_overrides_file(path)
+        if item.device_id != target
+    ]
+    save_device_overrides_file(path, current)
+    return tuple(current)

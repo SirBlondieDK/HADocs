@@ -63,6 +63,49 @@ class IncidentV2:
     evidence: list[str] = field(default_factory=list)
     recommendation: str = ""
 
+    # Compatibility fields used by the existing advisor and report pipeline.
+    estimated_score_gain: int = 0
+    estimated_repair_minutes: int = 15
+    child_incidents: list["IncidentV2"] = field(default_factory=list)
+
+    @property
+    def child_count(self) -> int:
+        return len(self.child_incidents)
+
+
+def _estimated_score_gain(severity: str, *, integration: bool = False) -> int:
+    if integration:
+        return {
+            "critical": 10,
+            "warning": 6,
+            "maintenance": 3,
+        }.get(severity, 1)
+
+    return {
+        "critical": 8,
+        "warning": 5,
+        "maintenance": 2,
+    }.get(severity, 1)
+
+
+def _estimated_repair_minutes(
+    severity: str,
+    *,
+    integration: bool = False,
+) -> int:
+    if integration:
+        return {
+            "critical": 45,
+            "warning": 30,
+            "maintenance": 15,
+        }.get(severity, 10)
+
+    return {
+        "critical": 30,
+        "warning": 20,
+        "maintenance": 10,
+    }.get(severity, 10)
+
 
 def collect_device_evidence(
     device: DeviceModel,
@@ -313,6 +356,8 @@ def build_device_incidents_v2(
                 affected_integrations=platforms,
                 evidence=evidence_lines,
                 recommendation=_device_recommendation(evidence),
+                estimated_score_gain=_estimated_score_gain(severity),
+                estimated_repair_minutes=_estimated_repair_minutes(severity),
             )
         )
 
@@ -400,6 +445,15 @@ def build_integration_incidents_v2(
                     "devices. Diagnose the parent integration only when "
                     "multiple devices share the same failure."
                 ),
+                estimated_score_gain=_estimated_score_gain(
+                    severity,
+                    integration=True,
+                ),
+                estimated_repair_minutes=_estimated_repair_minutes(
+                    severity,
+                    integration=True,
+                ),
+                child_incidents=list(children),
             )
         )
 

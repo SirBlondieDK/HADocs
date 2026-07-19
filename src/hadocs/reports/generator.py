@@ -20,7 +20,6 @@ from src.hadocs.core.history import (
 )
 from src.hadocs.core.incidents import (
     build_incidents,
-    collapse_incidents,
     hidden_incident_count,
     visible_incidents,
 )
@@ -52,16 +51,34 @@ def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
         overrides=device_overrides,
     )
     health_score, health_notes = calculate_health_score(model, device_health)
-    raw_incidents = build_incidents(model, graph)
-    incidents = collapse_incidents(raw_incidents)
 
-    # Run Incidents v2 in parallel while the legacy engine remains official.
-    # This allows real-world comparison without changing the dashboard,
-    # history, executive summary, or existing report contracts yet.
-    incidents_v2 = build_incidents_v2(model, device_overrides)
+    # Keep the legacy engine available for comparison and rollback.
+    legacy_raw_incidents = build_incidents(model, graph)
 
-    executive = build_executive_summary_from_incidents(health_score, incidents)
-    save_history_snapshot(cfg, model, health_score, executive, incidents=incidents, raw_incidents=raw_incidents)
+    # Evidence-based incidents are the official incident source used by all
+    # reports, history, intelligence, the executive summary, and Health Score.
+    evidence_incidents = build_incidents_v2(model, device_overrides)
+    official_incidents = evidence_incidents
+
+    executive = build_executive_summary_from_incidents(
+        health_score,
+        official_incidents,
+    )
+
+    # Apply intelligence first, then make Health Score v2 the official score.
+    # This ensures later intelligence enrichment cannot overwrite the v2 score.
+    executive = apply_intelligence_v014(model, executive, official_incidents)
+    executive = apply_health_score_v2(model, executive, official_incidents)
+    health_score = executive.score
+
+    save_history_snapshot(
+        cfg,
+        model,
+        health_score,
+        executive,
+        incidents=official_incidents,
+        raw_incidents=evidence_incidents,
+    )
     history_comparison = compare_last_two(cfg)
     history = load_history(cfg)
     trend_summary = build_trend_summary(history)
@@ -73,7 +90,7 @@ def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
         out,
         model=model,
         executive=executive,
-        incidents=incidents,
+        incidents=official_incidents,
         graph=graph,
         version="0.12.0",
     )
@@ -82,32 +99,55 @@ def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
         out,
         model=model,
         executive=executive,
-        incidents=incidents,
+        incidents=official_incidents,
         version="0.11.0",
     )
 
-    # Keep Health Score v2 details available, but do not override the official score yet.
-    executive = apply_intelligence_v014(model, executive, incidents)
-    generate_index(out, project_name, executive, incidents, now)
-    generate_executive_dashboard(out, project_name, model, executive, health_notes, history_comparison, trend_summary, incidents, raw_incidents, now)
-    generate_root_causes(out, incidents, now)
-    generate_incidents(out, incidents, raw_incidents, now)
-    generate_incidents_v2_comparison(
+    generate_index(out, project_name, executive, official_incidents, now)
+    generate_executive_dashboard(
         out,
-        legacy_incidents=raw_incidents,
-        incidents_v2=incidents_v2,
+        project_name,
+        model,
+        executive,
+        health_notes,
+        history_comparison,
+        trend_summary,
+        official_incidents,
+        legacy_raw_incidents,
+        now,
+    )
+    generate_root_causes(out, official_incidents, now)
+    generate_incidents(
+        out,
+        official_incidents,
+        legacy_raw_incidents,
+        now,
+    )
+    generate_legacy_evidence_comparison(
+        out,
+        legacy_incidents=legacy_raw_incidents,
+        evidence_incidents=official_incidents,
         now=now,
     )
-    generate_summary(out, model, graph, health_score, health_notes, incidents, raw_incidents, now)
+    generate_summary(
+        out,
+        model,
+        graph,
+        health_score,
+        health_notes,
+        official_incidents,
+        legacy_raw_incidents,
+        now,
+    )
     generate_areas(out, model, now)
     generate_devices(out, model, device_overrides, now)
     generate_integrations(out, integration_health, now)
     generate_device_health(out, device_health, now)
-    generate_maintenance(out, executive, incidents, now)
+    generate_maintenance(out, executive, official_incidents, now)
     generate_problems(out, model, now)
     generate_rules_report(out, model, now)
     generate_relationships(out, graph, now)
-    generate_insights(out, executive, incidents, now)
+    generate_insights(out, executive, official_incidents, now)
     generate_history(out, history_comparison, trend_summary, now)
     generate_architecture(out, now)
     export_entities_csv(out, model)
@@ -178,14 +218,14 @@ def generate_index(out: Path, project_name: str, *args) -> None:
         "- [12 Device Relationships](12_device_relationships.md)",
         "- [13 Integration Relationships](13_integration_relationships.md)",
         "- [17 Architecture](17_architecture.md)",
-        "- [18 Incidents v2 comparison](18_incidents_v2_comparison.md)",
+        "- [18 Legacy vs Evidence-based incidents](18_legacy_vs_evidence_based_incidents.md)",
         "- [CSV entities](csv/entities.csv)",
         "- [CSV devices](csv/devices.csv)",
     ]
     write_md(out / "index.md", lines)
 
 
-def generate_executive_dashboard(out, project_name, model, executive, health_notes, history_comparison, trend_summary, incidents, raw_incidents, now):
+def generate_executive_dashboard(out, project_name, model, executive, health_notes, history_comparison, trend_summary, incidents, legacy_incidents, now):
     """Generate polished Dashboard Engine v2.
 
     Stable self-contained renderer.
@@ -295,13 +335,13 @@ def generate_executive_dashboard(out, project_name, model, executive, health_not
     repair_minutes = num(get(executive, "estimated_repair_minutes", 0))
     main_cause = get(executive, "main_cause", "No major root cause")
     visible = as_list(incidents)
-    raw = as_list(raw_incidents)
+    legacy = as_list(legacy_incidents)
 
     critical = [i for i in visible if severity_of(i) == "critical"]
     warnings = [i for i in visible if severity_of(i) == "warning"]
     maintenance = [i for i in visible if severity_of(i) == "maintenance"]
     total_affected = sum(len(affected_entities(i)) for i in visible)
-    hidden = max(0, len(raw) - len(visible))
+    legacy_reduction = max(0, len(legacy) - len(visible))
 
     physical_devices = [d for d in devices if device_type(d) in {"physical", "device", ""}]
     virtual_devices = [d for d in devices if device_type(d) == "virtual"]
@@ -403,7 +443,7 @@ def generate_executive_dashboard(out, project_name, model, executive, health_not
             </div>
             {render_metric("Current score", f"{score}/100", status, "♡")}
             {render_metric("Top fix gain", f"+{top_gain}", "health score", "▲")}
-            {render_metric("Hidden noise", hidden, "lower priority", "◌")}
+            {render_metric("Legacy reduction", legacy_reduction, "fewer incidents", "◌")}
           </div>
         </section>
         """
@@ -422,8 +462,8 @@ def generate_executive_dashboard(out, project_name, model, executive, health_not
             {render_metric("System devices", len(system_devices), icon="⚙")}
             {render_metric("Integrations", len(integrations), icon="⌁")}
             {render_metric("Entities", len(entities), icon="⚡")}
-            {render_metric("Collapsed root causes", len(visible), icon="◆")}
-            {render_metric("Raw incidents", len(raw), icon="▤")}
+            {render_metric("Active incidents", len(visible), icon="◆")}
+            {render_metric("Legacy incidents", len(legacy), "comparison only", "▤")}
           </div>
         </section>
         """
@@ -539,7 +579,7 @@ def generate_executive_dashboard(out, project_name, model, executive, health_not
         <section class="section" id="root-causes">
           <div class="section-head">
             <h2>Top Root Causes</h2>
-            <p class="muted">Collapsed issues grouped by likely root cause.</p>
+            <p class="muted">Evidence-based incidents grouped by likely root cause.</p>
           </div>
           <div class="cards">{''.join(cards) if cards else '<div class="panel">No root causes found.</div>'}</div>
         </section>
@@ -739,12 +779,13 @@ def generate_root_causes(out, incidents, now):
     write_md(out / "01_root_causes.md", lines)
 
 
-def generate_incidents(out, incidents, raw_incidents, now):
+def generate_incidents(out, incidents, legacy_incidents, now):
     lines = ["# 02 Incidents", "", f"Generated: {now}", ""]
+    legacy_reduction = max(0, len(legacy_incidents) - len(incidents))
     lines += [
-        f"- Collapsed incidents: `{len(incidents)}`",
-        f"- Raw incidents: `{len(raw_incidents)}`",
-        f"- Raw incidents hidden/collapsed: `{len(raw_incidents) - len(incidents)}`",
+        f"- Active evidence-based incidents: `{len(incidents)}`",
+        f"- Legacy incidents (comparison only): `{len(legacy_incidents)}`",
+        f"- Reduction compared with legacy: `{legacy_reduction}`",
         "",
     ]
 
@@ -781,10 +822,10 @@ def generate_incidents(out, incidents, raw_incidents, now):
     write_md(out / "02_incidents.md", lines)
 
 
-def generate_incidents_v2_comparison(
+def generate_legacy_evidence_comparison(
     out,
     legacy_incidents,
-    incidents_v2,
+    evidence_incidents,
     now,
 ):
     """Write a side-by-side comparison of legacy and evidence-based incidents."""
@@ -809,7 +850,7 @@ def generate_incidents_v2_comparison(
     }
     v2_problem_entities = {
         entity_id
-        for incident in incidents_v2
+        for incident in evidence_incidents
         for entity_id in entity_ids(incident)
     }
 
@@ -826,33 +867,33 @@ def generate_incidents_v2_comparison(
     )
     v2_by_severity = Counter(
         severity_of(incident)
-        for incident in incidents_v2
+        for incident in evidence_incidents
     )
 
     lines = [
-        "# 18 Incidents v2 comparison",
+        "# 18 Legacy vs Evidence-based incidents",
         "",
         f"Generated: {now}",
         "",
         "This report compares the legacy count-based incident engine with "
-        "the evidence-based Incidents v2 engine.",
+        "the official evidence-based incident engine.",
         "",
-        "Incidents v2 is comparison-only at this stage. The existing dashboard, "
-        "history, executive summary, and official Health Score still use the "
-        "legacy incident engine.",
+        "The evidence-based engine is the official incident source used by the "
+        "dashboard, history, executive summary, and Health Score. The legacy engine remains "
+        "available here for comparison and rollback.",
         "",
         "## Summary",
         "",
-        f"- Legacy raw incidents: `{len(legacy_incidents)}`",
-        f"- Incidents v2: `{len(incidents_v2)}`",
+        f"- Legacy incidents: `{len(legacy_incidents)}`",
+        f"- Evidence-based incidents: `{len(evidence_incidents)}`",
         f"- Legacy affected entities: `{len(legacy_problem_entities)}`",
-        f"- V2 affected entities: `{len(v2_problem_entities)}`",
+        f"- Evidence-based affected entities: `{len(v2_problem_entities)}`",
         f"- Suppressed legacy-only entities: `{len(suppressed_entities)}`",
-        f"- Newly prioritized by v2: `{len(newly_prioritized_entities)}`",
+        f"- Newly prioritized by evidence-based analysis: `{len(newly_prioritized_entities)}`",
         "",
         "## Severity comparison",
         "",
-        "| Severity | Legacy | Incidents v2 |",
+        "| Severity | Legacy | Evidence-based |",
         "|---|---:|---:|",
     ]
 
@@ -869,12 +910,12 @@ def generate_incidents_v2_comparison(
         "",
     ]
 
-    if not incidents_v2:
+    if not evidence_incidents:
         lines.append("No evidence-based incidents detected.")
         lines.append("")
     else:
         for incident in sorted(
-            incidents_v2,
+            evidence_incidents,
             key=lambda item: (
                 severity_order.get(severity_of(item), 9),
                 -int(getattr(item, "confidence", 0) or 0),
@@ -947,7 +988,7 @@ def generate_incidents_v2_comparison(
 
     lines += [
         "",
-        "## Newly prioritized by Incidents v2",
+        "## Newly prioritized by evidence-based analysis",
         "",
     ]
 
@@ -962,10 +1003,10 @@ def generate_incidents_v2_comparison(
         lines.append("None.")
 
     lines.append("")
-    write_md(out / "18_incidents_v2_comparison.md", lines)
+    write_md(out / "18_legacy_vs_evidence_based_incidents.md", lines)
 
 
-def generate_summary(out, model, graph, health_score, health_notes, incidents, raw_incidents, now):
+def generate_summary(out, model, graph, health_score, health_notes, incidents, legacy_incidents, now):
     physical_devices = [d for d in model.devices.values() if d.is_physical]
     ignored_entities = [e for e in model.entities.values() if e.is_ignored]
     diagnostic_entities = [e for e in model.entities.values() if e.importance == "diagnostic"]
@@ -988,8 +1029,8 @@ def generate_summary(out, model, graph, health_score, health_notes, incidents, r
         f"- Diagnostic entities: `{len(diagnostic_entities)}`",
         f"- Ignored entities: `{len(ignored_entities)}`",
         f"- Integrations: `{len(model.integrations)}`",
-        f"- Collapsed incidents: `{len(incidents)}`",
-        f"- Raw incidents: `{len(raw_incidents)}`",
+        f"- Active evidence-based incidents: `{len(incidents)}`",
+        f"- Legacy incidents (comparison only): `{len(legacy_incidents)}`",
         f"- Entity relationships: `{len(graph.entities)}`",
         f"- Device relationships: `{len(graph.devices)}`",
         f"- Integration relationships: `{len(graph.integrations)}`",
