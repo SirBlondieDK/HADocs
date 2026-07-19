@@ -13,6 +13,16 @@ from typing import Any
 from urllib.parse import unquote, urlparse
 
 
+from src.hadocs.core.device_overrides import (
+    device_override_to_mapping,
+    load_device_overrides_file,
+    override_from_mapping,
+    remove_device_override,
+    resolve_device_overrides_file,
+    upsert_device_override,
+)
+from src.hadocs.utils.config import load_config
+
 HOST = "0.0.0.0"
 PORT = 8099
 
@@ -152,7 +162,7 @@ SCAN_MANAGER = ScanManager()
 
 
 class HadocsRequestHandler(BaseHTTPRequestHandler):
-    server_version = "HADocsWeb/0.2.1"
+    server_version = "HADocsWeb/0.2.6"
 
     def do_GET(self) -> None:
         path = self._request_path()
@@ -178,6 +188,24 @@ class HadocsRequestHandler(BaseHTTPRequestHandler):
             self._send_json({"status": "ok"})
             return
 
+        if path == "/api/summary":
+            self._send_json(self._load_report_summary())
+            return
+
+        if path == "/api/device-overrides":
+            try:
+                self._send_json(self._load_device_overrides())
+            except (OSError, ValueError) as exc:
+                self._send_json(
+                    {"error": f"Unable to load device overrides: {exc}"},
+                    status=HTTPStatus.INTERNAL_SERVER_ERROR,
+                )
+            return
+
+        if path == "/api/devices":
+            self._send_json({"devices": self._load_devices()})
+            return
+
         if path == "/report":
             self.send_response(HTTPStatus.FOUND)
             self.send_header("Location", "./report/index.html")
@@ -196,29 +224,98 @@ class HadocsRequestHandler(BaseHTTPRequestHandler):
     def do_POST(self) -> None:
         path = self._request_path()
 
-        if path != "/api/scan":
+        if path == "/api/scan":
+            if not SCAN_MANAGER.start():
+                self._send_json(
+                    {
+                        "error": "A scan is already running",
+                        "status": SCAN_MANAGER.status(),
+                    },
+                    status=HTTPStatus.CONFLICT,
+                )
+                return
+
+            self._send_json(
+                {
+                    "message": "Scan started",
+                    "status": SCAN_MANAGER.status(),
+                },
+                status=HTTPStatus.ACCEPTED,
+            )
+            return
+
+        if path == "/api/device-overrides":
+            try:
+                payload = self._read_json_body()
+                override = override_from_mapping(payload)
+                override_file = resolve_device_overrides_file(load_config())
+                overrides = upsert_device_override(override_file, override)
+            except (OSError, ValueError, TypeError, json.JSONDecodeError) as exc:
+                self._send_json(
+                    {"error": f"Unable to save Device Override: {exc}"},
+                    status=HTTPStatus.BAD_REQUEST,
+                )
+                return
+
+            self._send_json(
+                {
+                    "message": "Device Override saved",
+                    "count": len(overrides),
+                    "override": device_override_to_mapping(override),
+                },
+                status=HTTPStatus.OK,
+            )
+            return
+
+        self._send_json(
+            {"error": "Not found"},
+            status=HTTPStatus.NOT_FOUND,
+        )
+
+    def do_DELETE(self) -> None:
+        path = self._request_path()
+        prefix = "/api/device-overrides/"
+
+        if not path.startswith(prefix):
             self._send_json(
                 {"error": "Not found"},
                 status=HTTPStatus.NOT_FOUND,
             )
             return
 
-        if not SCAN_MANAGER.start():
+        device_id = unquote(path.removeprefix(prefix)).strip()
+        if not device_id:
             self._send_json(
-                {
-                    "error": "A scan is already running",
-                    "status": SCAN_MANAGER.status(),
-                },
-                status=HTTPStatus.CONFLICT,
+                {"error": "Missing device ID"},
+                status=HTTPStatus.BAD_REQUEST,
+            )
+            return
+
+        try:
+            override_file = resolve_device_overrides_file(load_config())
+            before = load_device_overrides_file(override_file)
+            existed = any(item.device_id == device_id for item in before)
+            overrides = remove_device_override(override_file, device_id)
+        except (OSError, ValueError) as exc:
+            self._send_json(
+                {"error": f"Unable to delete Device Override: {exc}"},
+                status=HTTPStatus.BAD_REQUEST,
+            )
+            return
+
+        if not existed:
+            self._send_json(
+                {"error": "Device Override not found"},
+                status=HTTPStatus.NOT_FOUND,
             )
             return
 
         self._send_json(
             {
-                "message": "Scan started",
-                "status": SCAN_MANAGER.status(),
-            },
-            status=HTTPStatus.ACCEPTED,
+                "message": "Device Override deleted",
+                "count": len(overrides),
+                "device_id": device_id,
+            }
         )
 
     def log_message(self, format: str, *args: object) -> None:
@@ -231,6 +328,127 @@ class HadocsRequestHandler(BaseHTTPRequestHandler):
     def _request_path(self) -> str:
         path = urlparse(self.path).path
         return unquote(path).rstrip("/") or "/"
+
+
+    def _load_report_summary(self) -> dict[str, Any]:
+        knowledge_directory = OUTPUT_DIRECTORY / "knowledge"
+
+        def read_json(name: str, fallback: Any) -> Any:
+            path = knowledge_directory / name
+            if not path.is_file():
+                return fallback
+            try:
+                return json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                return fallback
+
+        health = read_json("health.json", {})
+        inventory = read_json("inventory.json", {})
+        incidents = read_json("incidents.json", [])
+        recommendations = read_json("recommendations.json", [])
+
+        return {
+            "available": (OUTPUT_DIRECTORY / "index.html").is_file(),
+            "health": health if isinstance(health, dict) else {},
+            "inventory": inventory if isinstance(inventory, dict) else {},
+            "incidents": incidents if isinstance(incidents, list) else [],
+            "recommendations": (
+                recommendations if isinstance(recommendations, list) else []
+            ),
+        }
+
+    def _read_json_body(self) -> dict[str, Any]:
+        content_length = self.headers.get("Content-Length", "0")
+        try:
+            length = int(content_length)
+        except ValueError as exc:
+            raise ValueError("Invalid Content-Length") from exc
+
+        if length <= 0:
+            raise ValueError("Request body is empty")
+        if length > 1_000_000:
+            raise ValueError("Request body is too large")
+
+        payload = json.loads(self.rfile.read(length).decode("utf-8"))
+        if not isinstance(payload, dict):
+            raise ValueError("JSON body must be an object")
+        return payload
+
+    def _load_devices(self) -> list[dict[str, str]]:
+        """Return devices from the generated Explorer index for the editor."""
+        index_path = OUTPUT_DIRECTORY / "explorer" / "search_index.json"
+        if not index_path.is_file():
+            return []
+
+        try:
+            payload = json.loads(index_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            return []
+
+        if not isinstance(payload, list):
+            return []
+
+        devices: list[dict[str, str]] = []
+        for item in payload:
+            if not isinstance(item, dict) or item.get("type") != "device":
+                continue
+            device_id = str(item.get("id") or "").strip()
+            name = str(item.get("title") or "").strip()
+            subtitle = str(item.get("subtitle") or "").strip()
+            if device_id:
+                devices.append({
+                    "device_id": device_id,
+                    "device_name": name or device_id,
+                    "subtitle": subtitle,
+                })
+
+        devices.sort(key=lambda item: item["device_name"].casefold())
+        return devices
+
+    def _load_device_overrides(self) -> dict[str, Any]:
+        """Load overrides and enrich device IDs with names from the latest scan."""
+        config = load_config()
+        override_file = resolve_device_overrides_file(config)
+        overrides = load_device_overrides_file(override_file)
+        device_names = self._load_device_names()
+
+        items: list[dict[str, Any]] = []
+        for override in overrides:
+            item = device_override_to_mapping(override)
+            device_id = str(item.get("device_id") or "")
+            if not item.get("device_name") and device_id in device_names:
+                item["device_name"] = device_names[device_id]
+            items.append(item)
+
+        return {
+            "file": str(override_file),
+            "count": len(items),
+            "overrides": items,
+        }
+
+    def _load_device_names(self) -> dict[str, str]:
+        """Return device ID -> friendly name from Explorer's generated index."""
+        index_path = OUTPUT_DIRECTORY / "explorer" / "search_index.json"
+        if not index_path.is_file():
+            return {}
+
+        try:
+            payload = json.loads(index_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            return {}
+
+        if not isinstance(payload, list):
+            return {}
+
+        result: dict[str, str] = {}
+        for item in payload:
+            if not isinstance(item, dict) or item.get("type") != "device":
+                continue
+            device_id = str(item.get("id") or "").strip()
+            title = str(item.get("title") or "").strip()
+            if device_id and title:
+                result[device_id] = title
+        return result
 
     def _serve_web_file(self, relative_name: str) -> None:
         requested_file = (STATIC_DIRECTORY / relative_name).resolve()
