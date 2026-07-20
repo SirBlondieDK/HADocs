@@ -1,51 +1,19 @@
-# Quick Start
+# Quick start
 
-For a very simple guide, start here:
+Choose the installation method that best fits your environment:
 
-```text
-docs/BEGINNER_GUIDE.md
-```
+- [Home Assistant App](guides/installation/Home-Assistant-App.md)
+- [Docker](guides/installation/Docker.md)
+- [Windows](guides/installation/Windows.md)
 
-## Short version
+After installation:
 
-1. Install dependencies:
+1. Open the HADocs web interface.
+2. Configure access to Home Assistant when required by the platform.
+3. Run an analysis from **Overview**.
+4. Review the Executive Summary and Smart Recommendations.
+5. Use Root Cause Analysis and Explorer to investigate the supporting evidence.
 
-```powershell
-py -3.14 -m pip install -r requirements.txt
-```
+See the [README](../README.md#installation) for the canonical installation overview.
 
-2. Run tests:
-
-```powershell
-py -3.14 -m pytest
-```
-
-3. Start HADocs:
-
-```powershell
-py -3.14 main.py
-```
-
-4. Enter:
-
-- Home Assistant URL
-- Long-Lived Access Token
-- Project name
-
-5. Generate documentation.
-
-6. Open:
-
-```text
-output/index.html
-```
-
-## Recommended first checks
-
-Start with:
-
-- Executive Dashboard
-- Root Causes
-- Incidents
-- Maintenance
-- Device Health
+Next: review [configuration](CONFIGURATION.md) or return to the [documentation home](README.md).

@@ -1,49 +1,43 @@
 # HADocs Roadmap
 
-HADocs is evolving from a documentation generator into a Smart Home Intelligence platform for Home Assistant.
+HADocs is a **Home Assistant Analysis Platform** focused on explainable findings, practical prioritization, and private local operation.
 
-## v0.13.x - Stabilize Intelligence
+The roadmap describes intended direction, not a release commitment. Priorities may change as the analysis engine and supported platforms mature.
 
-- Health Score v2 tuning
-- Explain This improvements
-- Root Cause card refinements
-- Device classification improvements
-- Dashboard polish
-- Windows build stability
+## Analysis quality
 
-## v0.14.0 - Explain This
+- Refine Health Score weighting and Potential Health Score estimates.
+- Improve evidence-based integration assessments.
+- Expand device classification and reduce false positives.
+- Improve explanations, confidence, and verification guidance.
 
-- Explain This section on every Root Cause card
-- Plain-English issue explanations
-- Verification steps
-- Suggested fix steps
-- Confidence level
-- Expected Health Score gain
-- Better child incident descriptions
+## Investigation and repair
 
-## v0.15.0 - Repair Planner
+- Strengthen Root Cause Analysis and child-incident grouping.
+- Improve Smart Recommendations and repair-time estimates.
+- Connect root causes, devices, entities, and integrations more clearly.
+- Expand before-and-after analysis comparisons.
 
-- Repair plans
-- Expected Health Score after each fix
-- Top 3 highest-impact actions
-- Estimated repair time by root cause
-- Verification steps
-- Before/after scan comparison
+## Platform experience
 
-## v0.16.0 - Automation Intelligence
+- Continue Dashboard Engine and Explorer refinement.
+- Improve Device Overrides workflows.
+- Stabilize Home Assistant App, Docker, and Windows releases.
+- Prepare localization-ready interfaces and exports.
 
-- Dead automation detection
-- Automation conflict detection
-- Never-triggered automations
-- Broken entity references
-- Automation dependency map
-- Suggested cleanup
+## Automation analysis
 
-## v1.0.0 - Stable Public Release
+- Detect broken entity references.
+- Identify disabled, inactive, and conflicting automations.
+- Add automation dependency analysis and cleanup guidance.
 
-- Stable Windows release
-- Complete documentation
-- Clean project structure
-- Localization-ready UI and reports
-- Installer/update path
-- Strong test coverage
+## Toward 1.0
+
+- Stable shared models and configuration behavior.
+- Reliable installation and update paths.
+- Strong automated test coverage.
+- Complete contributor, release, and migration documentation.
+
+See the [documentation home](docs/README.md) for current guides and the [changelog](CHANGELOG.md) for shipped work.
+
+See the [documentation home](docs/README.md) for current guides and the [changelog](CHANGELOG.md) for shipped work.

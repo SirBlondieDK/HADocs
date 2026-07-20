@@ -1,5 +1,8 @@
 # README images
 
+> [!NOTE]
+> Maintainer reference for documentation assets. For current guides, use the [documentation home](../README.md).
+
 Place the final GitHub images here:
 
 ```text
@@ -28,8 +31,7 @@ Use the screenshots from the generated HTML dashboard:
 
 Before publishing screenshots:
 
-* remove tokens
-* remove exact URLs if needed
-* avoid exposing sensitive location/device names unless intentional
-* prefer redacted or demo data for public screenshots
-
+- Remove tokens.
+- Remove exact URLs where appropriate.
+- Avoid exposing sensitive location or device names.
+- Prefer redacted or demonstration data for public screenshots.

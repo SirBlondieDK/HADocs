@@ -1,50 +1,30 @@
 # Changelog
 
-## v0.13.0 - Smart Home Intelligence Dashboard
+Notable changes to HADocs are documented in this file. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) where practical.
+
+## [0.13.0] - Smart Home Intelligence Dashboard
 
 ### Added
 
-- Dashboard Engine v2.
-- Health Score v2.
-- Health Score breakdown.
-- Installation-size normalized scoring.
-- Disabled entity handling in scoring.
-- Root Cause cards.
-- Explain This-ready Root Cause layout.
-- Executive Dashboard.
-- Sidebar navigation.
-- Installation Overview.
-- Historical comparison section.
-- Generated output shortcuts.
-- Windows Credential Manager token storage.
-- Local-only token-safe configuration behavior.
-- README 3.0.
-- Roadmap.
-- Contributing guide.
-- GitHub issue templates.
-- GitHub Actions test workflow.
+- Dashboard Engine v2 and Executive Dashboard.
+- Health Score v2 with score breakdowns and installation-size normalization.
+- Root Cause cards and an Explain This-ready layout.
+- Installation Overview, historical comparison, and generated output shortcuts.
+- Windows Credential Manager support for Home Assistant tokens.
+- Local, token-safe configuration behavior.
+- Project roadmap, contributing guide, issue templates, and GitHub Actions tests.
 
-### Improved
+### Changed
 
-- HTML dashboard generation.
-- Root Cause presentation.
-- Health Score explainability.
-- Recommended Actions layout.
-- Explorer links.
-- Markdown report structure.
-- Knowledge Pack output.
-- GUI scan flow.
-- Dashboard auto-open behavior.
-- Windows release packaging flow.
-- Project branding and GitHub presentation.
+- Improved Dashboard, Root Cause Analysis, Smart Recommendations, Explorer links, and Markdown output.
+- Improved Health Score explainability and disabled-entity handling.
+- Improved Knowledge Pack output, scan flow, automatic Dashboard opening, Windows packaging, and project presentation.
 
 ### Fixed
 
-- Token no longer stored in `config.json`.
-- Token is read from Windows Credential Manager at scan runtime.
-- Dashboard generation writes `output/index.html`.
-- Explorer still writes `output/explorer/index.html`.
-- Markdown report still writes `output/index.md`.
-- Removed internal report wrapper issues.
-- Fixed generator compatibility problems.
-- Fixed GUI scan validation with secure token storage.
+- Prevented tokens from being stored in `config.json`.
+- Read tokens from Windows Credential Manager at scan time.
+- Preserved `output/index.html`, `output/explorer/index.html`, and `output/index.md` generation.
+- Corrected report wrapper, generator compatibility, and secure GUI scan validation issues.
+
+[0.13.0]: https://github.com/SirBlondieDK/HADocs/releases/tag/v0.13.0

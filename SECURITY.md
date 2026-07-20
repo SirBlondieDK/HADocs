@@ -1,53 +1,36 @@
 # Security Policy
 
-HADocs is designed to be safe for Home Assistant users.
+HADocs is a local-first, read-only **Home Assistant Analysis Platform**. It reads installation data and writes local analysis output; it does not call Home Assistant services or modify entities, automations, dashboards, or devices.
+
+## Supported versions
+
+Security fixes are applied to the latest published release and the current `main` branch. Older releases may not receive security updates.
+
+## Report a vulnerability
+
+Do not disclose suspected vulnerabilities in a public issue, discussion, or pull request.
+
+Use GitHub's private vulnerability reporting option on the repository **Security** page when available. If it is unavailable, contact the maintainer through the [GitHub profile](https://github.com/SirBlondieDK) to request a private reporting channel without including sensitive details.
+
+Include:
+
+- The affected version and platform
+- A clear description of the issue and its impact
+- Reproduction steps or a minimal proof of concept
+- Any known mitigations
+
+Allow reasonable time for investigation and remediation before public disclosure.
+
+## Credentials and private data
+
+Treat Home Assistant Long-Lived Access Tokens as passwords. Never commit credentials, private URLs, generated reports, Knowledge Packs, caches, or local Device Overrides.
+
+Reports can contain room names, device and entity names, local IP addresses, and other private installation details. Review and redact exports before sharing them.
 
 ## Security model
 
-HADocs is:
-
-- read-only
-- local-first
-- no cloud by default
-- no telemetry
-- no analytics
-- no tracking
-- no AI calls
-
-HADocs reads Home Assistant data and writes local reports. It does not modify Home Assistant.
-
-## HADocs never does this
-
-HADocs never:
-
-- uploads Home Assistant data
-- sends telemetry
-- sends analytics
-- tracks users
-- calls AI providers
-- calls Home Assistant services
-- changes entities
-- changes automations
-- changes dashboards
-- sends commands to devices
-
-## Tokens and secrets
-
-Never commit:
-
-```text
-config.json
-config.local.json
-.env
-cache/
-output/
-*.zip
-```
-
-Home Assistant Long-Lived Access Tokens should be treated like passwords.
-
-## Reports
-
-Reports may contain private smart home information such as room names, device names, entity names, local IP addresses and personal device names.
-
-Do not share full reports publicly unless you have reviewed them.
+- Local First and Privacy First operation
+- No telemetry, analytics, tracking, cloud upload, or external AI calls
+- Windows tokens stored in Windows Credential Manager
+- Docker credentials supplied through local environment configuration
+- Home Assistant App authentication supplied by its runtime environment
