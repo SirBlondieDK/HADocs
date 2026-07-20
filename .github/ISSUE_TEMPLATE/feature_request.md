@@ -11,3 +11,5 @@ assignees: ""
 ## Why would this be useful?
 
 ## Example
+
+## Alternatives considered

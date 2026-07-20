@@ -3,6 +3,14 @@ config.json
 config.local.json
 .env
 
+# HADocs local development context
+DEV_CONTEXT.md
+CURRENT_SPRINT.md
+HADocs_Development_Context.md
+
+# Local backups
+*.bak
+
 # Generated data
 cache/
 output/
@@ -66,4 +74,5 @@ device_overrides.local.json
 build/
 dist/
 *.zip
-*.bak
+
+

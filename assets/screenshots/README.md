@@ -1,5 +1,7 @@
 # Screenshot rename guide
 
+For current documentation navigation, see the [documentation home](../../docs/README.md).
+
 Copy your real PNG screenshots into `assets/screenshots/` using these names:
 
 | Screenshot | Filename |

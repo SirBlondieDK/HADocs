@@ -16,6 +16,11 @@ assignees: ""
 
 ## Platform
 
+## Steps to reproduce
+
 ## Logs
 
-Please remove tokens, private URLs and personal information.
+## Additional context
+
+> [!IMPORTANT]
+> Remove tokens, private URLs, personal information, and unredacted reports before submitting.
