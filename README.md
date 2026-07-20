@@ -188,20 +188,19 @@ HADocs can run in three supported ways:
 
 All three use the same HADocs analysis engine and web interface.
 
-### Home Assistant Add-on
+### Home Assistant App
 
-The add-on is the easiest option when HADocs should run directly inside Home Assistant.
+The app (formally known as add-on) is the easiest option when HADocs should run directly inside Home Assistant.
 
-1. Add the HADocs add-on repository to Home Assistant.
-2. Install **HADocs** from the Add-on Store.
-3. Configure the Home Assistant URL and Long-Lived Access Token in the add-on options.
-4. Start the add-on.
-5. Open the HADocs web interface from the add-on page.
-6. Run a scan from **Overview**.
+1. Add the HADocs app repository to Home Assistant.
+2. Install **HADocs** from the app Store.
+3. Start the add-on.
+4. Open the HADocs web interface from the app page.
+5. Run a scan from **Overview**.
 
-When a new `sirblondiedk/hadocs:dev` image has been published, rebuild or reinstall the add-on to pull the updated image.
+When a new `sirblondiedk/hadocs:dev` image has been published, rebuild or reinstall the app to pull the updated image.
 
-The add-on stores persistent data in its mapped `/config`, `/cache`, and `/output` directories.
+The app stores persistent data in its mapped `/config`, `/cache`, and `/output` directories.
 
 ### Docker
 
