@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 
-from src.hadocs.core.models import EntityModel
-from src.hadocs.intelligence.freshness import (
+from hadocs.core.models import EntityModel
+from hadocs.intelligence.freshness import (
     FreshnessStatus,
     determine_entity_freshness,
 )

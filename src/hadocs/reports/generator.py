@@ -2,15 +2,20 @@ from pathlib import Path
 from datetime import datetime
 from collections import Counter
 
-from src.hadocs.advisor.engine import build_executive_summary_from_incidents
-from src.hadocs.core.builder import build_model
-from src.hadocs.core.health import (
+from hadocs.advisor.engine import build_executive_summary_from_incidents
+from hadocs.application.hask_preview import (
+    HaskPreviewService,
+    render_hask_preview_html,
+)
+from hadocs.core.builder import build_model
+from hadocs.core.health import (
     calculate_device_health,
     calculate_health_score,
     find_duplicate_names_by_domain,
     get_critical_entities,
 )
-from src.hadocs.core.history import (
+from hadocs.core.entity_eligibility import is_disabled_entity
+from hadocs.core.history import (
     build_trend_summary,
     compare_last_two,
     export_history_summary,
@@ -18,24 +23,25 @@ from src.hadocs.core.history import (
     save_history_snapshot,
     sparkline,
 )
-from src.hadocs.core.incidents import (
+from hadocs.core.incidents import (
     build_incidents,
     collapse_incidents,
     hidden_incident_count,
     visible_incidents,
 )
-from src.hadocs.core.device_overrides import load_device_overrides
-from src.hadocs.core.effective_analysis import build_effective_analysis
-from src.hadocs.core.incidents_v2 import build_incidents_v2
-from src.hadocs.core.integration_health import calculate_integration_health
-from src.hadocs.core.relationships import build_relationship_graph
-from src.hadocs.exporters.csv_exporter import export_devices_csv, export_entities_csv
-from src.hadocs.utils.text import slugify, write_md
-from src.hadocs.html.explorer import write_explorer
-from src.hadocs.knowledge.exporter import export_knowledge
-from src.hadocs.core.health import apply_health_score_v2
-from src.hadocs.core.intelligence import apply_intelligence_v014
-from src.hadocs.utils.display import display_area, area_filename
+from hadocs.core.device_overrides import load_device_overrides
+from hadocs.core.effective_analysis import build_effective_analysis
+from hadocs.core.incidents_v2 import build_incidents_v2
+from hadocs.core.integration_health import calculate_integration_health
+from hadocs.core.relationships import build_relationship_graph
+from hadocs.exporters.csv_exporter import export_devices_csv, export_entities_csv
+from hadocs.utils.text import slugify, write_md
+from hadocs.html.explorer import write_explorer
+from hadocs.knowledge.exporter import export_knowledge
+from hadocs.core.health import apply_health_score_v2
+from hadocs.core.intelligence import apply_intelligence_v014
+from hadocs.utils.display import display_area, area_filename
+from hadocs.version import RELEASE_VERSION, __version__
 
 
 def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
@@ -68,6 +74,28 @@ def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
     # history, executive summary, or existing report contracts yet.
     incidents_v2 = build_incidents_v2(model, device_overrides)
 
+    # Persist only the normalized aggregate contract at the shared CLI/GUI/web
+    # boundary.  The adapter returns immediately when its default-disabled
+    # configuration is not explicitly enabled.
+    from hadocs.application.operational_database import persist_operational_database
+
+    persistence_result = persist_operational_database(model, cfg)
+
+    hask_preview = HaskPreviewService().snapshot(
+        cfg,
+        candidate_result=getattr(persistence_result, "hask_candidate_evidence", None),
+        relevant_platforms=model.integrations.keys(),
+    )
+    (out / "hask_preview.json").write_bytes(hask_preview.canonical_bytes())
+    (out / "hask_preview.html").write_text(
+        "<!doctype html><html lang='en'><head><meta charset='utf-8'>"
+        "<meta name='viewport' content='width=device-width,initial-scale=1'>"
+        "<title>HASK Preview · HADocs</title></head><body>"
+        + render_hask_preview_html(hask_preview)
+        + "</body></html>",
+        encoding="utf-8",
+    )
+
     executive = analysis.executive
     save_history_snapshot(cfg, model, health_score, executive, incidents=incidents, raw_incidents=raw_incidents)
     history_comparison = compare_last_two(cfg)
@@ -83,21 +111,13 @@ def generate_all(data: dict, idx: dict, cfg: dict, log=print) -> None:
         executive=executive,
         incidents=incidents,
         graph=graph,
-        version="0.12.0",
-    )
-
-    export_knowledge(
-        out,
-        model=model,
-        executive=executive,
-        incidents=incidents,
-        version="0.11.0",
+        version=RELEASE_VERSION,
     )
 
     # Keep Health Score v2 details available, but do not override the official score yet.
     executive = apply_intelligence_v014(model, executive, incidents)
     generate_index(out, project_name, executive, incidents, now, analysis=analysis)
-    generate_executive_dashboard(out, project_name, model, executive, health_notes, history_comparison, trend_summary, incidents, raw_incidents, now, analysis=analysis)
+    generate_executive_dashboard(out, project_name, model, executive, health_notes, history_comparison, trend_summary, incidents, raw_incidents, now, analysis=analysis, hask_preview=hask_preview)
     generate_root_causes(out, incidents, now)
     generate_incidents(out, incidents, raw_incidents, now)
     generate_incidents_v2_comparison(
@@ -193,7 +213,7 @@ def generate_index(out: Path, project_name: str, *args, analysis=None) -> None:
     write_md(out / "index.md", lines)
 
 
-def generate_executive_dashboard(out, project_name, model, executive, health_notes, history_comparison, trend_summary, incidents, raw_incidents, now, analysis=None):
+def generate_executive_dashboard(out, project_name, model, executive, health_notes, history_comparison, trend_summary, incidents, raw_incidents, now, analysis=None, hask_preview=None):
     """Generate polished Dashboard Engine v2.
 
     Stable self-contained renderer.
@@ -377,6 +397,7 @@ def generate_executive_dashboard(out, project_name, model, executive, health_not
             ("Markdown", "index.md", "▤"),
             ("Knowledge", "knowledge/summary.md", "◇"),
         ]
+        items.append(("HASK Preview", "#hask-preview", "H"))
         links = "".join(f'<a class="{ "active" if idx == 0 else "" }" href="{href}"><span>{icon}</span>{label}</a>' for idx, (label, href, icon) in enumerate(items))
         logo = f'<img src="{logo_uri}" alt="HADocs logo">' if logo_uri else '<div class="logo-fallback">HA</div>'
         return f"""
@@ -678,6 +699,7 @@ def generate_executive_dashboard(out, project_name, model, executive, health_not
             <a href="explorer/index.html">Open Explorer</a>
             <a href="index.md">Open Markdown Report</a>
             <a href="knowledge/summary.md">Open Knowledge Summary</a>
+            <a href="hask_preview.html">Open HASK Preview</a>
             <a href="01_root_causes.md">Open Root Causes Markdown</a>
           </div>
         </section>
@@ -727,7 +749,9 @@ def generate_executive_dashboard(out, project_name, model, executive, health_not
       {render_root_cards()}
       {render_health_notes()}
       {render_history()}
+      {render_hask_preview_html(hask_preview) if hask_preview is not None else ''}
       {render_output_links()}
+      <p class="footer">HADocs {esc(__version__)}</p>
       <p class="footer">Generated {esc(now)} • HADocs runs locally • No cloud upload • No AI calls</p>
     </main>
   </div>
@@ -1053,8 +1077,8 @@ def generate_areas(out, model, now):
 
 def generate_devices(out, model, device_overrides, now):
     """Generate complete per-device reports with override metadata."""
-    from src.hadocs.core.device_overrides import get_device_policy
-    from src.hadocs.core.device_reachability import determine_device_reachability
+    from hadocs.core.device_overrides import get_device_policy
+    from hadocs.core.device_reachability import determine_device_reachability
 
     dev_dir = out / "05_devices"
     index = ["# 05 Devices", "", f"Generated: {now}", ""]
@@ -1086,6 +1110,13 @@ def generate_devices(out, model, device_overrides, now):
             f"- Hardware version: `{device.hw_version}`",
             f"- Platforms: `{', '.join(platforms) or 'unknown'}`",
             f"- Entity count: `{len(device.entities)}`",
+            "", "## HUDD offline match", "",
+            f"- Match level: `{device.hudd.get('level', 'unknown')}`",
+            f"- Confidence: `{device.hudd.get('confidence', 0.0)}`",
+            f"- HUDD ID: `{((device.hudd.get('device') or {}).get('hudd_id') or 'not matched')}`",
+            f"- HUDD product: `{((device.hudd.get('device') or {}).get('product_name') or 'not matched')}`",
+            f"- Reason: {device.hudd.get('reason', 'No HUDD result available')}",
+            f"- Local/offline lookup: `{device.hudd.get('offline', True)}`",
             "", "## Analysis", "",
             f"- Reachability: `{reachability.status.value}`",
             f"- Reachability confidence: `{reachability.confidence}%`",
@@ -1330,7 +1361,13 @@ def generate_problems(out, model, now):
     critical = get_critical_entities(model)
     duplicates = find_duplicate_names_by_domain(model)
     physical_without_area = [d for d in model.devices.values() if d.is_physical and (not d.area_id or d.area_id == "_uden_område")]
-    ignored_bad = [e for e in model.entities.values() if e.is_ignored and e.state in ("unknown", "unavailable")]
+    ignored_bad = [
+        e
+        for e in model.entities.values()
+        if e.is_ignored
+        and e.state in ("unknown", "unavailable")
+        and not is_disabled_entity(e)
+    ]
 
     lines = ["# 08 Problems and cleanup", "", f"Generated: {now}", ""]
     lines += ["## Critical entities", ""]

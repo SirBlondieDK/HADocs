@@ -1,4 +1,4 @@
-from src.hadocs.knowledge.exporter import build_manifest, build_summary
+from hadocs.knowledge.exporter import build_manifest, build_summary
 
 
 def test_manifest_privacy_defaults():

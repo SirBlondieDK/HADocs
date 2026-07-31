@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from src.hadocs.gui.output_actions import completion_message, output_paths, output_status
+from hadocs.gui.output_actions import completion_message, output_paths, output_status
 
 
 def test_output_paths():

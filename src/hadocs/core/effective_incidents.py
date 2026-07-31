@@ -3,10 +3,10 @@ from __future__ import annotations
 from dataclasses import replace
 from typing import Iterable
 
-from src.hadocs.core.device_overrides import DeviceOverride, get_device_policy
-from src.hadocs.core.health import is_disabled_entity
-from src.hadocs.core.incidents import Incident
-from src.hadocs.core.models import HADocsModel
+from hadocs.core.device_overrides import DeviceOverride, get_device_policy
+from hadocs.core.entity_eligibility import is_disabled_entity
+from hadocs.core.incidents import Incident
+from hadocs.core.models import HADocsModel
 
 
 def _severity_from_count(count: int) -> str:

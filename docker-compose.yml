@@ -17,6 +17,6 @@ services:
     ports:
       - "8099:8099"
 
-    entrypoint: ["python", "-m", "src.hadocs.web.app"]
+    entrypoint: ["python", "-m", "hadocs.web.app"]
 
     restart: unless-stopped

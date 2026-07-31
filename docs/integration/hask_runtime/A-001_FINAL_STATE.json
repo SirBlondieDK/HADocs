@@ -1,0 +1,41 @@
+{
+  "program": "A-001 Architecture Defect Resolution",
+  "subject": "websocket_feature Contract Ambiguity",
+  "completed_on": "2026-07-24",
+  "status": "completed",
+  "conclusion": "REMOVE_WEBSOCKET_FEATURE",
+  "authoritative_classification": "CLIENT_DECLARATION",
+  "contract_baseline": "1.0.0",
+  "decision": {
+    "remove_observation": "websocket_feature",
+    "remove_capability": "supported_features",
+    "replacement_observations": 0,
+    "release_1_capabilities_before": 5,
+    "release_1_capabilities_after": 4,
+    "release_1_observations_before": 5,
+    "release_1_observations_after": 4,
+    "relationship_predicates_changed": 0
+  },
+  "official_sources": [
+    "https://developers.home-assistant.io/docs/api/websocket/",
+    "https://developers.home-assistant.io/docs/auth_api/"
+  ],
+  "validation": {
+    "production_code_changes": 0,
+    "runtime_changes": 0,
+    "collector_implementation_changes": 0,
+    "test_changes": 0,
+    "fixture_changes": 0,
+    "hask_changes": 0,
+    "consumer_contract_changes": 0,
+    "pi2_changes": 0,
+    "unrelated_observations_reviewed": 0,
+    "documentation_artifacts": 6,
+    "json_validation": "PASS",
+    "determinism_passes": 2,
+    "deterministic_outputs": true,
+    "non_state_artifact_aggregate_sha256": "1d4474b7587b955d40c9f3a634c915e4d875b2343f4318f11f69abd750ba3255"
+  },
+  "next_governance_action": "Updated Architecture Review and new Design Freeze before I-001B resumes.",
+  "exception_expired": true
+}

@@ -1,0 +1,999 @@
+﻿=== DATE ===
+
+31. juli 2026 07:34:13
+
+=== BRANCH ===
+recovery/hask-snapshot-20260727
+
+=== HEAD ===
+590cc33 docs: improve repository templates and packaging documentation
+
+=== STATUS ===
+ M .github/workflows/python.yml
+ M .gitignore
+ M CHANGELOG.md
+ M Dockerfile
+ M README.md
+ M ROADMAP.md
+ M build/HADocs/Analysis-00.toc
+ M build/HADocs/COLLECT-00.toc
+ M build/HADocs/EXE-00.toc
+ M build/HADocs/HADocs.exe
+ M build/HADocs/HADocs.pkg
+ M build/HADocs/PKG-00.toc
+ M build/HADocs/PYZ-00.pyz
+ M build/HADocs/PYZ-00.toc
+ M build/HADocs/warn-HADocs.txt
+ M build/HADocs/xref-HADocs.html
+ M dist/HADocs/HADocs.exe
+ D dist/HADocs/_internal/LICENSE
+ D dist/HADocs/_internal/README.md
+ D dist/HADocs/_internal/docs/AI.md
+ D dist/HADocs/_internal/docs/ARCHITECTURE.md
+ D dist/HADocs/_internal/docs/BEGINNER_GUIDE.md
+ D dist/HADocs/_internal/docs/BEGINNER_GUIDE_APPEND.md
+ D dist/HADocs/_internal/docs/CLEANUP.md
+ D dist/HADocs/_internal/docs/CONFIGURATION.md
+ D dist/HADocs/_internal/docs/CONTRIBUTING.md
+ D dist/HADocs/_internal/docs/CREDENTIALS_GUI_FIX.md
+ D dist/HADocs/_internal/docs/DASHBOARD_POLISH.md
+ D dist/HADocs/_internal/docs/DESKTOP_EXPERIENCE.md
+ D dist/HADocs/_internal/docs/EXE_RELEASE_IMPORT_FIX.md
+ D dist/HADocs/_internal/docs/EXPLAIN_ENGINE.md
+ D dist/HADocs/_internal/docs/EXPLORER.md
+ D dist/HADocs/_internal/docs/FAQ.md
+ D dist/HADocs/_internal/docs/FINAL_IMPORT_FIX.md
+ D dist/HADocs/_internal/docs/FINAL_SLEEP_PATCH.md
+ D dist/HADocs/_internal/docs/GITHUB_SETUP.md
+ D dist/HADocs/_internal/docs/GUI_DESKTOP.md
+ D dist/HADocs/_internal/docs/GUI_UX.md
+ D dist/HADocs/_internal/docs/HISTORY_TRENDS.md
+ D dist/HADocs/_internal/docs/INSTALL.md
+ D dist/HADocs/_internal/docs/INSTALLER.md
+ D dist/HADocs/_internal/docs/KNOWLEDGE_ENGINE.md
+ D dist/HADocs/_internal/docs/LOGO_AND_LOG_WINDOW_FIX.md
+ D dist/HADocs/_internal/docs/LOGO_LAYOUT_FINAL_FIX.md
+ D dist/HADocs/_internal/docs/LOGO_LOG_DIRECT_FIX.md
+ D dist/HADocs/_internal/docs/PRIVACY.md
+ D dist/HADocs/_internal/docs/PROFESSIONAL_UI.md
+ D dist/HADocs/_internal/docs/PROJECT_PRINCIPLES.md
+ D dist/HADocs/_internal/docs/QUICKSTART.md
+ D dist/HADocs/_internal/docs/RELEASE_CHECKLIST.md
+ D dist/HADocs/_internal/docs/RELEASE_DESKTOP.md
+ D dist/HADocs/_internal/docs/RELEASE_v1.0.0.md
+ D dist/HADocs/_internal/docs/ROADMAP.md
+ D dist/HADocs/_internal/docs/SCREENSHOTS.md
+ D dist/HADocs/_internal/docs/SECURITY.md
+ D dist/HADocs/_internal/docs/SETUP_WIZARD.md
+ D dist/HADocs/_internal/docs/SMART_DASHBOARD_UI.md
+ D dist/HADocs/_internal/docs/TESTING.md
+ D dist/HADocs/_internal/docs/TOKEN_SECURITY_V101.md
+ D dist/HADocs/_internal/docs/V013_HEALTH_ENGINE.md
+ D dist/HADocs/_internal/docs/V013_HEALTH_ENGINE_CLEAN.md
+ D dist/HADocs/_internal/docs/V017_PROFESSIONAL_UI.md
+ D dist/HADocs/_internal/docs/V018_UI_WOW.md
+ D dist/HADocs/_internal/docs/V0_12_HTML_CSS_PATCH.md
+ D dist/HADocs/_internal/docs/V0_14_GUI_PATCH.md
+ D dist/HADocs/_internal/docs/V100_HTML_HOOK_FIX.md
+ D dist/HADocs/_internal/docs/V101_AUTO_OPEN_DASHBOARD_FIX.md
+ D dist/HADocs/_internal/docs/V101_CONFIG_GENERATOR_HOTFIX.md
+ D dist/HADocs/_internal/docs/V101_DASHBOARD_ENGINE_V2_FAST.md
+ D dist/HADocs/_internal/docs/V101_DASHBOARD_ENGINE_V2_POLISH.md
+ D dist/HADocs/_internal/docs/V101_FINAL_DASHBOARD_WRAPPER_FIX.md
+ D dist/HADocs/_internal/docs/V101_HTML_DASHBOARD_OUTPUT_FIX.md
+ D dist/HADocs/_internal/docs/V101_HTML_WRAPPER_8ARG_FIX.md
+ D dist/HADocs/_internal/docs/V101_MODEL_OBJECT_WRAPPER_FIX.md
+ D dist/HADocs/_internal/docs/V101_REPORT_ENGINE_CLEANUP.md
+ D dist/HADocs/_internal/docs/V101_RESTORE_PROFESSIONAL_DASHBOARD.md
+ D dist/HADocs/_internal/docs/V101_RUNTIME_TOKEN_FIX.md
+ D dist/HADocs/_internal/docs/V102_HEALTH_SCORE_V2.md
+ D dist/HADocs/_internal/docs/V102_HEALTH_SCORE_V2_SAFE_FIX.md
+ D dist/HADocs/_internal/docs/WINDOWS_BUILD.md
+ D dist/HADocs/_internal/docs/images/README_IMAGES.md
+ D dist/HADocs/_internal/docs/images/actions.png
+ D dist/HADocs/_internal/docs/images/dashboard.png
+ D dist/HADocs/_internal/docs/images/explorer.png
+ D dist/HADocs/_internal/docs/images/icon.svg
+ D dist/HADocs/_internal/docs/images/installation.png
+ D dist/HADocs/_internal/docs/images/logo.png
+ D dist/HADocs/_internal/docs/images/logo.svg
+ D dist/HADocs/_internal/docs/images/root-causes.png
+ M docker-compose.yml
+ M docs/README.md
+ M docs/architecture/Decisions.md
+ M docs/guides/installation/Home-Assistant-App.md
+ M docs/guides/installation/Windows.md
+ M hadocs/config.yaml
+ M hadocs/run.sh
+ M installer/HADocs.spec
+ M main.py
+ M pyproject.toml
+ M src/hadocs/advisor/engine.py
+ M src/hadocs/analysis/health_score_v2.py
+ M src/hadocs/analyzers/core.py
+ M src/hadocs/analyzers/helpers.py
+ M src/hadocs/application/__init__.py
+ M src/hadocs/application/doctor.py
+ M src/hadocs/application/generate.py
+ M src/hadocs/application/init.py
+ M src/hadocs/application/preview_policy.py
+ M src/hadocs/cli.py
+ M src/hadocs/cli/main.py
+ M src/hadocs/collectors/__init__.py
+ M src/hadocs/collectors/areas.py
+ M src/hadocs/collectors/config.py
+ M src/hadocs/collectors/devices.py
+ M src/hadocs/collectors/entities.py
+ M src/hadocs/collectors/homeassistant.py
+ M src/hadocs/collectors/installation.py
+ M src/hadocs/collectors/labels.py
+ M src/hadocs/collectors/services.py
+ M src/hadocs/collectors/states.py
+ M src/hadocs/core/builder.py
+ M src/hadocs/core/classifiers.py
+ M src/hadocs/core/device_overrides.py
+ M src/hadocs/core/device_reachability.py
+ M src/hadocs/core/effective_analysis.py
+ M src/hadocs/core/effective_incidents.py
+ M src/hadocs/core/health.py
+ M src/hadocs/core/history.py
+ M src/hadocs/core/incidents.py
+ M src/hadocs/core/incidents_v2.py
+ M src/hadocs/core/integration_health.py
+ M src/hadocs/core/models.py
+ M src/hadocs/core/recommendations.py
+ M src/hadocs/core/relationships.py
+ M src/hadocs/core/rules.py
+ M src/hadocs/core/rulesets/default.py
+ M src/hadocs/core/state_interpreter.py
+ M src/hadocs/exporters/csv_exporter.py
+ M src/hadocs/gui/app.py
+ M src/hadocs/gui/desktop_app.py
+ M src/hadocs/gui/dialogs/about_dialog.py
+ M src/hadocs/gui/dialogs/device_override_manager.py
+ M src/hadocs/gui/dialogs/first_run.py
+ M src/hadocs/gui/dialogs/log_window.py
+ M src/hadocs/gui/dialogs/settings_dialog.py
+ M src/hadocs/gui/modern_app.py
+ M src/hadocs/gui/widgets/health_gauge.py
+ M src/hadocs/html/components.py
+ M src/hadocs/html/dashboard.py
+ M src/hadocs/html/explorer.py
+ M src/hadocs/intelligence/engine.py
+ M src/hadocs/intelligence/freshness.py
+ M src/hadocs/intelligence/health_score_v2.py
+ M src/hadocs/knowledge/exporter.py
+ M src/hadocs/knowledge/search_index.py
+ M src/hadocs/persistence/policy_repository.py
+ M src/hadocs/platform/config_manager.py
+ M src/hadocs/providers/__init__.py
+ M src/hadocs/providers/homeassistant.py
+ M src/hadocs/reports/generator.py
+ M src/hadocs/reports/html_hook.py
+ M src/hadocs/runtime/__init__.py
+ M src/hadocs/runtime/detector.py
+ M src/hadocs/security/credential_store.py
+ M src/hadocs/utils/config.py
+ M src/hadocs/utils/security.py
+ M src/hadocs/version.py
+ M src/hadocs/web/api/services.py
+ M src/hadocs/web/app.py
+ M src/hadocs/web/static/index.html
+ M tests/platform/test_config_manager.py
+ M tests/platform/test_migration.py
+ M tests/platform/test_paths.py
+ M tests/test_advisor.py
+ M tests/test_area_filename_display.py
+ M tests/test_areas_report_display.py
+ M tests/test_classifier_input_types.py
+ M tests/test_config_security_warnings.py
+ M tests/test_config_validation.py
+ M tests/test_container_config.py
+ M tests/test_core_classifiers.py
+ M tests/test_credential_store.py
+ M tests/test_dashboard_polish.py
+ M tests/test_device_health.py
+ M tests/test_device_override_file.py
+ M tests/test_device_override_integration.py
+ M tests/test_device_override_manager_storage.py
+ M tests/test_device_overrides.py
+ M tests/test_device_ownership.py
+ M tests/test_device_policy_engine.py
+ M tests/test_device_reachability.py
+ M tests/test_display_utils.py
+ M tests/test_effective_analysis.py
+ M tests/test_effective_incidents.py
+ M tests/test_entity_profiles.py
+ M tests/test_entity_state_context.py
+ M tests/test_explain_engine.py
+ M tests/test_explorer_builder.py
+ M tests/test_explorer_html.py
+ M tests/test_gui_output_actions.py
+ M tests/test_hassio_severity_calibration.py
+ M tests/test_health_score.py
+ M tests/test_health_score_v2.py
+ M tests/test_history.py
+ M tests/test_history_trends.py
+ M tests/test_html_components.py
+ M tests/test_html_dashboard.py
+ M tests/test_incident_collapse.py
+ M tests/test_incidents.py
+ M tests/test_incidents_v2.py
+ M tests/test_installation_model.py
+ M tests/test_integration_health.py
+ M tests/test_integration_profiles.py
+ M tests/test_knowledge_engine_v012.py
+ M tests/test_knowledge_export.py
+ M tests/test_logo_and_log_window.py
+ M tests/test_normalize.py
+ M tests/test_policy_engine.py
+ M tests/test_policy_repository.py
+ M tests/test_privacy_redaction.py
+ M tests/test_professional_gui_import.py
+ M tests/test_project_quality.py
+ M tests/test_raw_cache_security.py
+ M tests/test_relationships.py
+ M tests/test_rules_engine.py
+ M tests/test_security.py
+ M tests/test_setup_wizard_import.py
+ M tests/test_slugify.py
+ M tests/test_smart_dashboard_ui.py
+ M tests/test_state_freshness.py
+ M tests/test_state_interpreter.py
+ M tests/test_v017_professional_ui.py
+ M tests/test_v018_ui_wow.py
+ M tests/test_version.py
+ M tools/dashboard_engine_v2_fast.py
+ M tools/dashboard_engine_v2_polish.py
+ M tools/report_engine_cleanup.py
+?? docs/guides/features/HASK-Preview.md
+?? docs/integration/
+?? src/hadocs/application/database_status.py
+?? src/hadocs/application/hask_candidate_evidence.py
+?? src/hadocs/application/hask_preview.py
+?? src/hadocs/application/operational_database.py
+?? src/hadocs/collectors/native_integration_status.py
+?? src/hadocs/core/entity_eligibility.py
+?? src/hadocs/hask_database/
+?? src/hadocs/hudd/
+?? src/hadocs/knowledge/hask_bundle/
+?? src/hadocs/knowledge/hask_pilot/
+?? src/hadocs/knowledge/hask_runtime/
+?? src/hadocs/metadata_collector/
+?? src/hadocs/web/static/hask-preview.html
+?? tests/conftest.py
+?? tests/fixtures/
+?? tests/test_addon_operational_database_startup.py
+?? tests/test_hask_candidate_evidence_bridge.py
+?? tests/test_hask_database_entity_persistence.py
+?? tests/test_hask_database_identity_foundation.py
+?? tests/test_hask_database_infrastructure.py
+?? tests/test_hask_database_operational_slice.py
+?? tests/test_hask_database_posix_credentials.py
+?? tests/test_hask_database_product_integration.py
+?? tests/test_hask_database_relationship_persistence.py
+?? tests/test_hask_database_repositories.py
+?? tests/test_hask_database_scan_completion.py
+?? tests/test_hask_database_schema.py
+?? tests/test_hask_pilot.py
+?? tests/test_hask_preview.py
+?? tests/test_hask_runtime.py
+?? tests/test_hudd.py
+?? tests/test_hudd_homeassistant.py
+?? tests/test_issue_29_disabled_entity_eligibility.py
+?? tests/test_native_integration_status.py
+?? tests/test_product_consolidation_repair.py
+?? tests/test_relationship_input_contract.py
+?? tools/build_hask_pi1.py
+?? tools/build_hask_pilot.py
+
+=== DIFF NAME STATUS ===
+M	.github/workflows/python.yml
+M	.gitignore
+M	CHANGELOG.md
+M	Dockerfile
+M	README.md
+M	ROADMAP.md
+M	build/HADocs/Analysis-00.toc
+M	build/HADocs/COLLECT-00.toc
+M	build/HADocs/EXE-00.toc
+M	build/HADocs/HADocs.exe
+M	build/HADocs/HADocs.pkg
+M	build/HADocs/PKG-00.toc
+M	build/HADocs/PYZ-00.pyz
+M	build/HADocs/PYZ-00.toc
+M	build/HADocs/warn-HADocs.txt
+M	build/HADocs/xref-HADocs.html
+M	dist/HADocs/HADocs.exe
+D	dist/HADocs/_internal/LICENSE
+D	dist/HADocs/_internal/README.md
+D	dist/HADocs/_internal/docs/AI.md
+D	dist/HADocs/_internal/docs/ARCHITECTURE.md
+D	dist/HADocs/_internal/docs/BEGINNER_GUIDE.md
+D	dist/HADocs/_internal/docs/BEGINNER_GUIDE_APPEND.md
+D	dist/HADocs/_internal/docs/CLEANUP.md
+D	dist/HADocs/_internal/docs/CONFIGURATION.md
+D	dist/HADocs/_internal/docs/CONTRIBUTING.md
+D	dist/HADocs/_internal/docs/CREDENTIALS_GUI_FIX.md
+D	dist/HADocs/_internal/docs/DASHBOARD_POLISH.md
+D	dist/HADocs/_internal/docs/DESKTOP_EXPERIENCE.md
+D	dist/HADocs/_internal/docs/EXE_RELEASE_IMPORT_FIX.md
+D	dist/HADocs/_internal/docs/EXPLAIN_ENGINE.md
+D	dist/HADocs/_internal/docs/EXPLORER.md
+D	dist/HADocs/_internal/docs/FAQ.md
+D	dist/HADocs/_internal/docs/FINAL_IMPORT_FIX.md
+D	dist/HADocs/_internal/docs/FINAL_SLEEP_PATCH.md
+D	dist/HADocs/_internal/docs/GITHUB_SETUP.md
+D	dist/HADocs/_internal/docs/GUI_DESKTOP.md
+D	dist/HADocs/_internal/docs/GUI_UX.md
+D	dist/HADocs/_internal/docs/HISTORY_TRENDS.md
+D	dist/HADocs/_internal/docs/INSTALL.md
+D	dist/HADocs/_internal/docs/INSTALLER.md
+D	dist/HADocs/_internal/docs/KNOWLEDGE_ENGINE.md
+D	dist/HADocs/_internal/docs/LOGO_AND_LOG_WINDOW_FIX.md
+D	dist/HADocs/_internal/docs/LOGO_LAYOUT_FINAL_FIX.md
+D	dist/HADocs/_internal/docs/LOGO_LOG_DIRECT_FIX.md
+D	dist/HADocs/_internal/docs/PRIVACY.md
+D	dist/HADocs/_internal/docs/PROFESSIONAL_UI.md
+D	dist/HADocs/_internal/docs/PROJECT_PRINCIPLES.md
+D	dist/HADocs/_internal/docs/QUICKSTART.md
+D	dist/HADocs/_internal/docs/RELEASE_CHECKLIST.md
+D	dist/HADocs/_internal/docs/RELEASE_DESKTOP.md
+D	dist/HADocs/_internal/docs/RELEASE_v1.0.0.md
+D	dist/HADocs/_internal/docs/ROADMAP.md
+D	dist/HADocs/_internal/docs/SCREENSHOTS.md
+D	dist/HADocs/_internal/docs/SECURITY.md
+D	dist/HADocs/_internal/docs/SETUP_WIZARD.md
+D	dist/HADocs/_internal/docs/SMART_DASHBOARD_UI.md
+D	dist/HADocs/_internal/docs/TESTING.md
+D	dist/HADocs/_internal/docs/TOKEN_SECURITY_V101.md
+D	dist/HADocs/_internal/docs/V013_HEALTH_ENGINE.md
+D	dist/HADocs/_internal/docs/V013_HEALTH_ENGINE_CLEAN.md
+D	dist/HADocs/_internal/docs/V017_PROFESSIONAL_UI.md
+D	dist/HADocs/_internal/docs/V018_UI_WOW.md
+D	dist/HADocs/_internal/docs/V0_12_HTML_CSS_PATCH.md
+D	dist/HADocs/_internal/docs/V0_14_GUI_PATCH.md
+D	dist/HADocs/_internal/docs/V100_HTML_HOOK_FIX.md
+D	dist/HADocs/_internal/docs/V101_AUTO_OPEN_DASHBOARD_FIX.md
+D	dist/HADocs/_internal/docs/V101_CONFIG_GENERATOR_HOTFIX.md
+D	dist/HADocs/_internal/docs/V101_DASHBOARD_ENGINE_V2_FAST.md
+D	dist/HADocs/_internal/docs/V101_DASHBOARD_ENGINE_V2_POLISH.md
+D	dist/HADocs/_internal/docs/V101_FINAL_DASHBOARD_WRAPPER_FIX.md
+D	dist/HADocs/_internal/docs/V101_HTML_DASHBOARD_OUTPUT_FIX.md
+D	dist/HADocs/_internal/docs/V101_HTML_WRAPPER_8ARG_FIX.md
+D	dist/HADocs/_internal/docs/V101_MODEL_OBJECT_WRAPPER_FIX.md
+D	dist/HADocs/_internal/docs/V101_REPORT_ENGINE_CLEANUP.md
+D	dist/HADocs/_internal/docs/V101_RESTORE_PROFESSIONAL_DASHBOARD.md
+D	dist/HADocs/_internal/docs/V101_RUNTIME_TOKEN_FIX.md
+D	dist/HADocs/_internal/docs/V102_HEALTH_SCORE_V2.md
+D	dist/HADocs/_internal/docs/V102_HEALTH_SCORE_V2_SAFE_FIX.md
+D	dist/HADocs/_internal/docs/WINDOWS_BUILD.md
+D	dist/HADocs/_internal/docs/images/README_IMAGES.md
+D	dist/HADocs/_internal/docs/images/actions.png
+D	dist/HADocs/_internal/docs/images/dashboard.png
+D	dist/HADocs/_internal/docs/images/explorer.png
+D	dist/HADocs/_internal/docs/images/icon.svg
+D	dist/HADocs/_internal/docs/images/installation.png
+D	dist/HADocs/_internal/docs/images/logo.png
+D	dist/HADocs/_internal/docs/images/logo.svg
+D	dist/HADocs/_internal/docs/images/root-causes.png
+M	docker-compose.yml
+M	docs/README.md
+M	docs/architecture/Decisions.md
+M	docs/guides/installation/Home-Assistant-App.md
+M	docs/guides/installation/Windows.md
+M	hadocs/config.yaml
+M	hadocs/run.sh
+M	installer/HADocs.spec
+M	main.py
+M	pyproject.toml
+M	src/hadocs/advisor/engine.py
+M	src/hadocs/analysis/health_score_v2.py
+M	src/hadocs/analyzers/core.py
+M	src/hadocs/analyzers/helpers.py
+M	src/hadocs/application/__init__.py
+M	src/hadocs/application/doctor.py
+M	src/hadocs/application/generate.py
+M	src/hadocs/application/init.py
+M	src/hadocs/application/preview_policy.py
+M	src/hadocs/cli.py
+M	src/hadocs/cli/main.py
+M	src/hadocs/collectors/__init__.py
+M	src/hadocs/collectors/areas.py
+M	src/hadocs/collectors/config.py
+M	src/hadocs/collectors/devices.py
+M	src/hadocs/collectors/entities.py
+M	src/hadocs/collectors/homeassistant.py
+M	src/hadocs/collectors/installation.py
+M	src/hadocs/collectors/labels.py
+M	src/hadocs/collectors/services.py
+M	src/hadocs/collectors/states.py
+M	src/hadocs/core/builder.py
+M	src/hadocs/core/classifiers.py
+M	src/hadocs/core/device_overrides.py
+M	src/hadocs/core/device_reachability.py
+M	src/hadocs/core/effective_analysis.py
+M	src/hadocs/core/effective_incidents.py
+M	src/hadocs/core/health.py
+M	src/hadocs/core/history.py
+M	src/hadocs/core/incidents.py
+M	src/hadocs/core/incidents_v2.py
+M	src/hadocs/core/integration_health.py
+M	src/hadocs/core/models.py
+M	src/hadocs/core/recommendations.py
+M	src/hadocs/core/relationships.py
+M	src/hadocs/core/rules.py
+M	src/hadocs/core/rulesets/default.py
+M	src/hadocs/core/state_interpreter.py
+M	src/hadocs/exporters/csv_exporter.py
+M	src/hadocs/gui/app.py
+M	src/hadocs/gui/desktop_app.py
+M	src/hadocs/gui/dialogs/about_dialog.py
+M	src/hadocs/gui/dialogs/device_override_manager.py
+M	src/hadocs/gui/dialogs/first_run.py
+M	src/hadocs/gui/dialogs/log_window.py
+M	src/hadocs/gui/dialogs/settings_dialog.py
+M	src/hadocs/gui/modern_app.py
+M	src/hadocs/gui/widgets/health_gauge.py
+M	src/hadocs/html/components.py
+M	src/hadocs/html/dashboard.py
+M	src/hadocs/html/explorer.py
+M	src/hadocs/intelligence/engine.py
+M	src/hadocs/intelligence/freshness.py
+M	src/hadocs/intelligence/health_score_v2.py
+M	src/hadocs/knowledge/exporter.py
+M	src/hadocs/knowledge/search_index.py
+M	src/hadocs/persistence/policy_repository.py
+M	src/hadocs/platform/config_manager.py
+M	src/hadocs/providers/__init__.py
+M	src/hadocs/providers/homeassistant.py
+M	src/hadocs/reports/generator.py
+M	src/hadocs/reports/html_hook.py
+M	src/hadocs/runtime/__init__.py
+M	src/hadocs/runtime/detector.py
+M	src/hadocs/security/credential_store.py
+M	src/hadocs/utils/config.py
+M	src/hadocs/utils/security.py
+M	src/hadocs/version.py
+M	src/hadocs/web/api/services.py
+M	src/hadocs/web/app.py
+M	src/hadocs/web/static/index.html
+M	tests/platform/test_config_manager.py
+M	tests/platform/test_migration.py
+M	tests/platform/test_paths.py
+M	tests/test_advisor.py
+M	tests/test_area_filename_display.py
+M	tests/test_areas_report_display.py
+M	tests/test_classifier_input_types.py
+M	tests/test_config_security_warnings.py
+M	tests/test_config_validation.py
+M	tests/test_container_config.py
+M	tests/test_core_classifiers.py
+M	tests/test_credential_store.py
+M	tests/test_dashboard_polish.py
+M	tests/test_device_health.py
+M	tests/test_device_override_file.py
+M	tests/test_device_override_integration.py
+M	tests/test_device_override_manager_storage.py
+M	tests/test_device_overrides.py
+M	tests/test_device_ownership.py
+M	tests/test_device_policy_engine.py
+M	tests/test_device_reachability.py
+M	tests/test_display_utils.py
+M	tests/test_effective_analysis.py
+M	tests/test_effective_incidents.py
+M	tests/test_entity_profiles.py
+M	tests/test_entity_state_context.py
+M	tests/test_explain_engine.py
+M	tests/test_explorer_builder.py
+M	tests/test_explorer_html.py
+M	tests/test_gui_output_actions.py
+M	tests/test_hassio_severity_calibration.py
+M	tests/test_health_score.py
+M	tests/test_health_score_v2.py
+M	tests/test_history.py
+M	tests/test_history_trends.py
+M	tests/test_html_components.py
+M	tests/test_html_dashboard.py
+M	tests/test_incident_collapse.py
+M	tests/test_incidents.py
+M	tests/test_incidents_v2.py
+M	tests/test_installation_model.py
+M	tests/test_integration_health.py
+M	tests/test_integration_profiles.py
+M	tests/test_knowledge_engine_v012.py
+M	tests/test_knowledge_export.py
+M	tests/test_logo_and_log_window.py
+M	tests/test_normalize.py
+M	tests/test_policy_engine.py
+M	tests/test_policy_repository.py
+M	tests/test_privacy_redaction.py
+M	tests/test_professional_gui_import.py
+M	tests/test_project_quality.py
+M	tests/test_raw_cache_security.py
+M	tests/test_relationships.py
+M	tests/test_rules_engine.py
+M	tests/test_security.py
+M	tests/test_setup_wizard_import.py
+M	tests/test_slugify.py
+M	tests/test_smart_dashboard_ui.py
+M	tests/test_state_freshness.py
+M	tests/test_state_interpreter.py
+M	tests/test_v017_professional_ui.py
+M	tests/test_v018_ui_wow.py
+M	tests/test_version.py
+M	tools/dashboard_engine_v2_fast.py
+M	tools/dashboard_engine_v2_polish.py
+M	tools/report_engine_cleanup.py
+
+=== STAGED ===
+
+=== UNTRACKED ===
+docs/guides/features/HASK-Preview.md
+docs/integration/HASK_INTEGRATION_STATUS.md
+docs/integration/HASK_PREVIEW_RELEASE_CANDIDATE_REPORT.md
+docs/integration/hask_pilot/HADOCS_APPROVED_DIRTY_BASELINE.json
+docs/integration/hask_pilot/HADOCS_APPROVED_DIRTY_BASELINE.md
+docs/integration/hask_pilot/HADOCS_APPROVED_DIRTY_BASELINE.patch
+docs/integration/hask_pilot/HADOCS_BASELINE_TEST_REPORT.md
+docs/integration/hask_pilot/HADOCS_DIRTY_BASELINE_CLASSIFICATION.md
+docs/integration/hask_pilot/HADOCS_EVIDENCE_MODEL_REPORT.md
+docs/integration/hask_pilot/HADOCS_HASK_SCORING_BOUNDARY_REPORT.md
+docs/integration/hask_pilot/HADOCS_HEALTH_SCORE_INTERFACE_REPORT.md
+docs/integration/hask_pilot/HADOCS_INTEGRATION_PILOT_PREFLIGHT.md
+docs/integration/hask_pilot/HADOCS_MIKROTIK_PILOT_RESULT.json
+docs/integration/hask_pilot/HADOCS_MIKROTIK_PILOT_TRACE.md
+docs/integration/hask_pilot/HADOCS_REPORT_INTERFACE_REPORT.md
+docs/integration/hask_pilot/HADOCS_ROOT_CAUSE_MODEL_REPORT.md
+docs/integration/hask_pilot/HADOCS_UNIFI_PILOT_RESULT.json
+docs/integration/hask_pilot/HADOCS_UNIFI_PILOT_TRACE.md
+docs/integration/hask_pilot/HASK_HADOCS_ADAPTER_ARCHITECTURE.md
+docs/integration/hask_pilot/HASK_HADOCS_DISTRIBUTION_TRUST_PREFLIGHT.md
+docs/integration/hask_pilot/HASK_HADOCS_FIELD_MAPPING_MATRIX.md
+docs/integration/hask_pilot/HASK_HADOCS_ISOLATED_INTEGRATION_PILOT_FINAL_REPORT.md
+docs/integration/hask_runtime/A-001_ARCHITECTURE_DEFECT_REPORT.md
+docs/integration/hask_runtime/A-001_CONTRACT_IMPACT.md
+docs/integration/hask_runtime/A-001_DECISION_RECORD.md
+docs/integration/hask_runtime/A-001_FINAL_REPORT.md
+docs/integration/hask_runtime/A-001_FINAL_STATE.json
+docs/integration/hask_runtime/A-001_WEBSOCKET_FEATURE_ANALYSIS.md
+docs/integration/hask_runtime/AI-001_ARCHITECTURE_PROPOSAL.md
+docs/integration/hask_runtime/AI-001_BASELINE_VERIFICATION.md
+docs/integration/hask_runtime/AI-001_BLOCKER_ANALYSIS.md
+docs/integration/hask_runtime/AI-001_CANONICAL_KEY_SPECIFICATION.md
+docs/integration/hask_runtime/AI-001_CATEGORY_IDENTITY_PROFILES.md
+docs/integration/hask_runtime/AI-001_FINAL_REPORT.md
+docs/integration/hask_runtime/AI-001_FINAL_STATE.json
+docs/integration/hask_runtime/AI-001_IDENTITY_REQUIREMENTS.md
+docs/integration/hask_runtime/AI-001_INSTALLATION_SCOPE_SPECIFICATION.md
+docs/integration/hask_runtime/AI-001_OBSERVATION_ID_SPECIFICATION.md
+docs/integration/hask_runtime/AI-001_OPTIONS_ANALYSIS.md
+docs/integration/hask_runtime/AI-001_PRIVACY_ANALYSIS.md
+docs/integration/hask_runtime/AI-001_RELATIONSHIP_REFERENCE_RULES.md
+docs/integration/hask_runtime/AI-001_REVIEW_PACKAGE.md
+docs/integration/hask_runtime/AI-001_SOURCE_CAPABILITY_SPECIFICATION.md
+docs/integration/hask_runtime/AI-001_STABILITY_MATRIX.md
+docs/integration/hask_runtime/AI-001_VERSIONING_RECOMMENDATION.md
+docs/integration/hask_runtime/AI-002_ARCHITECTURE_CONSISTENCY_CORRECTION.md
+docs/integration/hask_runtime/AI-002_ARCHITECTURE_CONSISTENCY_REREVIEW.md
+docs/integration/hask_runtime/AI-002_ARCHITECTURE_CONSISTENCY_REVIEW.md
+docs/integration/hask_runtime/AI-002_AUTHORIZED_SCOPE.md
+docs/integration/hask_runtime/AI-002_BASELINE_VERIFICATION.md
+docs/integration/hask_runtime/AI-002_BLOCKER_REPORT.md
+docs/integration/hask_runtime/AI-002_BLOCKER_STATE.json
+docs/integration/hask_runtime/AI-002_CLONE_ANALYSIS.md
+docs/integration/hask_runtime/AI-002_CLONE_DECISION_RECORD.md
+docs/integration/hask_runtime/AI-002_CLONE_IDENTITY_SPECIFICATION.md
+docs/integration/hask_runtime/AI-002_EXECUTION_PLAN.md
+docs/integration/hask_runtime/AI-002_FINAL_REPORT.md
+docs/integration/hask_runtime/AI-002_FROZEN_AI001_INVENTORY.md
+docs/integration/hask_runtime/AI-002_R003_FINDINGS_TRACEABILITY.md
+docs/integration/hask_runtime/AI-002_REFERENCE_HASH_COMPATIBILITY.md
+docs/integration/hask_runtime/AI-002_RELATIONSHIP_REFERENCE_CORRECTION.md
+docs/integration/hask_runtime/AI-002_REMOVAL_SEMANTICS.md
+docs/integration/hask_runtime/AI-002_RESUMPTION_STATUS.md
+docs/integration/hask_runtime/AI-002_REVIEW_PACKAGE.md
+docs/integration/hask_runtime/AI-002_SECRET_LOCAL_MATERIAL_SPECIFICATION.md
+docs/integration/hask_runtime/AI-002_VERSION_COMPATIBILITY.md
+docs/integration/hask_runtime/API_COVERAGE_EXECUTIVE_SUMMARY.md
+docs/integration/hask_runtime/API_COVERAGE_METRICS.json
+docs/integration/hask_runtime/API_COVERAGE_SCORECARD.md
+docs/integration/hask_runtime/API_FIELD_STABILITY_REPORT.md
+docs/integration/hask_runtime/API_MATURITY_ASSESSMENT.md
+docs/integration/hask_runtime/API_MATURITY_SCORE.json
+docs/integration/hask_runtime/API_VERSION_REPORT.md
+docs/integration/hask_runtime/ARCHITECTURAL_RISK_REGISTER.md
+docs/integration/hask_runtime/ARCHITECTURE_REVIEW_FINAL_REPORT.md
+docs/integration/hask_runtime/ARCHITECTURE_REVIEW_FINAL_STATE.json
+docs/integration/hask_runtime/ARCHITECTURE_REVIEW_REPORT.md
+docs/integration/hask_runtime/BUNDLE_LIFECYCLE.md
+docs/integration/hask_runtime/CACHE_ARCHITECTURE.md
+docs/integration/hask_runtime/CONFIG_ENTRY_ANALYSIS.md
+docs/integration/hask_runtime/CONNECTIVITY_SIGNAL_REVIEW.md
+docs/integration/hask_runtime/CONSUMER_MATCHER_REQUIREMENTS_INVENTORY.json
+docs/integration/hask_runtime/DB-001_HASK_DATABASE_FOUNDATION.md
+docs/integration/hask_runtime/DB-002_EXECUTABLE_CONSTRAINT_SEMANTICS.md
+docs/integration/hask_runtime/DESIGN_FREEZE_CHECKLIST.md
+docs/integration/hask_runtime/DESIGN_FREEZE_DECISION.md
+docs/integration/hask_runtime/DESIGN_FREEZE_REVIEW.md
+docs/integration/hask_runtime/DF-001_CHANGE_CONTROL.md
+docs/integration/hask_runtime/DF-001_DESIGN_FREEZE_RECORD.md
+docs/integration/hask_runtime/DF-001_FINAL_REPORT.md
+docs/integration/hask_runtime/DF-001_FINAL_STATE.json
+docs/integration/hask_runtime/DF-001_GOVERNANCE_STATUS.md
+docs/integration/hask_runtime/DF-001_IMPLEMENTATION_BASELINE.md
+docs/integration/hask_runtime/DF-002_CHANGE_CONTROL.md
+docs/integration/hask_runtime/DF-002_DESIGN_FREEZE_RECORD.md
+docs/integration/hask_runtime/DF-002_FINAL_REPORT.md
+docs/integration/hask_runtime/DF-002_FINAL_STATE.json
+docs/integration/hask_runtime/DF-002_GOVERNANCE_STATUS.md
+docs/integration/hask_runtime/DF-002_IMPLEMENTATION_BASELINE.md
+docs/integration/hask_runtime/ENTITY_DEVICE_RELATIONSHIPS.json
+docs/integration/hask_runtime/EVENT_MODEL_ANALYSIS.md
+docs/integration/hask_runtime/FINAL_DISCOVERY_REPORT.md
+docs/integration/hask_runtime/FINAL_DISCOVERY_STATE.json
+docs/integration/hask_runtime/G-001_BLOCKER_POLICY.md
+docs/integration/hask_runtime/G-001_DEVELOPMENT_LIFECYCLE.md
+docs/integration/hask_runtime/G-001_FINAL_REPORT.md
+docs/integration/hask_runtime/G-001_FINAL_STATE.json
+docs/integration/hask_runtime/G-001_GOVERNANCE_POLICY.md
+docs/integration/hask_runtime/G-001_IMPLEMENTATION_RULES.md
+docs/integration/hask_runtime/GENERIC_METADATA_COLLECTOR_ARCHITECTURE.md
+docs/integration/hask_runtime/GENERIC_METADATA_COLLECTOR_CONTRACT_SPECIFICATION.md
+docs/integration/hask_runtime/GENERIC_METADATA_COLLECTOR_ERROR_MODEL.md
+docs/integration/hask_runtime/GENERIC_METADATA_COLLECTOR_FINAL_REPORT.md
+docs/integration/hask_runtime/GENERIC_METADATA_COLLECTOR_FINAL_STATE.json
+docs/integration/hask_runtime/GENERIC_METADATA_COLLECTOR_IMPLEMENTATION_READINESS.md
+docs/integration/hask_runtime/GENERIC_METADATA_COLLECTOR_LIFECYCLE.md
+docs/integration/hask_runtime/GENERIC_METADATA_COLLECTOR_OBSERVATION_MODEL.md
+docs/integration/hask_runtime/GENERIC_METADATA_COLLECTOR_PRIVACY_MODEL.md
+docs/integration/hask_runtime/GENERIC_METADATA_COLLECTOR_RELATIONSHIP_MODEL.md
+docs/integration/hask_runtime/GENERIC_METADATA_COLLECTOR_RELEASE_PLAN.md
+docs/integration/hask_runtime/GENERIC_METADATA_COLLECTOR_SPECIFICATION.md
+docs/integration/hask_runtime/GENERIC_METADATA_COLLECTOR_VERSION_STRATEGY.md
+docs/integration/hask_runtime/HADOCS_API_GAP_ANALYSIS.md
+docs/integration/hask_runtime/HADOCS_NATIVE_SIGNAL_INVENTORY.md
+docs/integration/hask_runtime/HASK_MATCHER_OPPORTUNITIES.md
+docs/integration/hask_runtime/HA_COMPANION_CONNECTIVITY_CONTRACT_ASSESSMENT.md
+docs/integration/hask_runtime/HOME_ASSISTANT_API_ATLAS.json
+docs/integration/hask_runtime/HOME_ASSISTANT_API_ATLAS.md
+docs/integration/hask_runtime/HOME_ASSISTANT_API_DISCOVERY_PREFLIGHT.md
+docs/integration/hask_runtime/HOME_ASSISTANT_API_INVENTORY.md
+docs/integration/hask_runtime/HOME_ASSISTANT_API_SCHEMA_CATALOG.json
+docs/integration/hask_runtime/HOME_ASSISTANT_SIGNAL_CLASSIFICATION.md
+docs/integration/hask_runtime/HOME_ASSISTANT_SIGNAL_MATRIX.json
+docs/integration/hask_runtime/I-001A_ARCHITECTURE_CONFORMANCE.md
+docs/integration/hask_runtime/I-001A_IMPLEMENTATION_INVENTORY.md
+docs/integration/hask_runtime/I-001A_IMPLEMENTATION_REPORT.md
+docs/integration/hask_runtime/I-001A_IMPLEMENTATION_STATE.json
+docs/integration/hask_runtime/I-001A_IMPLEMENTATION_VALIDATION.md
+docs/integration/hask_runtime/I-001B_RESUME_BASELINE_VERIFICATION.md
+docs/integration/hask_runtime/I-001B_RESUME_BLOCKER_REPORT.md
+docs/integration/hask_runtime/I-001B_RESUME_BLOCKER_STATE.json
+docs/integration/hask_runtime/I-001B_RESUME_CAPABILITY_INVENTORY.md
+docs/integration/hask_runtime/I-001B_RESUME_CONTRACT_MAPPING.md
+docs/integration/hask_runtime/I-001B_RESUME_HISTORICAL_BLOCKER_RESOLUTION.md
+docs/integration/hask_runtime/IM-001_BATCH1_FINAL_REPORT.md
+docs/integration/hask_runtime/IM-001_BATCH1_PRESERVATION_REPORT.md
+docs/integration/hask_runtime/IM-001_BATCH2_BLOCKER_REPORT.md
+docs/integration/hask_runtime/IM-001_BATCH2_CONFORMANCE.json
+docs/integration/hask_runtime/IM-001_BATCH2_IMPLEMENTATION_REPORT.md
+docs/integration/hask_runtime/IM-001_BATCH3_CONFORMANCE.json
+docs/integration/hask_runtime/IM-001_BATCH3_CORRECTION_AUTHORITY_CONFLICT_REPORT.md
+docs/integration/hask_runtime/IM-001_BATCH3_IMPLEMENTATION_REPORT.md
+docs/integration/hask_runtime/IMPLEMENTATION_GATE.md
+docs/integration/hask_runtime/IMPLEMENTATION_SCOPE_BLOCKER.md
+docs/integration/hask_runtime/LEGACY_MATCHER_PI2_EXECUTABILITY_REPORT.md
+docs/integration/hask_runtime/LIVE_API_RESPONSE_CATALOG.md
+docs/integration/hask_runtime/NATIVE_CONNECTIVITY_OBSERVATION_BLOCKER_REPORT.md
+docs/integration/hask_runtime/NATIVE_CONNECTIVITY_OBSERVATION_PREFLIGHT.md
+docs/integration/hask_runtime/NATIVE_CONNECTIVITY_OBSERVATION_STARTING_STATE.json
+docs/integration/hask_runtime/NATIVE_CONNECTIVITY_SIGNAL_SOURCE_ANALYSIS.md
+docs/integration/hask_runtime/OBJECT_GRAPH_ANALYSIS.md
+docs/integration/hask_runtime/OBSERVED_STRUCTURED_SIGNALS.json
+docs/integration/hask_runtime/OFFICIAL_VS_OBSERVED_COMPARISON.md
+docs/integration/hask_runtime/OPEN_ITEMS_CLASSIFICATION.md
+docs/integration/hask_runtime/PI1_PREFLIGHT_REPORT.md
+docs/integration/hask_runtime/PI1_RUNTIME_FOUNDATION_FINAL_REPORT.md
+docs/integration/hask_runtime/PI1_STARTING_STATE_MANIFEST.json
+docs/integration/hask_runtime/PI2_BLOCKER_REGISTER.md
+docs/integration/hask_runtime/PI2_COMPATIBILITY_TEST_INCREMENT_REPORT.md
+docs/integration/hask_runtime/PI2_COMPATIBILITY_TEST_INCREMENT_STATE.json
+docs/integration/hask_runtime/PI2_DATA_FLOW.md
+docs/integration/hask_runtime/PI2_EVIDENCE_PIPELINE_BLOCKER_REPORT.md
+docs/integration/hask_runtime/PI2_FEASIBILITY_FROM_API_REPORT.md
+docs/integration/hask_runtime/PI2_INTEGRATION_BOUNDARY.md
+docs/integration/hask_runtime/PI2_NATIVE_SIGNAL_READINESS_REPORT.md
+docs/integration/hask_runtime/PI2_RESCOPING_RECOMMENDATION.md
+docs/integration/hask_runtime/PI2_RESUME_PREFLIGHT_REPORT.md
+docs/integration/hask_runtime/PI2_RESUME_STARTING_STATE.json
+docs/integration/hask_runtime/PI2_SIGNAL_COVERAGE_FINAL_REPORT.md
+docs/integration/hask_runtime/PI2_SIGNAL_COVERAGE_FINAL_STATE.json
+docs/integration/hask_runtime/PI2_SIGNAL_COVERAGE_PREFLIGHT.md
+docs/integration/hask_runtime/PI2_SIGNAL_COVERAGE_STARTING_STATE.json
+docs/integration/hask_runtime/PI2_SIGNAL_TO_MATCHER_MATRIX.json
+docs/integration/hask_runtime/PI2_SIGNAL_TO_MATCHER_REPORT.md
+docs/integration/hask_runtime/PRIVACY_CLASSIFICATION_REPORT.md
+docs/integration/hask_runtime/PRODUCTION_RUNTIME_FOUNDATION.md
+docs/integration/hask_runtime/PS-001_DEPENDENCY_MAP.md
+docs/integration/hask_runtime/PS-001_FINAL_REPORT.md
+docs/integration/hask_runtime/PS-001_FINAL_STATE.json
+docs/integration/hask_runtime/PS-001_INCREMENT_REGISTER.md
+docs/integration/hask_runtime/PS-001_PROGRAM_STATUS.md
+docs/integration/hask_runtime/PS-001_ROADMAP.md
+docs/integration/hask_runtime/R-002_ARCHITECTURE_AMENDMENT_REVIEW.md
+docs/integration/hask_runtime/R-002_CHANGE_INVENTORY.md
+docs/integration/hask_runtime/R-002_CONTRACT_CONSISTENCY_REVIEW.md
+docs/integration/hask_runtime/R-002_DESIGN_FREEZE_RECOMMENDATION.md
+docs/integration/hask_runtime/R-002_FINAL_REPORT.md
+docs/integration/hask_runtime/R-002_FINAL_STATE.json
+docs/integration/hask_runtime/R-002_RELEASE_1_SCOPE_REVIEW.md
+docs/integration/hask_runtime/R-002_VERSIONING_DECISION.md
+docs/integration/hask_runtime/R-003_AI001_DELIVERABLE_INVENTORY.md
+docs/integration/hask_runtime/R-003_BASELINE_VERIFICATION.md
+docs/integration/hask_runtime/R-003_CANONICAL_KEY_REVIEW.md
+docs/integration/hask_runtime/R-003_CATEGORY_PROFILE_REVIEW.md
+docs/integration/hask_runtime/R-003_COLLISION_MODEL_REVIEW.md
+docs/integration/hask_runtime/R-003_CROSS_DOCUMENT_CONSISTENCY_REVIEW.md
+docs/integration/hask_runtime/R-003_DF002_COMPATIBILITY_REVIEW.md
+docs/integration/hask_runtime/R-003_DF003_READINESS.md
+docs/integration/hask_runtime/R-003_FINAL_REPORT.md
+docs/integration/hask_runtime/R-003_FINAL_STATE.json
+docs/integration/hask_runtime/R-003_FINDINGS_REGISTER.md
+docs/integration/hask_runtime/R-003_INSTALLATION_SCOPE_REVIEW.md
+docs/integration/hask_runtime/R-003_NORMATIVE_COMPLETENESS_REVIEW.md
+docs/integration/hask_runtime/R-003_OBSERVATION_ID_REVIEW.md
+docs/integration/hask_runtime/R-003_PRIVACY_REVIEW.md
+docs/integration/hask_runtime/R-003_RELATIONSHIP_REFERENCE_REVIEW.md
+docs/integration/hask_runtime/R-003_REQUIREMENTS_TRACEABILITY.md
+docs/integration/hask_runtime/R-003_REVIEW_DECISION.md
+docs/integration/hask_runtime/R-003_REVIEW_SCOPE.md
+docs/integration/hask_runtime/R-003_SCOPE_COMPLIANCE_REVIEW.md
+docs/integration/hask_runtime/R-003_SOURCE_CAPABILITY_REVIEW.md
+docs/integration/hask_runtime/R-003_STABILITY_REVIEW.md
+docs/integration/hask_runtime/R-003_TEST_VECTOR_VERIFICATION.md
+docs/integration/hask_runtime/R-003_VERSIONING_REVIEW.md
+docs/integration/hask_runtime/REGISTRY_ANALYSIS.md
+docs/integration/hask_runtime/REST_VS_WEBSOCKET_REPORT.md
+docs/integration/hask_runtime/RUNTIME_CONFIGURATION.md
+docs/integration/hask_runtime/TRUST_FOUNDATION.md
+docs/integration/hask_runtime/UNIFI_MIKROTIK_CONNECTIVITY_DEFERRAL.md
+docs/integration/hask_runtime/ca001/CA-001_ARCHITECTURE_ALTERNATIVES.md
+docs/integration/hask_runtime/ca001/CA-001_DECISION_CRITERIA.md
+docs/integration/hask_runtime/ca001/CA-001_EXISTING_AUTHORITY.md
+docs/integration/hask_runtime/ca001/CA-001_MIGRATION_AND_RECOVERY.md
+docs/integration/hask_runtime/ca001/CA-001_NORMATIVE_SPECIFICATION.md
+docs/integration/hask_runtime/ca001/CA-001_OPEN_DECISIONS.md
+docs/integration/hask_runtime/ca001/CA-001_RECOMMENDED_ARCHITECTURE.md
+docs/integration/hask_runtime/ca001/CA-001_REQUIREMENTS.md
+docs/integration/hask_runtime/ca001/CA-001_SECRET_LIFECYCLE.md
+docs/integration/hask_runtime/ca001/CA-001_TEST_VECTORS.md
+docs/integration/hask_runtime/r004/R-004_FINDINGS.md
+docs/integration/hask_runtime/r004/R-004_REVIEW_ADDENDUM.md
+docs/integration/hask_runtime/r004/R-004_REVIEW_REPORT.md
+docs/integration/hask_runtime/r004/R-004_VALIDATION_EVIDENCE.md
+src/hadocs/application/database_status.py
+src/hadocs/application/hask_candidate_evidence.py
+src/hadocs/application/hask_preview.py
+src/hadocs/application/operational_database.py
+src/hadocs/collectors/native_integration_status.py
+src/hadocs/core/entity_eligibility.py
+src/hadocs/hask_database/__init__.py
+src/hadocs/hask_database/config.py
+src/hadocs/hask_database/connection.py
+src/hadocs/hask_database/coordination.py
+src/hadocs/hask_database/errors.py
+src/hadocs/hask_database/integrity.py
+src/hadocs/hask_database/migration_chain.py
+src/hadocs/hask_database/migrations.py
+src/hadocs/hask_database/repositories.py
+src/hadocs/hask_database/repository_contracts.py
+src/hadocs/hask_database/schema.py
+src/hadocs/hask_database/secrets.py
+src/hadocs/hask_database/service.py
+src/hadocs/hask_database/sql/0001_schema_governance.sql
+src/hadocs/hask_database/sql/0002_version_foundation.sql
+src/hadocs/hask_database/sql/0003_installation_foundation.sql
+src/hadocs/hask_database/sql/0004_identity_foundation.sql
+src/hadocs/hask_database/sql/0005_operational_subjects.sql
+src/hadocs/hask_database/sql/0006_collection_facts.sql
+src/hadocs/hask_database/sql/0007_history_decisions.sql
+src/hadocs/hask_database/sql/0008_audit_closure.sql
+src/hadocs/hask_database/transactions.py
+src/hadocs/hask_database/uow_contracts.py
+src/hadocs/hask_database/validators.py
+src/hadocs/hudd/README.md
+src/hadocs/hudd/__init__.py
+src/hadocs/hudd/cli.py
+src/hadocs/hudd/data/hudd.sqlite
+src/hadocs/hudd/data/masterlist.txt
+src/hadocs/hudd/database.py
+src/hadocs/hudd/homeassistant.py
+src/hadocs/hudd/importers/__init__.py
+src/hadocs/hudd/importers/masterlist.py
+src/hadocs/hudd/importers/ohf.py
+src/hadocs/hudd/matcher.py
+src/hadocs/hudd/migrations/0002_device_matcher.sql
+src/hadocs/hudd/migrations/__init__.py
+src/hadocs/hudd/models.py
+src/hadocs/hudd/repository.py
+src/hadocs/hudd/schema/schema.sql
+src/hadocs/hudd/service.py
+src/hadocs/knowledge/hask_bundle/0.2.0/applicability.json
+src/hadocs/knowledge/hask_bundle/0.2.0/competing_causes.json
+src/hadocs/knowledge/hask_bundle/0.2.0/conflicts.json
+src/hadocs/knowledge/hask_bundle/0.2.0/diagnostic_scenarios.json
+src/hadocs/knowledge/hask_bundle/0.2.0/evidence_catalog.json
+src/hadocs/knowledge/hask_bundle/0.2.0/evidence_matchers.json
+src/hadocs/knowledge/hask_bundle/0.2.0/known_gaps.json
+src/hadocs/knowledge/hask_bundle/0.2.0/manifest.json
+src/hadocs/knowledge/hask_bundle/0.2.0/platform_index.json
+src/hadocs/knowledge/hask_bundle/0.2.0/provenance.json
+src/hadocs/knowledge/hask_bundle/0.2.0/readiness.json
+src/hadocs/knowledge/hask_bundle/0.2.0/recommendations.json
+src/hadocs/knowledge/hask_bundle/0.2.0/root_cause_candidates.json
+src/hadocs/knowledge/hask_bundle/0.2.0/verification_paths.json
+src/hadocs/knowledge/hask_pilot/__init__.py
+src/hadocs/knowledge/hask_pilot/adapters.py
+src/hadocs/knowledge/hask_pilot/config.py
+src/hadocs/knowledge/hask_pilot/loader.py
+src/hadocs/knowledge/hask_pilot/models.py
+src/hadocs/knowledge/hask_pilot/runner.py
+src/hadocs/knowledge/hask_runtime/__init__.py
+src/hadocs/knowledge/hask_runtime/cache.py
+src/hadocs/knowledge/hask_runtime/config.py
+src/hadocs/knowledge/hask_runtime/discovery.py
+src/hadocs/knowledge/hask_runtime/manager.py
+src/hadocs/knowledge/hask_runtime/models.py
+src/hadocs/knowledge/hask_runtime/provider.py
+src/hadocs/knowledge/hask_runtime/validation.py
+src/hadocs/metadata_collector/__init__.py
+src/hadocs/metadata_collector/bootstrap.py
+src/hadocs/metadata_collector/contract.py
+src/hadocs/metadata_collector/errors.py
+src/hadocs/metadata_collector/lifecycle.py
+src/hadocs/metadata_collector/normalization.py
+src/hadocs/metadata_collector/privacy.py
+src/hadocs/metadata_collector/registry.py
+src/hadocs/metadata_collector/serialization.py
+src/hadocs/metadata_collector/versioning.py
+src/hadocs/web/static/hask-preview.html
+tests/conftest.py
+tests/fixtures/hask_pilot/mikrotik_local_evidence.json
+tests/fixtures/hask_pilot/unifi_local_evidence.json
+tests/test_addon_operational_database_startup.py
+tests/test_hask_candidate_evidence_bridge.py
+tests/test_hask_database_entity_persistence.py
+tests/test_hask_database_identity_foundation.py
+tests/test_hask_database_infrastructure.py
+tests/test_hask_database_operational_slice.py
+tests/test_hask_database_posix_credentials.py
+tests/test_hask_database_product_integration.py
+tests/test_hask_database_relationship_persistence.py
+tests/test_hask_database_repositories.py
+tests/test_hask_database_scan_completion.py
+tests/test_hask_database_schema.py
+tests/test_hask_pilot.py
+tests/test_hask_preview.py
+tests/test_hask_runtime.py
+tests/test_hudd.py
+tests/test_hudd_homeassistant.py
+tests/test_issue_29_disabled_entity_eligibility.py
+tests/test_native_integration_status.py
+tests/test_product_consolidation_repair.py
+tests/test_relationship_input_contract.py
+tools/build_hask_pi1.py
+tools/build_hask_pilot.py
+
+=== VERSION REFERENCES ===
+.github/ISSUE_TEMPLATE/bug_report.md:15:## HADocs version
+.github/workflows/build-release.yml:16:          python-version: "3.11"
+.github/workflows/build-windows.yml:19:          python-version: "3.12"
+.github/workflows/python.yml:19:        python-version: ["3.14"]
+.github/workflows/python.yml:27:          python-version: ${{ matrix.python-version }}
+.github/workflows/tests.yml:15:          python-version: "3.11"
+CHANGELOG.md:11:- Packaged the validated HASK consumer bundle `0.2.0` as a versioned, checksum-bound read-only resource.
+CHANGELOG.md:15:- Established `hadocs.version` as the documented version authority for source, wheel, CLI, GUI, frozen runtime, and HASK compatibility checks.
+CHANGELOG.md:45:- Added checksum, version, structure and reference validation plus isolated pilot fixtures, traces and reports.
+CHANGELOG.md:54:- Added contract, HADocs-version, manifest, typed structure, checksum and reference validation with a future signature-verifier interface.
+README.md:183:- A redacted version is available for safer sharing.
+README.md:184:- You decide whether to share either version.
+ROADMAP.md:47:- The generated HASK consumer bundle is packaged as a versioned, checksum-bound read-only resource while retaining strict explicit-path precedence.
+ROADMAP.md:69:- HADocs consumes HASK only through the versioned, read-only Consumer Contract.
+ROADMAP.md:108:applicability/version boundaries, evidence quality, deterministic relationships,
+ROADMAP.md:121:8. Release manifest and versioned bundle.
+SECURITY.md:5:## Supported versions
+SECURITY.md:17:- The affected version and platform
+config/device_overrides.example.json:2:  "version": 2,
+docs/architecture/Decisions.md:11:- Decision: Package one validated, versioned HASK consumer bundle as an immutable read-only resource and expose it only through a shared redacted `HaskPreviewSnapshot`. Prefer a valid explicit bundle, then the packaged bundle, then a visible unavailable state. A corrupt explicit bundle never silently falls back. Keep Preview and every HASK feature default-disabled.
+docs/architecture/Decisions.md:27:- Decision: Consume HASK exclusively through its local, versioned JSON bundle using a disabled-by-default loader under `src/hadocs/knowledge/hask_pilot/`. Preserve canonical evidence, candidate causes, provenance, conflicts, gaps, applicability and verification in an isolated metadata DTO rather than converting them into production `Finding` or `IncidentV2` objects.
+docs/architecture/Decisions.md:28:- Reason: HADocs owns runtime evidence, confirmation, severity, priority, grouping and Health Score. Direct conversion would lose HASK semantics and could turn hypotheses into production conclusions.
+docs/archive/DUPLICATE-SECURITY-POINTER.md:6:The canonical security policy, supported-version policy, and responsible disclosure process are maintained in [SECURITY.md](../../SECURITY.md).
+docs/archive/DUPLICATE-VERSIONING-POINTER.md:1:# Archived versioning pointer
+docs/archive/DUPLICATE-VERSIONING-POINTER.md:6:See the canonical [versioning guide](../release/Versioning.md).
+docs/archive/RELEASE_DESKTOP.md:7:- [ ] Update `src/hadocs/version.py`
+docs/guides/development/TESTING.md:10:Python 3.11 is the minimum supported version; Python 3.14 is used by the current local development workflow. Add or update tests when behavior changes, and verify platform-specific workflows when relevant.
+docs/guides/features/Knowledge-Pack.md:10:You decide whether either version is shared. Prefer the redacted Knowledge Pack when external review is necessary, and inspect it before distribution.
+docs/release/Release-Process.md:5:1. Confirm the intended version and scope.
+docs/release/Release-Process.md:16:See the [versioning guide](Versioning.md) and [release checklist](Release-Checklist.md), or return to the [documentation home](../README.md).
+docs/release/Versioning.md:7:Update version metadata consistently across packaging, release notes, and published artifacts as part of the release process.
+hadocs/Dockerfile:7:    io.hass.version="${BUILD_VERSION}" \
+hadocs/config.yaml:2:version: "0.2.1"
+installer/HADocs.iss:4:#define MyAppVersion "0.16.0"
+installer/HADocs.iss:35:Source: "dist\HADocs\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+pyproject.toml:7:dynamic = ["version"]
+pyproject.toml:46:version = {attr = "hadocs.version.__version__"}
+rc.hadocs.web.app:122:  V                    Print version number of "less".
+rc.hadocs.web.app:202:  -V  ........  --version
+rc.hadocs.web.app:203:                  Display the version number of "less".
+src/hadocs/cli/main.py:10:from hadocs.version import __version__
+src/hadocs/cli/main.py:15:    parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
+src/hadocs/core/builder.py:168:            sw_version=dev.get("sw_version") or "",
+src/hadocs/core/builder.py:169:            hw_version=dev.get("hw_version") or "",
+src/hadocs/core/history.py:59:        "schema_version": SNAPSHOT_SCHEMA_VERSION,
+src/hadocs/core/models.py:42:    sw_version: str
+src/hadocs/core/models.py:43:    hw_version: str
+src/hadocs/core/rulesets/default.py:32:                "*latest_version*",
+src/hadocs/core/rulesets/default.py:107:                "*app_version*",
+src/hadocs/core/rulesets/default.py:141:            ignore=["button.*", "update.*", "*snapshot*", "*restart*", "*latest_version*"],
+src/hadocs/domain/scans.py:17:    hadocs_version: str | None = None
+src/hadocs/domain/scans.py:18:    home_assistant_version: str | None = None
+src/hadocs/domain/scoring.py:14:    version: int
+src/hadocs/explain/engine.py:49:        why_it_matters="Add-ons can expose multiple status and version entities. If an add-on is stopped, several entities may become unavailable.",
+src/hadocs/gui/dialogs/about_dialog.py:16:            from hadocs.version import __version__
+src/hadocs/gui/dialogs/about_dialog.py:18:            __version__ = "unknown"
+src/hadocs/gui/dialogs/about_dialog.py:31:        ttk.Label(frame, text=f"Version {__version__}", style="Panel.TLabel").pack(anchor="center")
+src/hadocs/gui/dialogs/settings_dialog.py:230:        version = (
+src/hadocs/gui/dialogs/settings_dialog.py:232:            if status.schema_version is None
+src/hadocs/gui/dialogs/settings_dialog.py:233:            else str(status.schema_version)
+src/hadocs/gui/dialogs/settings_dialog.py:238:            "Database file: {database}\nSchema: {version}   Integrity: {integrity}   "
+src/hadocs/gui/dialogs/settings_dialog.py:244:                version=version,
+src/hadocs/knowledge/exporter.py:20:def build_manifest(version: str = "0.12.0") -> dict:
+src/hadocs/knowledge/exporter.py:23:        "version": version,
+src/hadocs/knowledge/exporter.py:223:def export_knowledge(out: Path, model=None, executive=None, incidents=None, graph=None, version: str = "0.12.0") -> None:
+src/hadocs/knowledge/exporter.py:227:    manifest = build_manifest(version=version)
+src/hadocs/reports/generator.py:44:from hadocs.version import RELEASE_VERSION, __version__
+src/hadocs/reports/generator.py:114:        version=RELEASE_VERSION,
+src/hadocs/reports/generator.py:754:      <p class="footer">HADocs {esc(__version__)}</p>
+src/hadocs/reports/generator.py:1109:            f"- Software version: `{device.sw_version}`",
+src/hadocs/reports/generator.py:1110:            f"- Hardware version: `{device.hw_version}`",
+src/hadocs/utils/security.py:23:        subprocess.run(["git", "--version"], capture_output=True, text=True, check=False)
+src/hadocs/version.py:6:# One product-version authority for source, wheel, CLI, GUI, frozen builds,
+src/hadocs/version.py:10:RELEASE_VERSION = "0.15.0"
+src/hadocs/version.py:17:    version: str
+src/hadocs/version.py:21:    def display_version(self) -> str:
+src/hadocs/version.py:23:            return self.version
+src/hadocs/version.py:25:        return f"{self.version}-{self.channel}"
+src/hadocs/version.py:29:        return f"{self.name} {self.display_version}"
+src/hadocs/version.py:34:    version="0.3.0",
+src/hadocs/version.py:40:    version=RELEASE_VERSION,
+src/hadocs/version.py:46:    version="0.3.0",
+src/hadocs/version.py:52:    version="0.3.0",
+src/hadocs/version.py:60:# The current Windows application release remains the public desktop version.
+src/hadocs/version.py:61:__version__ = WINDOWS.display_version
+src/hadocs/web/app.py:166:    server_version = "HADocsWeb/0.4.0"
+src/hadocs/web/static/index.html:16:      <div class="version">v0.4.0</div>
+src/hadocs/web/static/style.css:83:.version {
+tests/test_device_health.py:46:        sw_version="",
+tests/test_device_health.py:47:        hw_version="",
+tests/test_device_override_file.py:6:    path.write_text(json.dumps({"version":1,"devices":[{"device_id":"abc","expected_offline":True,"reason":"PIR"}]}), encoding="utf-8")
+tests/test_device_override_integration.py:15:        sw_version="",hw_version="",classification="physical",entities=[e])
+tests/test_device_reachability.py:39:        sw_version="",
+tests/test_device_reachability.py:40:        hw_version="",
+tests/test_incidents_v2.py:44:        sw_version="",
+tests/test_incidents_v2.py:45:        hw_version="",
+tests/test_installation_model.py:19:        sw_version="",
+tests/test_installation_model.py:20:        hw_version="",
+tests/test_integration_health.py:56:        sw_version="",
+tests/test_integration_health.py:57:        hw_version="",
+tests/test_version.py:1:from hadocs.version import (
+tests/test_version.py:8:    __version__,
+tests/test_version.py:12:def test_version_metadata():
+tests/test_version.py:13:    assert __version__ == "0.15.0-rc1"
+tests/test_version.py:18:def test_product_versions():
+tests/test_version.py:19:    assert WINDOWS.display_version == "0.15.0-rc1"
+tests/test_version.py:20:    assert CORE.display_version == "0.3.0-alpha"
+tests/test_version.py:21:    assert DOCKER.display_version == "0.3.0-alpha"
+tests/test_version.py:22:    assert HOME_ASSISTANT_ADDON.display_version == "0.3.0-alpha"
+
+

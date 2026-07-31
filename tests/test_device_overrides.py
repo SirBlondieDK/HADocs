@@ -1,5 +1,5 @@
 from datetime import UTC, datetime, timedelta
-from src.hadocs.core.device_overrides import (
+from hadocs.core.device_overrides import (
     DeviceOverride, get_device_policy, load_device_overrides, match_override,
 )
 

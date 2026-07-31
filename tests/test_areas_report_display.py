@@ -1,4 +1,4 @@
-from src.hadocs.utils.display import display_area
+from hadocs.utils.display import display_area
 
 
 def test_area_report_display_formatter_is_available():

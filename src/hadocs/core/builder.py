@@ -1,12 +1,17 @@
 from __future__ import annotations
 
-from src.hadocs.core.classifiers import classify_device, classify_entity
-from src.hadocs.core.models import (
+from hadocs.core.classifiers import classify_device, classify_entity
+from hadocs.core.entity_eligibility import is_registry_disabled_entity
+from hadocs.core.models import (
     AreaModel,
     DeviceModel,
     EntityModel,
     InstallationModel,
     IntegrationModel,
+)
+from hadocs.hudd.homeassistant import (
+    match_device_registry_entry,
+    serialize_match,
 )
 
 
@@ -62,7 +67,7 @@ def build_model(data: dict, idx: dict) -> InstallationModel:
             state=state_obj.get("state", "unknown"),
             area_id=area_id,
             device_id=device_id,
-            is_ignored=ignored,
+            is_ignored=ignored or is_registry_disabled_entity(ent),
             is_physical=physical,
             importance=importance,
             rule_reason=reason,
@@ -145,6 +150,11 @@ def build_model(data: dict, idx: dict) -> InstallationModel:
 
         area_id = dev.get("area_id") or "_uden_område"
 
+        hudd_match = match_device_registry_entry(
+            dev,
+            platforms=platforms,
+        )
+
         model = DeviceModel(
             device_id=device_id,
             name=(
@@ -159,6 +169,7 @@ def build_model(data: dict, idx: dict) -> InstallationModel:
             hw_version=dev.get("hw_version") or "",
             classification=classification,
             entities=dev_entities,
+            hudd=serialize_match(hudd_match),
             raw=(
                 dict(dev)
                 if isinstance(dev, dict)

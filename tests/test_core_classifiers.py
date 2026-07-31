@@ -1,4 +1,4 @@
-from src.hadocs.core.classifiers import classify_device
+from hadocs.core.classifiers import classify_device
 
 
 def test_integration_device_is_system():

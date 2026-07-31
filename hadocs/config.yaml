@@ -1,7 +1,7 @@
 name: HADocs
-version: "0.2.1"
+version: "0.17.0-rc1"
 slug: hadocs
-description: Generate local documentation and health analysis for Home Assistant
+description: Local Home Assistant analysis, diagnostics and stability platform
 url: https://github.com/SirBlondieDK/HADocs
 stage: experimental
 
@@ -30,8 +30,26 @@ options:
   project_name: My Smart Home
   output_directory: /share/hadocs
   scan_on_start: false
+  hask_database_initialize: false
+  hask_database_enabled: false
+  hask_database_path: /config/hadocs.db
+  hask_database_installation_ref: home-assistant-app
+  hask_enabled: false
+  hask_preview_enabled: false
+  hask_bundle_path: /config/hask-bundle
+  hask_candidate_evidence_enabled: false
+  hask_native_integration_status_enabled: false
 
 schema:
   project_name: str
   output_directory: str
   scan_on_start: bool
+  hask_database_initialize: bool
+  hask_database_enabled: bool
+  hask_database_path: str
+  hask_database_installation_ref: str
+  hask_enabled: bool
+  hask_preview_enabled: bool
+  hask_bundle_path: str
+  hask_candidate_evidence_enabled: bool
+  hask_native_integration_status_enabled: bool

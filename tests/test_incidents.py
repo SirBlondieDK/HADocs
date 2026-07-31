@@ -1,4 +1,4 @@
-from src.hadocs.core.incidents import _repair_minutes, _score_gain_from_count, _severity_from_count
+from hadocs.core.incidents import _repair_minutes, _score_gain_from_count, _severity_from_count
 
 
 def test_severity_from_count():

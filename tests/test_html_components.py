@@ -1,4 +1,4 @@
-from src.hadocs.html.components import esc, health_ring
+from hadocs.html.components import esc, health_ring
 
 
 def test_escape():

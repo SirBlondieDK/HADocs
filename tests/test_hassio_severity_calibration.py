@@ -1,6 +1,6 @@
 from types import SimpleNamespace
 
-from src.hadocs.core.effective_incidents import _hassio_severity
+from hadocs.core.effective_incidents import _hassio_severity
 
 
 def model_with(states):

@@ -1,4 +1,4 @@
-from src.hadocs.html.dashboard import build_ai_summary
+from hadocs.html.dashboard import build_ai_summary
 
 
 class Executive:

@@ -5,20 +5,35 @@
 from pathlib import Path
 
 ROOT = Path.cwd()
+SRC = ROOT / "src"
 MAIN = ROOT / "main.py"
 
 if not MAIN.exists():
     raise FileNotFoundError(f"main.py not found at {MAIN}. Run PyInstaller from the repository root.")
 
 datas = []
+for migration in sorted((SRC / "hadocs" / "hask_database" / "sql").glob("*.sql")):
+    datas.append((str(migration), "hadocs/hask_database/sql"))
 
-for optional in ["docs", "README.md", "LICENSE", "config.example"]:
-    p = ROOT / optional
-    if p.exists():
-        datas.append((str(p), optional if p.is_dir() else "."))
+for source, destination in (
+    (SRC / "hadocs" / "hudd" / "data" / "hudd.sqlite", "hadocs/hudd/data"),
+    (SRC / "hadocs" / "hudd" / "data" / "masterlist.txt", "hadocs/hudd/data"),
+    (SRC / "hadocs" / "hudd" / "schema" / "schema.sql", "hadocs/hudd/schema"),
+):
+    datas.append((str(source), destination))
+
+for migration in sorted((SRC / "hadocs" / "hudd" / "migrations").glob("*.sql")):
+    datas.append((str(migration), "hadocs/hudd/migrations"))
+
+for artifact in sorted((SRC / "hadocs" / "knowledge" / "hask_bundle" / "0.2.0").glob("*.json")):
+    datas.append((str(artifact), "hadocs/knowledge/hask_bundle/0.2.0"))
+
+for asset in sorted((SRC / "hadocs" / "web" / "static").glob("*")):
+    if asset.is_file():
+        datas.append((str(asset), "hadocs/web/static"))
 
 # Include project package explicitly for reliability.
-pathex = [str(ROOT)]
+pathex = [str(SRC)]
 
 a = Analysis(
     [str(MAIN)],
@@ -26,16 +41,20 @@ a = Analysis(
     binaries=[],
     datas=datas,
     hiddenimports=[
-        "src",
-        "src.hadocs",
-        "src.hadocs.gui.app",
-        "src.hadocs.gui.modern_app",
-        "src.hadocs.gui.output_actions",
-        "src.hadocs.api.client",
-        "src.hadocs.reports.generator",
-        "src.hadocs.html.explorer",
-        "src.hadocs.knowledge.exporter",
-        "src.hadocs.explain.engine",
+        "hadocs",
+        "hadocs.cli.main",
+        "hadocs.application.database_status",
+        "hadocs.application.operational_database",
+        "hadocs.application.hask_preview",
+        "hadocs.hask_database",
+        "hadocs.gui.app",
+        "hadocs.gui.modern_app",
+        "hadocs.gui.output_actions",
+        "hadocs.api.client",
+        "hadocs.reports.generator",
+        "hadocs.html.explorer",
+        "hadocs.knowledge.exporter",
+        "hadocs.explain.engine",
     ],
     hookspath=[],
     hooksconfig={},
@@ -43,14 +62,12 @@ a = Analysis(
     excludes=[
         "pytest",
         "tests",
+        "hadocs.metadata_collector",
     ],
     noarchive=False,
 )
 
 pyz = PYZ(a.pure, a.zipped_data)
-
-icon_path = ROOT / "docs" / "images" / "icon.ico"
-icon_arg = str(icon_path) if icon_path.exists() else None
 
 exe = EXE(
     pyz,
@@ -62,9 +79,9 @@ exe = EXE(
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
-    console=False,
+    console=True,
     disable_windowed_traceback=False,
-    icon=icon_arg,
+    icon=None,
 )
 
 coll = COLLECT(

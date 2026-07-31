@@ -3,6 +3,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from hadocs.core.entity_eligibility import is_disabled_entity
+
 
 SNAPSHOT_SCHEMA_VERSION = 2
 
@@ -23,6 +25,7 @@ def _problem_entities(model) -> list:
         if e.state in ("unknown", "unavailable")
         and not e.is_ignored
         and e.importance != "diagnostic"
+        and not is_disabled_entity(e)
     ]
 
 

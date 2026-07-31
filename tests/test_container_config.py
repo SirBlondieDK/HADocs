@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from src.hadocs.utils import config as config_module
+from hadocs.utils import config as config_module
 
 
 def test_default_config_file_is_local_config_json():

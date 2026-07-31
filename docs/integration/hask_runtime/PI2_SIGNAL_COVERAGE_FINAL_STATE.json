@@ -1,0 +1,35 @@
+{
+  "program": "PI2 Native Signal Coverage Replanning - Evidence Pipeline Scope Recovery",
+  "completed_on": "2026-07-24",
+  "status": "completed",
+  "scope_outcome": "PI2_NO_SAFE_EXECUTABLE_SLICE",
+  "coverage": {
+    "matchers_assessed": 25,
+    "typed_matchers": 2,
+    "legacy_matchers": 23,
+    "direct_explicit_matches": 0,
+    "safe_normalization_matches": 0,
+    "pi2_executable_now": 0,
+    "unifi_runtime_status": "deferred",
+    "mikrotik_runtime_status": "deferred"
+  },
+  "verification": {
+    "hadocs_tests_passed": 251,
+    "hask_tests_passed": 88,
+    "hask_validator_gates": "PASS",
+    "confirmed_candidates": 0,
+    "health_score_changes": 0,
+    "production_code_changes": 0,
+    "test_changes": 0,
+    "fixture_changes": 0,
+    "hask_authoritative_changes": 0,
+    "consumer_contract_changes": 0
+  },
+  "determinism": {
+    "generation_passes": 2,
+    "outputs_identical": true,
+    "non_state_artifact_aggregate_sha256": "58a0a45609929cb4f4ed0a1744bdf503b44e45fc214939b56cbe4846aad402ba"
+  },
+  "exception_expired": true,
+  "pi2_implementation_authorized": false
+}

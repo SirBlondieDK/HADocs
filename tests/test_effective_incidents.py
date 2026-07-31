@@ -1,6 +1,6 @@
 from types import SimpleNamespace
-from src.hadocs.core.effective_incidents import filter_effective_incidents
-from src.hadocs.core.incidents import Incident
+from hadocs.core.effective_incidents import filter_effective_incidents
+from hadocs.core.incidents import Incident
 
 
 def entity(eid, did, disabled_by=None):

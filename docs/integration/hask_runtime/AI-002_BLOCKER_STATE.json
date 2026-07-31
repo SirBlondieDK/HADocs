@@ -1,0 +1,30 @@
+{
+  "active_contract_version": "1.0.0",
+  "active_implementation_baseline": "DF-002",
+  "base_proposal": "AI-001",
+  "blocked_finding": "R003-F-001",
+  "blocked_gate": "cryptographic_authority",
+  "conclusion": "OBSERVATION_IDENTITY_COMPATIBILITY_BLOCKED",
+  "contract_changed": false,
+  "df002_changed": false,
+  "finding_classification": "COMPATIBILITY_DEFECT",
+  "finding_severity": "CRITICAL",
+  "governance": [
+    "G-001",
+    "G-002"
+  ],
+  "implementation_authorized": false,
+  "increment": "AI-002",
+  "minimum_unblock": "narrow_cryptographic_architecture_decision_and_independent_review",
+  "production_changes": 0,
+  "review_evidence": "R-003",
+  "status": "BLOCKED",
+  "tests_changed": 0,
+  "unresolved_findings": [
+    "R003-F-001",
+    "R003-F-002",
+    "R003-F-003",
+    "R003-F-004",
+    "R003-F-005"
+  ]
+}

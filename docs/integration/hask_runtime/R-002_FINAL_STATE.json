@@ -1,0 +1,45 @@
+{
+  "program": "R-002 Architecture Amendment Review",
+  "completed_on": "2026-07-24",
+  "status": "completed",
+  "conclusion": "AMENDMENT_APPROVED_WITH_IMPLEMENTATION_NOTES",
+  "authority": "A-001",
+  "amendment": "REMOVE_WEBSOCKET_FEATURE",
+  "revised_contract_version": "1.0.0",
+  "revised_release_1": {
+    "capabilities": 4,
+    "observation_categories": 4,
+    "relationship_predicates": 4,
+    "replacement_capabilities": 0,
+    "replacement_observations": 0,
+    "release_2_movements": 0,
+    "release_3_movements": 0
+  },
+  "candidate_documents_changed": [
+    "GENERIC_METADATA_COLLECTOR_ARCHITECTURE.md",
+    "GENERIC_METADATA_COLLECTOR_OBSERVATION_MODEL.md",
+    "GENERIC_METADATA_COLLECTOR_RELEASE_PLAN.md",
+    "GENERIC_METADATA_COLLECTOR_SPECIFICATION.md"
+  ],
+  "validation": {
+    "production_code_changes": 0,
+    "collector_implementation_changes": 0,
+    "runtime_changes": 0,
+    "test_changes": 0,
+    "fixture_changes": 0,
+    "dependency_changes": 0,
+    "hask_changes": 0,
+    "consumer_contract_changes": 0,
+    "pi2_changes": 0,
+    "unrelated_architecture_changes": 0,
+    "json_validation": "PASS",
+    "internal_consistency": "PASS",
+    "determinism_passes": 2,
+    "deterministic_outputs": true,
+    "non_state_artifact_aggregate_sha256": "d9b5d3ab54db11fdcde735699119bb00f067d328f6f50394bacfdb88d11377f2",
+    "documentation_artifacts": 8
+  },
+  "next_governance_step": "DF-002",
+  "i001b_status": "BLOCKED_UNTIL_DF_002",
+  "exception_expired": true
+}

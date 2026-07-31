@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from src.hadocs.utils.security import gitignore_contains_required_entries
+from hadocs.utils.security import gitignore_contains_required_entries
 
 
 def test_gitignore_required_entries(tmp_path):

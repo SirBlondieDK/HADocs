@@ -2,16 +2,16 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from src.hadocs.platform import AppPaths
-from src.hadocs.providers import HomeAssistantProvider
-from src.hadocs.utils.config import (
+from hadocs.platform import AppPaths
+from hadocs.providers import HomeAssistantProvider
+from hadocs.utils.config import (
     CONFIG_FILE,
     config_exists,
     load_config,
     validate_config,
     validate_config_warnings,
 )
-from src.hadocs.utils.security import (
+from hadocs.utils.security import (
     gitignore_contains_required_entries,
     is_git_repository,
     tracked_generated_files,

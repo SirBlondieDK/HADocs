@@ -1,4 +1,4 @@
-from src.hadocs.project.quality import ProjectQuality
+from hadocs.project.quality import ProjectQuality
 
 
 def test_project_quality_score():

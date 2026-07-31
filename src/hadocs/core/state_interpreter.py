@@ -3,10 +3,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
 
-from src.hadocs.core.models import EntityModel
-from src.hadocs.intelligence.engine import profile_entity
-from src.hadocs.intelligence.profiles import ProfileKind
-from src.hadocs.utils.normalize import normalize_text
+from hadocs.core.models import EntityModel
+from hadocs.core.entity_eligibility import registry_disabled_by
+from hadocs.intelligence.engine import profile_entity
+from hadocs.intelligence.profiles import ProfileKind
+from hadocs.utils.normalize import normalize_text
 
 
 class StateMeaning(str, Enum):
@@ -35,24 +36,11 @@ _EXPECTED_UNKNOWN_SUFFIXES = (
 )
 
 
-def _registry_metadata(entity: EntityModel) -> tuple[dict, dict]:
-    registry = getattr(entity, "registry", None)
-    if not isinstance(registry, dict):
-        registry = {}
-
-    raw = getattr(entity, "raw", None)
-    if not isinstance(raw, dict):
-        raw = {}
-
-    return registry, raw
-
-
 def interpret_entity_state(entity: EntityModel) -> StateInterpretation:
     """Interpret an entity state using its HIL entity profile."""
 
     state = normalize_text(entity.state)
     entity_id = normalize_text(entity.entity_id)
-    registry, raw = _registry_metadata(entity)
     profile = profile_entity(entity)
 
     if entity.is_ignored:
@@ -63,10 +51,7 @@ def interpret_entity_state(entity: EntityModel) -> StateInterpretation:
             reason="Entity is excluded by classification rules.",
         )
 
-    disabled_by = normalize_text(
-        registry.get("disabled_by")
-        or raw.get("disabled_by")
-    )
+    disabled_by = registry_disabled_by(entity)
     if disabled_by:
         return StateInterpretation(
             meaning=StateMeaning.IGNORED,

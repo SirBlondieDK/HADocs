@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from src.hadocs.core.device_overrides import (
+from hadocs.core.device_overrides import (
     DeviceOverride,
     load_device_overrides_file,
     remove_device_override,

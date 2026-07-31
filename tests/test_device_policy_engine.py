@@ -1,7 +1,7 @@
 from datetime import UTC, datetime
 from types import SimpleNamespace
 
-from src.hadocs.core.device_overrides import (
+from hadocs.core.device_overrides import (
     get_device_policy,
     override_from_mapping,
 )

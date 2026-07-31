@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from getpass import getpass
 
-from src.hadocs.platform import MigrationManager
-from src.hadocs.utils.config import (
+from hadocs.platform import MigrationManager
+from hadocs.utils.config import (
     CONFIG_FILE,
     load_config,
     save_config,

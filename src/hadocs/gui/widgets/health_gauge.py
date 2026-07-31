@@ -1,5 +1,5 @@
 import tkinter as tk
-from src.hadocs.gui.theme import COLORS
+from hadocs.gui.theme import COLORS
 
 class HealthGauge(tk.Canvas):
     def __init__(self, master, size=184):

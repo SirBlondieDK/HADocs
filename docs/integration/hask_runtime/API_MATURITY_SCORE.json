@@ -1,0 +1,9 @@
+{
+  "level": 2,
+  "label": "Structured Discovery",
+  "score": 44,
+  "evidence_confidence": "HIGH",
+  "basis": {"documented_capabilities":50,"current_coverage_percent":18.0,"potential_generic_coverage_percent":44.0,"authoritative_coverage_percent":40.0,"version_tagged_live_atlas":true,"privacy_reviewed":true},
+  "not_claimed": ["production readiness","connectivity coverage","schema compatibility guarantee","PI2 executability"]
+}
+

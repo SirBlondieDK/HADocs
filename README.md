@@ -60,6 +60,29 @@ The result is a practical answer to three questions:
 - **HTML and Markdown exports** — produces portable reports without making exports the primary interface.
 - **Local First and Privacy First** — keeps analysis and data on infrastructure you control.
 
+## HASK Preview
+
+HASK Preview is an experimental, read-only knowledge view. It can show a
+validated bundled knowledge release, coverage, relevant platform knowledge,
+candidate classifications, supporting evidence categories, missing evidence,
+and limitations. It is disabled by default.
+
+> **Experimental preview — HASK results are candidate-only and do not affect
+> findings, recommendations, Root Causes or Health Score.**
+
+Enable both `hask_preview_enabled` and `hask_enabled` explicitly. An optional
+`hask_bundle_path` selects a validated external bundle; otherwise installed
+Windows and wheel builds use the checksum-bound packaged bundle. An invalid
+explicit path fails visibly and never silently falls back. Candidate evaluation
+still requires the separate operational database, candidate-evidence, and
+native-status controls. Disable the Preview by setting its flag back to `false`.
+
+The Preview never exports installation identities, entity/device IDs, database
+keys, addresses, credentials, or raw Home Assistant data. UniFi and MikroTik
+normally remain `INSUFFICIENT_EVIDENCE` until authoritative controller/API
+results exist; HADocs performs no authenticated probe. See the
+[current integration status](docs/integration/HASK_INTEGRATION_STATUS.md).
+
 ## Quick start
 
 Choose the installation method that best fits your environment.
@@ -203,6 +226,19 @@ HADocs is designed for private, local analysis.
 
 > [!WARNING]
 > Treat Home Assistant tokens, generated reports, Knowledge Packs, local overrides, and private URLs as sensitive data. Do not commit them to a public repository.
+
+## Optional operational database and HASK evidence
+
+HADocs includes an optional, default-disabled operational SQLite database and a
+read-only HASK candidate-evidence boundary. Explicit identity initialization is
+required before persistence can be enabled. HASK candidates do not alter
+findings, recommendations, Root Causes, or Health Score, and UniFi/MikroTik
+connectivity remains conservatively `INSUFFICIENT_EVIDENCE` while authenticated
+controller probes are deferred.
+
+See the [canonical HADocs/HASK integration status](docs/integration/HASK_INTEGRATION_STATUS.md)
+for the capability matrix, Windows and Home Assistant App activation steps,
+privacy boundary, safe verification method, and remaining release items.
 
 ## Installation
 

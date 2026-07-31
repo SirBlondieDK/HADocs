@@ -1,5 +1,5 @@
 import json
-from src.hadocs.core.device_overrides import load_device_overrides, load_device_overrides_file
+from hadocs.core.device_overrides import load_device_overrides, load_device_overrides_file
 
 def test_load_dedicated_devices_format(tmp_path):
     path = tmp_path / "device_overrides.json"

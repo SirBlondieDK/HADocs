@@ -4,14 +4,17 @@ import json
 from collections.abc import Callable
 from pathlib import Path
 
-from src.hadocs.collectors.areas import AreasCollector
-from src.hadocs.collectors.config import ConfigCollector
-from src.hadocs.collectors.devices import DevicesCollector
-from src.hadocs.collectors.entities import EntitiesCollector
-from src.hadocs.collectors.labels import LabelsCollector
-from src.hadocs.collectors.services import ServicesCollector
-from src.hadocs.collectors.states import StatesCollector
-from src.hadocs.providers import HomeAssistantProvider
+from hadocs.collectors.areas import AreasCollector
+from hadocs.collectors.config import ConfigCollector
+from hadocs.collectors.devices import DevicesCollector
+from hadocs.collectors.entities import EntitiesCollector
+from hadocs.collectors.labels import LabelsCollector
+from hadocs.collectors.native_integration_status import (
+    NativeIntegrationStatusCollector,
+)
+from hadocs.collectors.services import ServicesCollector
+from hadocs.collectors.states import StatesCollector
+from hadocs.providers import HomeAssistantProvider
 
 
 LogFunction = Callable[[str], None]
@@ -63,6 +66,25 @@ class InstallationCollector:
             self.provider,
             self.log,
         )
+
+        native_status_enabled = self.config.get(
+            "hask_native_integration_status_enabled", False
+        )
+        if not isinstance(native_status_enabled, bool):
+            raise ValueError(
+                "hask_native_integration_status_enabled must be a boolean value"
+            )
+        if native_status_enabled:
+            from hadocs.hask_database import HaskDatabaseApplicationConfig
+
+            database = HaskDatabaseApplicationConfig.from_application_config(
+                self.config
+            )
+            if database.database.enabled and database.identity is not None:
+                self.log("Collecting native integration status...")
+                data["native_integration_status"] = (
+                    NativeIntegrationStatusCollector().collect(self.provider)
+                )
 
         self._write_raw_cache(data)
 

@@ -20,6 +20,7 @@ HADocs is a local-first **Home Assistant Analysis Platform**. Start with the [pr
 - [Device Overrides](guides/features/Device-Overrides.md)
 - [History](guides/features/History.md)
 - [Exports](guides/features/Exports.md)
+- [HASK Preview](guides/features/HASK-Preview.md)
 
 ## Privacy and security
 
@@ -42,3 +43,20 @@ HADocs is a local-first **Home Assistant Analysis Platform**. Start with the [pr
 - [Project principles](architecture/PROJECT_PRINCIPLES.md)
 - [Internal notes](internal/README.md)
 - [Historical archive](archive/README.md)
+
+## Documentation classification
+
+- **Current product documentation:** this index, the top-level README, user
+  guides, architecture decisions, privacy documentation, and the canonical
+  [HASK integration status](integration/HASK_INTEGRATION_STATUS.md).
+- **Current HASK Preview documentation:** the HASK Preview guide, canonical
+  status, and the
+  [release-candidate report](integration/HASK_PREVIEW_RELEASE_CANDIDATE_REPORT.md).
+- **Historical implementation evidence:** dated pilot, runtime, database,
+  discovery, and recovery reports under `docs/integration/`; retained for
+  traceability, not as current product authority.
+- **Deferred work:** documents explicitly marked deferred, including
+  authenticated controller probes and metadata collection.
+- **Obsolete pointers retained for traceability:** blocker/state pointer files
+  named in the canonical integration status. They must not override current
+  contracts.

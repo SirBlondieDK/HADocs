@@ -1,4 +1,4 @@
-from src.hadocs.core.rules import RuleSet
+from hadocs.core.rules import RuleSet
 
 
 def load_builtin_rulesets() -> list[RuleSet]:

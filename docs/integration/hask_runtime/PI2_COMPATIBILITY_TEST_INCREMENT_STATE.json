@@ -1,0 +1,32 @@
+{
+  "_generated": "compatibility test increment report; no runtime generation",
+  "consumer_contract_version": "1.1.0",
+  "decision": "PASS",
+  "hask_changed": false,
+  "pi2_resume_ready": true,
+  "runtime_behavior_changed": false,
+  "runtime_verification": {
+    "active": true,
+    "bundle_version": "1.1.0",
+    "compatibility": "compatible_with_unknown_fields",
+    "discovery_path": "D:\\HA-Stability-Knowledge\\dist\\hadocs",
+    "graceful_degradation_reason": null,
+    "validation_status": "valid"
+  },
+  "tests": {
+    "compatibility_assertions_passed": 2,
+    "full_hadocs_passed": 251,
+    "pilot_and_pi1_passed": 35
+  },
+  "changed_test_files": {
+    "tests/test_hask_pilot.py": "a39d937907cd54e4b8e0247a89ef1c5a61874c5e919650c77788810460c0a4ef",
+    "tests/test_hask_runtime.py": "d4462c1bbeab998dc14e419ee0f5c5f108be9ac8fe7e499634a94c810cc8eda5"
+  },
+  "unchanged_boundaries": {
+    "consumer_contract": true,
+    "hask": true,
+    "pilot_implementation": true,
+    "pi1_implementation": true,
+    "runtime_services": true
+  }
+}

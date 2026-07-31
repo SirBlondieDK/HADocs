@@ -1,4 +1,4 @@
-from src.hadocs.core.relationships import build_relationship_graph
+from hadocs.core.relationships import build_relationship_graph
 
 
 class DummyEntity:

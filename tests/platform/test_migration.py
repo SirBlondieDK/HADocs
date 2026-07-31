@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from src.hadocs.platform.migration import MigrationManager
-from src.hadocs.platform.paths import AppPaths
+from hadocs.platform.migration import MigrationManager
+from hadocs.platform.paths import AppPaths
 
 
 def test_migrate_without_legacy_files_does_nothing(tmp_path: Path) -> None:

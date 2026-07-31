@@ -1,0 +1,261 @@
+{
+  "candidates": [
+    {
+      "applicability": [
+        {
+          "claim_id": "causal_boundary",
+          "claims": [],
+          "id": "applicability__dns_service_failure__causal_boundary",
+          "record_id": "dns_service_failure",
+          "references": {},
+          "relationships": [],
+          "type": "applicability",
+          "verification_status": "verified",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app version boundary is asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Current documentation reviewed; symptom or cause is not bounded to an exact Core release."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration versions are not exactly bounded."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Host and installation applicability must be established from context."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor applicability depends on installation type and observed component."
+            }
+          }
+        }
+      ],
+      "candidate_id": "dns_service_failure",
+      "competing_causes": [
+        "network_path_failure"
+      ],
+      "confirmed": false,
+      "conflicts": [],
+      "contradicting_evidence": [],
+      "default_knowledge_weight": 0.9,
+      "description": "The configured DNS resolver is unreachable or returns responses Home Assistant cannot use.",
+      "known_gaps": [
+        {
+          "claim_ref": "perform_unifi_privileged_action_safely__guarded_control_action",
+          "claims": [],
+          "id": "gap__perform_unifi_privileged_action_safely__guarded_control_action",
+          "record_id": "perform_unifi_privileged_action_safely",
+          "references": {
+            "claims": [
+              "perform_unifi_privileged_action_safely__guarded_control_action"
+            ]
+          },
+          "relationships": [],
+          "statement": "Action absence or rejection can be intentional permission, option, entity-default, capability, or transient-state behavior.",
+          "type": "known_gap"
+        }
+      ],
+      "metadata": {
+        "confirmation_owner": "HADocs",
+        "hadocs_score_impact": null,
+        "pilot_only": true
+      },
+      "missing_evidence": [
+        "config_entry_reauthentication_required",
+        "unifi_authorization_scope",
+        "unifi_client_presence_state",
+        "unifi_managed_device_state"
+      ],
+      "provenance": [
+        "source_home_assistant_docs_dns_issue"
+      ],
+      "recommendations": [
+        "complete_and_verify_reauthentication_safely",
+        "diagnose_unifi_controller_path",
+        "inspect_config_entry_lifecycle_before_change",
+        "perform_unifi_privileged_action_safely",
+        "verify_unifi_presence_inputs"
+      ],
+      "scenarios": [
+        "scenario_unifi_controller_or_lifecycle_failure"
+      ],
+      "supporting_canonical_evidence": [
+        "config_entry_setup_retry",
+        "entity_unavailable_state",
+        "unifi_controller_connection_state"
+      ],
+      "title": "DNS service failure",
+      "verification": [
+        "verification__complete_and_verify_reauthentication_safely",
+        "verification__diagnose_unifi_controller_path",
+        "verification__inspect_config_entry_lifecycle_before_change",
+        "verification__perform_unifi_privileged_action_safely",
+        "verification__verify_unifi_presence_inputs"
+      ]
+    },
+    {
+      "applicability": [
+        {
+          "claim_id": "causal_boundary",
+          "claims": [],
+          "id": "applicability__network_path_failure__causal_boundary",
+          "record_id": "network_path_failure",
+          "references": {},
+          "relationships": [],
+          "type": "applicability",
+          "verification_status": "needs_manual_verification",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app version boundary is asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Current documentation reviewed; symptom or cause is not bounded to an exact Core release."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration versions are not exactly bounded."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Host and installation applicability must be established from context."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor applicability depends on installation type and observed component."
+            }
+          }
+        }
+      ],
+      "candidate_id": "network_path_failure",
+      "competing_causes": [
+        "dns_service_failure"
+      ],
+      "confirmed": false,
+      "conflicts": [],
+      "contradicting_evidence": [],
+      "default_knowledge_weight": 0.4,
+      "description": "Routing, addressing, firewalling, link state, or local network reachability prevents communication between required components.",
+      "known_gaps": [
+        {
+          "claim_ref": "perform_unifi_privileged_action_safely__guarded_control_action",
+          "claims": [],
+          "id": "gap__perform_unifi_privileged_action_safely__guarded_control_action",
+          "record_id": "perform_unifi_privileged_action_safely",
+          "references": {
+            "claims": [
+              "perform_unifi_privileged_action_safely__guarded_control_action"
+            ]
+          },
+          "relationships": [],
+          "statement": "Action absence or rejection can be intentional permission, option, entity-default, capability, or transient-state behavior.",
+          "type": "known_gap"
+        }
+      ],
+      "metadata": {
+        "confirmation_owner": "HADocs",
+        "hadocs_score_impact": null,
+        "pilot_only": true
+      },
+      "missing_evidence": [
+        "config_entry_reauthentication_required",
+        "unifi_authorization_scope",
+        "unifi_client_presence_state",
+        "unifi_managed_device_state"
+      ],
+      "provenance": [
+        "source_home_assistant_docs_dns_issue"
+      ],
+      "recommendations": [
+        "complete_and_verify_reauthentication_safely",
+        "diagnose_unifi_controller_path",
+        "inspect_config_entry_lifecycle_before_change",
+        "perform_unifi_privileged_action_safely",
+        "verify_unifi_presence_inputs"
+      ],
+      "scenarios": [
+        "scenario_unifi_controller_available_device_or_action_failure",
+        "scenario_unifi_controller_or_lifecycle_failure"
+      ],
+      "supporting_canonical_evidence": [
+        "config_entry_setup_retry",
+        "entity_unavailable_state",
+        "unifi_controller_connection_state"
+      ],
+      "title": "Network path failure",
+      "verification": [
+        "verification__complete_and_verify_reauthentication_safely",
+        "verification__diagnose_unifi_controller_path",
+        "verification__inspect_config_entry_lifecycle_before_change",
+        "verification__perform_unifi_privileged_action_safely",
+        "verification__verify_unifi_presence_inputs"
+      ]
+    }
+  ],
+  "canonical_evidence": [
+    {
+      "ambiguous": false,
+      "canonical_ids": [
+        "unifi_controller_connection_state"
+      ],
+      "local_evidence_id": "unifi_controller_unreachable",
+      "status": "matched"
+    },
+    {
+      "ambiguous": false,
+      "canonical_ids": [
+        "config_entry_setup_retry"
+      ],
+      "local_evidence_id": "config_entry_setup_retry",
+      "status": "matched"
+    },
+    {
+      "ambiguous": false,
+      "canonical_ids": [
+        "entity_unavailable_state"
+      ],
+      "local_evidence_id": "entity_unavailable",
+      "status": "matched"
+    }
+  ],
+  "confirmed_candidates": [],
+  "contract_version": "1.0.0",
+  "health_score_impact": null,
+  "local_evidence": [
+    {
+      "details": "Pilot fixture only",
+      "evidence_id": "unifi_controller_unreachable",
+      "state": "observed"
+    },
+    {
+      "details": "Pilot fixture only",
+      "evidence_id": "config_entry_setup_retry",
+      "state": "observed"
+    },
+    {
+      "details": "Does not prove cause",
+      "evidence_id": "entity_unavailable",
+      "state": "observed"
+    }
+  ],
+  "platform": "unifi",
+  "production_scoring_changed": false,
+  "scan_impact": "none",
+  "status": "candidate_only"
+}

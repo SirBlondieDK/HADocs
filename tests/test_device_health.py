@@ -1,8 +1,8 @@
-from src.hadocs.core.health import (
+from hadocs.core.health import (
     calculate_device_health,
     calculate_health_score,
 )
-from src.hadocs.core.models import DeviceModel, EntityModel, InstallationModel
+from hadocs.core.models import DeviceModel, EntityModel, InstallationModel
 
 
 class Model:

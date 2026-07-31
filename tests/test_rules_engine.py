@@ -1,4 +1,4 @@
-from src.hadocs.core.classifiers import classify_entity, is_ignored_entity_id
+from hadocs.core.classifiers import classify_entity, is_ignored_entity_id
 
 
 def test_buttons_are_ignored():

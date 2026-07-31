@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
-from src.hadocs.gui.assets import load_logo_image
-from src.hadocs.gui.theme import Theme
+from hadocs.gui.assets import load_logo_image
+from hadocs.gui.theme import Theme
 
 class AboutDialog(tk.Toplevel):
     def __init__(self, master):
@@ -13,7 +13,7 @@ class AboutDialog(tk.Toplevel):
         Theme.apply(self)
 
         try:
-            from src.hadocs.version import __version__
+            from hadocs.version import __version__
         except Exception:
             __version__ = "unknown"
 

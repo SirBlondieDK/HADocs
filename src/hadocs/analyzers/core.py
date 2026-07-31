@@ -1,6 +1,6 @@
 from collections import Counter, defaultdict
 
-from src.hadocs.analyzers.helpers import (
+from hadocs.analyzers.helpers import (
     SERVER_WORDS,
     entity_area,
     is_dashboard_candidate,
@@ -8,7 +8,7 @@ from src.hadocs.analyzers.helpers import (
     is_physical_entity,
     state_for,
 )
-from src.hadocs.analyzers.rules import CRITICAL_ENTITY_PATTERNS
+from hadocs.analyzers.rules import CRITICAL_ENTITY_PATTERNS
 
 
 def analyze(data: dict, idx: dict) -> dict:

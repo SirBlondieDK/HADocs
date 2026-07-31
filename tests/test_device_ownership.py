@@ -1,11 +1,11 @@
 from types import SimpleNamespace
 
-from src.hadocs.core.device_overrides import (
+from hadocs.core.device_overrides import (
     DeviceOverride,
     get_device_policy,
     override_from_mapping,
 )
-from src.hadocs.core.device_reachability import (
+from hadocs.core.device_reachability import (
     ReachabilityStatus,
     determine_device_reachability,
 )

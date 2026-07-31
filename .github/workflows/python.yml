@@ -36,4 +36,4 @@ jobs:
         run: python -m compileall src
 
       - name: CLI Help
-        run: python -m src.hadocs.cli.main --help
+        run: python -m hadocs.cli.main --help

@@ -9,7 +9,7 @@ import os
 import shutil
 from typing import Iterable, Mapping, Sequence
 
-from src.hadocs.platform import AppPaths
+from hadocs.platform import AppPaths
 
 
 OWNERSHIP_VALUES = {"unspecified", "owned", "shared", "external", "unknown"}

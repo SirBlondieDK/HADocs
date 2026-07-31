@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from fnmatch import fnmatch
 from typing import Any
 
-from src.hadocs.utils.normalize import normalize_text
+from hadocs.utils.normalize import normalize_text
 
 
 @dataclass

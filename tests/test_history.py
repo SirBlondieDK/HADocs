@@ -1,4 +1,4 @@
-from src.hadocs.core.history import load_history
+from hadocs.core.history import load_history
 
 
 def test_empty_history(tmp_path):

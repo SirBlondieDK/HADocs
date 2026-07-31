@@ -43,6 +43,7 @@ class DeviceModel:
     hw_version: str
     classification: str
     entities: list[EntityModel] = field(default_factory=list)
+    hudd: dict[str, Any] = field(default_factory=dict)
     raw: dict[str, Any] = field(default_factory=dict)
 
     @property

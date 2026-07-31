@@ -1,0 +1,55 @@
+{
+  "program": "DF-001 Design Freeze Record",
+  "completed_on": "2026-07-24",
+  "status": "completed",
+  "conclusion": "DESIGN_FREEZE_RECORDED",
+  "governance_record": "DF-001",
+  "collector_name": "Generic Metadata Collector",
+  "collector_contract": {
+    "name": "hadocs-generic-metadata",
+    "version": "1.0.0"
+  },
+  "observation_model_version": "contract-bound-1.0.0",
+  "relationship_model_version": "contract-bound-1.0.0",
+  "architecture_status": "FROZEN",
+  "implementation_status": "NOT STARTED",
+  "architecture_review": {
+    "record": "R-001",
+    "status": "PASSED",
+    "conclusion": "DESIGN_FROZEN_WITH_IMPLEMENTATION_NOTES"
+  },
+  "release_1": {
+    "capabilities": 5,
+    "observation_categories": 5,
+    "relationship_predicates": 4
+  },
+  "implementation_notes": {
+    "Implementation": [
+      "Minimum Core version capability matrix",
+      "Opaque reference security review"
+    ],
+    "Operational": [
+      "Implementation defaults"
+    ],
+    "Documentation": []
+  },
+  "validation": {
+    "production_code_changes": 0,
+    "collector_implementation": 0,
+    "runtime_changes": 0,
+    "schema_changes": 0,
+    "test_changes": 0,
+    "fixture_changes": 0,
+    "hask_changes": 0,
+    "consumer_contract_changes": 0,
+    "pi2_changes": 0,
+    "architecture_changes": 0,
+    "governance_artifacts": 6,
+    "json_validation": "PASS",
+    "determinism_passes": 2,
+    "deterministic_outputs": true,
+    "non_state_artifact_aggregate_sha256": "787540dd83d51a8c97500b781af6dca2898ec21e20ae7c87f1f93ceabcafe146"
+  },
+  "change_policy": "Architectural deviation requires a demonstrated defect, approved Architecture Increment, Architecture Review, and new Design Freeze.",
+  "exception_expired": true
+}

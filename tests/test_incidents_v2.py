@@ -1,5 +1,5 @@
-from src.hadocs.core.incidents_v2 import build_incidents_v2
-from src.hadocs.core.models import (
+from hadocs.core.incidents_v2 import build_incidents_v2
+from hadocs.core.models import (
     DeviceModel,
     EntityModel,
     InstallationModel,

@@ -23,4 +23,14 @@ $env:HADOCS_OUTPUT_DIR = Join-Path (Get-Location) "output"
 py -3.14 -m src.hadocs.web.app
 ```
 
+## HASK Preview
+
+HASK Preview is experimental and disabled by default. In Settings, enable both
+**HASK Preview** and **HASK**. Leave the operational database, candidate bridge,
+and native-status controls disabled unless those independent features are also
+intended. Without an explicit bundle path, the installed Windows package uses
+its validated read-only packaged bundle. Set both flags back to false to disable
+Preview. Candidate output never affects normal findings, Root Causes,
+recommendations, or Health Score.
+
 For build instructions, see the [Windows packaging guide](../../../installer/README.md). For general navigation, return to the [documentation home](../../README.md).

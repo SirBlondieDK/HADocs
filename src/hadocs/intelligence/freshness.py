@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import Enum
 
-from src.hadocs.core.models import EntityModel
+from hadocs.core.models import EntityModel
 
 
 class FreshnessStatus(str, Enum):

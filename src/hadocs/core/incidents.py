@@ -1,8 +1,9 @@
 from dataclasses import dataclass, field
 from collections import defaultdict
 
-from src.hadocs.core.models import HADocsModel
-from src.hadocs.core.relationships import RelationshipGraph
+from hadocs.core.models import HADocsModel
+from hadocs.core.entity_eligibility import is_disabled_entity
+from hadocs.core.relationships import RelationshipGraph
 
 
 @dataclass
@@ -105,6 +106,7 @@ def relevant_problem_entities(model: HADocsModel):
         if entity.state in ("unknown", "unavailable")
         and not entity.is_ignored
         and entity.importance != "diagnostic"
+        and not is_disabled_entity(entity)
     ]
 
 

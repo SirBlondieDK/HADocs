@@ -1,4 +1,4 @@
-from src.hadocs.utils.text import slugify
+from hadocs.utils.text import slugify
 
 
 def test_slugify_danish():

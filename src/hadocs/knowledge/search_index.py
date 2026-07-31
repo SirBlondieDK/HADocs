@@ -1,4 +1,4 @@
-from src.hadocs.explorer.builder import build_explorer_data, build_search_index
+from hadocs.explorer.builder import build_explorer_data, build_search_index
 
 
 def build_knowledge_search_index(model, graph=None) -> list[dict]:

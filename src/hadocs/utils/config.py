@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
+from uuid import uuid4
 
-from src.hadocs.platform.config_manager import (
+from hadocs.platform.config_manager import (
     DEFAULT_CONFIG,
     INSECURE_HTTP_WARNING,
     SENSITIVE_CONFIG_FILES,
@@ -12,6 +14,12 @@ from src.hadocs.platform.config_manager import (
 
 
 CONFIG_FILE = resolve_config_file()
+
+
+def persistent_config_root() -> Path:
+    """Return the canonical root containing persistent HADocs configuration."""
+
+    return Path(CONFIG_FILE).expanduser().absolute().parent
 
 
 def _manager() -> ConfigManager:
@@ -42,6 +50,20 @@ def load_config() -> dict:
 def save_config(config: dict | None) -> None:
     """Save non-sensitive configuration values."""
     _manager().save(config)
+
+
+def save_database_identity_config(config: dict | None) -> None:
+    """Atomically persist non-secret database identity metadata."""
+
+    target = Path(CONFIG_FILE)
+    temporary = target.with_name(
+        f".{target.name}.hadocs-database-init-{uuid4().hex}.tmp"
+    )
+    try:
+        ConfigManager(config_file=temporary).save(config)
+        os.replace(temporary, target)
+    finally:
+        temporary.unlink(missing_ok=True)
 
 
 def validate_config(config: dict) -> list[str]:

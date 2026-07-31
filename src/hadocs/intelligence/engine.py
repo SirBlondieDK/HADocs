@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from src.hadocs.core.models import EntityModel
-from src.hadocs.intelligence.profiles import (
+from hadocs.core.models import EntityModel
+from hadocs.core.entity_eligibility import is_disabled_entity
+from hadocs.intelligence.profiles import (
     ACTION_PROFILE,
     AVAILABILITY_PROFILE,
     CONFIGURATION_PROFILE,
@@ -12,7 +13,7 @@ from src.hadocs.intelligence.profiles import (
     UNKNOWN_PROFILE,
     EntityProfile,
 )
-from src.hadocs.utils.normalize import normalize_text
+from hadocs.utils.normalize import normalize_text
 
 
 _ACTION_DOMAINS = {
@@ -147,10 +148,7 @@ def profile_entity(entity: EntityModel) -> EntityProfile:
     if entity.is_ignored:
         return DIAGNOSTIC_PROFILE
 
-    if normalize_text(
-        registry.get("disabled_by")
-        or raw.get("disabled_by")
-    ):
+    if is_disabled_entity(entity):
         return DIAGNOSTIC_PROFILE
 
     if importance in {"diagnostic", "ignored"}:

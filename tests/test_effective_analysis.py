@@ -1,7 +1,7 @@
 from types import SimpleNamespace
 
-from src.hadocs.core.effective_analysis import build_effective_analysis
-from src.hadocs.core.incidents import Incident
+from hadocs.core.effective_analysis import build_effective_analysis
+from hadocs.core.incidents import Incident
 
 
 def _model(entity_state="unavailable"):
@@ -37,7 +37,7 @@ def _incident():
 
 
 def test_analysis_suppresses_expected_offline_and_all_consumers_see_no_issue(monkeypatch):
-    import src.hadocs.core.effective_analysis as module
+    import hadocs.core.effective_analysis as module
 
     monkeypatch.setattr(
         module,
@@ -55,7 +55,7 @@ def test_analysis_suppresses_expected_offline_and_all_consumers_see_no_issue(mon
 
 
 def test_top_recommendation_gain_cannot_exceed_score_headroom(monkeypatch):
-    import src.hadocs.core.effective_analysis as module
+    import hadocs.core.effective_analysis as module
 
     monkeypatch.setattr(
         module,

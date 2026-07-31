@@ -3,8 +3,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from src.hadocs.explain.engine import explain_incident
-from src.hadocs.privacy.redaction import redact_dict, redact_value
+from hadocs.explain.engine import explain_incident
+from hadocs.privacy.redaction import redact_dict, redact_value
 
 
 def write_json(path: Path, data: Any) -> None:

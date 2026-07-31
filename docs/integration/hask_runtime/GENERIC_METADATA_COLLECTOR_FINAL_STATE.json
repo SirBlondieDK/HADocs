@@ -1,0 +1,50 @@
+{
+  "program": "Generic Metadata Collector Specification Increment",
+  "completed_on": "2026-07-24",
+  "status": "completed",
+  "conclusion": "READY_WITH_MINOR_OPEN_ITEMS",
+  "specification_only": true,
+  "discovery_baseline": {
+    "home_assistant_core_version": "2026.7.3",
+    "official_capabilities": 50,
+    "generic_collectable_candidates": 13
+  },
+  "contract": {
+    "name": "hadocs-generic-metadata",
+    "specified_version": "1.0.0",
+    "implemented": false
+  },
+  "release_1": {
+    "selected_capabilities": 5,
+    "optional_capabilities": 1,
+    "observation_categories": [
+      "api_availability",
+      "entity_display_reference",
+      "loaded_component",
+      "registered_event_type",
+      "websocket_feature"
+    ]
+  },
+  "minor_open_items": [
+    "minimum_core_version_capability_matrix",
+    "opaque_reference_security_review",
+    "implementation_configuration_defaults"
+  ],
+  "validation": {
+    "production_code_changes": 0,
+    "runtime_changes": 0,
+    "collectors_implemented": 0,
+    "schemas_implemented": 0,
+    "test_changes": 0,
+    "fixture_changes": 0,
+    "hask_changes": 0,
+    "consumer_contract_changes": 0,
+    "pi2_changes": 0,
+    "documentation_artifacts": 13,
+    "json_validation": "PASS",
+    "deterministic_outputs": true,
+    "determinism_passes": 2,
+    "non_state_artifact_aggregate_sha256": "9ea717cd079a4630577ab4d619775173e09f7902a55be454aea3bcb1ac8db0dc"
+  },
+  "exception_expired": true
+}

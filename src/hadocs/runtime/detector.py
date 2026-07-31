@@ -4,7 +4,7 @@ import os
 import sys
 from pathlib import Path
 
-from src.hadocs.runtime.environment import RuntimeEnvironment
+from hadocs.runtime.environment import RuntimeEnvironment
 
 
 _CONTAINER_MARKERS = (

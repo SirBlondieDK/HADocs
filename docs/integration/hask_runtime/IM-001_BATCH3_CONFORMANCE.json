@@ -1,0 +1,48 @@
+{
+  "authority": "IM-001",
+  "batch": 3,
+  "status": "PASS",
+  "architecture": {
+    "acr_001_sha256": "9443b1cf4dee94ca642fe46be40d05e4bd00b76de2d16e066bd02798b06f9b76",
+    "db_001_sha256": "676e5cca648bf894eb69c1329371819e272fade44eba5ff9130fc3d1d0491e79",
+    "db_002_sha256": "6d754c18f3a1172c71e9b5be0d701535ff84598b8792ea61966e9a965e54b6b9",
+    "physical_schema_sha256": "623d0fed0f626eea698c87d62af611ce2c90b5d4ae470cb576def99ad39a9673"
+  },
+  "repository_infrastructure": {
+    "owners": 10,
+    "owned_tables": 25,
+    "duplicate_table_owners": 0,
+    "additional_repositories": 0,
+    "public_repository_write_methods": 0,
+    "raw_public_connections": 0,
+    "lifetime": "UNIT_OF_WORK"
+  },
+  "transactions": {
+    "serialized_writer": true,
+    "nested_transactions_rejected": true,
+    "commit": "PASS",
+    "rollback": "PASS",
+    "canonical_error_categories": 12,
+    "retry_attempts": 3,
+    "retry_delays_ms": [25, 57, 119],
+    "retry_timeout_ms": 500
+  },
+  "coordination": {
+    "idempotency": "PASS",
+    "recovery_state_machine": "PASS",
+    "recovery_fail_closed": true
+  },
+  "scope": {
+    "runtime_persistence": 0,
+    "business_persistence": 0,
+    "schema_changes": 0,
+    "migration_changes": 0,
+    "sql_changes": 0,
+    "governance_changes": 0
+  },
+  "tests": {
+    "batch3_added": 18,
+    "targeted_passed": 45,
+    "full_suite_passed": 296
+  }
+}

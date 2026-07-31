@@ -1,0 +1,44 @@
+{
+  "decision": "PREFLIGHT_PASS_INTEGRATION_BOUNDARY_BLOCKED",
+  "branch": "main",
+  "head": "590cc33a9762c4d22699f20c60d136ef2c4de00c",
+  "merge_conflicts": 0,
+  "contract": {
+    "consumer_contract_version": "1.1.0",
+    "knowledge_schema_version": "2.0.0",
+    "compatibility": "compatible_with_unknown_fields",
+    "provider_snapshot_version": "1.1.0"
+  },
+  "runtime": {
+    "lifecycle": "active",
+    "validation": "valid",
+    "graceful_fallback_active": false
+  },
+  "matchers": {
+    "unifi": 1,
+    "mikrotik": 1,
+    "coverage": {
+      "unifi": "PI2_MATCHABLE",
+      "mikrotik": "PI2_MATCHABLE"
+    }
+  },
+  "confirmed_candidates": 0,
+  "tests": {
+    "passed": 251,
+    "failed": 0
+  },
+  "approved_compatibility_test_checksums": {
+    "tests/test_hask_pilot.py": "a39d937907cd54e4b8e0247a89ef1c5a61874c5e919650c77788810460c0a4ef",
+    "tests/test_hask_runtime.py": "d4462c1bbeab998dc14e419ee0f5c5f108be9ac8fe7e499634a94c810cc8eda5"
+  },
+  "frozen_boundary_checksums": {
+    "src/hadocs/collectors/installation.py": "3698eb5f96e6be61ba987002617a29e46febadeae44e6cbbd16bb67000c01fcd",
+    "src/hadocs/collectors/homeassistant.py": "0cdc629989708c8d08cce8e08d783ab616b180135d1a22ee8d415672249b28d1",
+    "src/hadocs/core/models.py": "97d0efe980be8bde569c212d23a30d2168fbeef2a107861c630efcfa51214722",
+    "src/hadocs/core/builder.py": "1fc48dd8a74bbb10b91a0b1bd20b3afdd2e766bfdc9c1e143a1362facd99bed8",
+    "src/hadocs/core/integration_health.py": "4cb0e7339eb323a4be23d3b773c3f5f3e6579c13e0ff5e21c1873191d391b97f"
+  },
+  "authoritative_hask_changes": 0,
+  "consumer_contract_changes": 0
+}
+

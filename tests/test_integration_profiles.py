@@ -1,4 +1,4 @@
-from src.hadocs.intelligence.integration_profiles import get_integration_profile
+from hadocs.intelligence.integration_profiles import get_integration_profile
 
 def test_zigbee_profile():
     p=get_integration_profile("zigbee2mqtt")

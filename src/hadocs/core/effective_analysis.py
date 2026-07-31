@@ -3,12 +3,12 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Iterable
 
-from src.hadocs.advisor.engine import build_executive_summary_from_incidents
-from src.hadocs.advisor.models import ExecutiveSummary
-from src.hadocs.core.device_overrides import DeviceOverride
-from src.hadocs.core.effective_incidents import filter_effective_incidents
-from src.hadocs.core.incidents import CollapsedIncident, Incident, collapse_incidents
-from src.hadocs.core.models import HADocsModel
+from hadocs.advisor.engine import build_executive_summary_from_incidents
+from hadocs.advisor.models import ExecutiveSummary
+from hadocs.core.device_overrides import DeviceOverride
+from hadocs.core.effective_incidents import filter_effective_incidents
+from hadocs.core.incidents import CollapsedIncident, Incident, collapse_incidents
+from hadocs.core.models import HADocsModel
 
 
 @dataclass(frozen=True, slots=True)

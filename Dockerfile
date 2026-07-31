@@ -19,5 +19,5 @@ RUN mkdir -p /config /output /cache
 
 VOLUME ["/config", "/output", "/cache"]
 
-ENTRYPOINT ["python", "-m", "src.hadocs.cli.main"]
+ENTRYPOINT ["python", "-m", "hadocs.cli.main"]
 CMD ["generate"]

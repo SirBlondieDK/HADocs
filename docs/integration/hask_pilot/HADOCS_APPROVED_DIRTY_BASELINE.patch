@@ -1,0 +1,102 @@
+diff --git a/pyproject.toml b/pyproject.toml
+index c90c8d0cdd1a98ffe579c6c582989ebed0e02480..862fc9e45056db3c0c82418c1e08eb9965862ec6 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -14,7 +14,7 @@ hadocs = "src.hadocs.cli.main:main"
+ 
+ [tool.pytest.ini_options]
+ testpaths = ["tests"]
+-pythonpath = ["."]
++pythonpath = ["scr"]
+ addopts = "--basetemp=.pytest_tmp"
+ 
+ [tool.black]
+diff --git a/src/hadocs/core/builder.py b/src/hadocs/core/builder.py
+index 408483c895bf3eb2731f4fadf49e78efd84d1960..21c44522bee6c31a6cede2e319717cd02cb8d26f 100644
+--- a/src/hadocs/core/builder.py
++++ b/src/hadocs/core/builder.py
+@@ -8,6 +8,10 @@ from src.hadocs.core.models import (
+     InstallationModel,
+     IntegrationModel,
+ )
++from src.hadocs.hudd.homeassistant import (
++    match_device_registry_entry,
++    serialize_match,
++)
+ 
+ 
+ def build_model(data: dict, idx: dict) -> InstallationModel:
+@@ -145,6 +149,11 @@ def build_model(data: dict, idx: dict) -> InstallationModel:
+ 
+         area_id = dev.get("area_id") or "_uden_område"
+ 
++        hudd_match = match_device_registry_entry(
++            dev,
++            platforms=platforms,
++        )
++
+         model = DeviceModel(
+             device_id=device_id,
+             name=(
+@@ -159,6 +168,7 @@ def build_model(data: dict, idx: dict) -> InstallationModel:
+             hw_version=dev.get("hw_version") or "",
+             classification=classification,
+             entities=dev_entities,
++            hudd=serialize_match(hudd_match),
+             raw=(
+                 dict(dev)
+                 if isinstance(dev, dict)
+diff --git a/src/hadocs/core/models.py b/src/hadocs/core/models.py
+index f2a5d80051486cecdb840a3ce90c5c8548cb66e4..06cb32984eb4aeb01ca9f285df513eb39dcc1de4 100644
+--- a/src/hadocs/core/models.py
++++ b/src/hadocs/core/models.py
+@@ -43,6 +43,7 @@ class DeviceModel:
+     hw_version: str
+     classification: str
+     entities: list[EntityModel] = field(default_factory=list)
++    hudd: dict[str, Any] = field(default_factory=dict)
+     raw: dict[str, Any] = field(default_factory=dict)
+ 
+     @property
+diff --git a/src/hadocs/exporters/csv_exporter.py b/src/hadocs/exporters/csv_exporter.py
+index a778fcff5fe81f449d741b3ee3beae5f2e137c61..dc52bd8fb383ba5eab38463d5de774cb7029444e 100644
+--- a/src/hadocs/exporters/csv_exporter.py
++++ b/src/hadocs/exporters/csv_exporter.py
+@@ -29,10 +29,18 @@ def export_devices_csv(out: Path, model: HADocsModel) -> None:
+ 
+     with (csv_dir / "devices.csv").open("w", encoding="utf-8", newline="") as f:
+         writer = csv.writer(f, delimiter=";")
+-        writer.writerow(["device_id", "name", "area_id", "manufacturer", "model", "classification", "entity_count"])
++        writer.writerow([
++            "device_id", "name", "area_id", "manufacturer", "model",
++            "classification", "entity_count", "hudd_id", "hudd_level",
++            "hudd_confidence", "hudd_reason",
++        ])
+ 
+         for device in sorted(model.devices.values(), key=lambda d: d.name):
+             writer.writerow([
+                 device.device_id, device.name, device.area_id, device.manufacturer,
+                 device.model, device.classification, len(device.entities),
++                (device.hudd.get("device") or {}).get("hudd_id", ""),
++                device.hudd.get("level", "unknown"),
++                device.hudd.get("confidence", 0.0),
++                device.hudd.get("reason", ""),
+             ])
+diff --git a/src/hadocs/reports/generator.py b/src/hadocs/reports/generator.py
+index f70992b1786ee1f43673469d04380658220ed0c2..301f411459b15c5c92a3c405bff72435471fc14f 100644
+--- a/src/hadocs/reports/generator.py
++++ b/src/hadocs/reports/generator.py
+@@ -1086,6 +1086,13 @@ def generate_devices(out, model, device_overrides, now):
+             f"- Hardware version: `{device.hw_version}`",
+             f"- Platforms: `{', '.join(platforms) or 'unknown'}`",
+             f"- Entity count: `{len(device.entities)}`",
++            "", "## HUDD offline match", "",
++            f"- Match level: `{device.hudd.get('level', 'unknown')}`",
++            f"- Confidence: `{device.hudd.get('confidence', 0.0)}`",
++            f"- HUDD ID: `{((device.hudd.get('device') or {}).get('hudd_id') or 'not matched')}`",
++            f"- HUDD product: `{((device.hudd.get('device') or {}).get('product_name') or 'not matched')}`",
++            f"- Reason: {device.hudd.get('reason', 'No HUDD result available')}",
++            f"- Local/offline lookup: `{device.hudd.get('offline', True)}`",
+             "", "## Analysis", "",
+             f"- Reachability: `{reachability.status.value}`",
+             f"- Reachability confidence: `{reachability.confidence}%`",

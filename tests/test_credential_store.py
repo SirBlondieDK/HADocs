@@ -1,5 +1,5 @@
 def test_credential_store_exports():
-    from src.hadocs.security.credential_store import (
+    from hadocs.security.credential_store import (
         CREDENTIAL_TARGET,
         inject_token_into_runtime_config,
         migrate_plaintext_token_from_config,
@@ -11,7 +11,7 @@ def test_credential_store_exports():
 
 
 def test_migrate_plaintext_token_removes_token(monkeypatch):
-    from src.hadocs.security import credential_store
+    from hadocs.security import credential_store
 
     stored = {}
 
@@ -30,7 +30,7 @@ def test_migrate_plaintext_token_removes_token(monkeypatch):
 
 
 def test_inject_token_into_runtime_config(monkeypatch):
-    from src.hadocs.security import credential_store
+    from hadocs.security import credential_store
 
     monkeypatch.setattr(credential_store, "get_home_assistant_token", lambda: "secure-token")
 

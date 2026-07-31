@@ -1,0 +1,1159 @@
+{
+  "_generated": "scripts/build_hadocs_contract.py; DO NOT EDIT",
+  "artifact_kind": "competing_causes",
+  "contract_version": "1.1.0",
+  "items": [
+    {
+      "candidate_ids": [
+        "dns_service_failure",
+        "network_path_failure"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_adguard_management_dns_or_upstream_failure",
+      "references": {
+        "root_causes": [
+          "dns_service_failure",
+          "network_path_failure"
+        ],
+        "scenarios": [
+          "scenario_adguard_management_dns_or_upstream_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_adguard_management_dns_or_upstream_failure",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "matter_fabric_or_credential_mismatch",
+        "zigbee_coordinator_unavailable"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_aqara_path_or_feature_mismatch",
+      "references": {
+        "root_causes": [
+          "matter_fabric_or_credential_mismatch",
+          "zigbee_coordinator_unavailable"
+        ],
+        "scenarios": [
+          "scenario_aqara_path_or_feature_mismatch"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_aqara_path_or_feature_mismatch",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "automation_action_sequence_error",
+        "automation_condition_blocked_run",
+        "automation_feedback_loop",
+        "automation_mode_rejected_run"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_automation_triggered_without_effect",
+      "references": {
+        "root_causes": [
+          "automation_action_sequence_error",
+          "automation_condition_blocked_run",
+          "automation_feedback_loop",
+          "automation_mode_rejected_run"
+        ],
+        "scenarios": [
+          "scenario_automation_triggered_without_effect"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_automation_triggered_without_effect",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "backup_not_created",
+        "host_storage_pressure",
+        "supervisor_dependency_failure"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_backup_creation_failure",
+      "references": {
+        "root_causes": [
+          "backup_not_created",
+          "host_storage_pressure",
+          "supervisor_dependency_failure"
+        ],
+        "scenarios": [
+          "scenario_backup_creation_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_backup_creation_failure",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "backup_not_created",
+        "restore_path_not_verified"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_backup_exists_restore_unverified",
+      "references": {
+        "root_causes": [
+          "backup_not_created",
+          "restore_path_not_verified"
+        ],
+        "scenarios": [
+          "scenario_backup_exists_restore_unverified"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_backup_exists_restore_unverified",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "host_storage_pressure",
+        "restore_path_not_verified",
+        "supervisor_dependency_failure"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_backup_restore_failure",
+      "references": {
+        "root_causes": [
+          "host_storage_pressure",
+          "restore_path_not_verified",
+          "supervisor_dependency_failure"
+        ],
+        "scenarios": [
+          "scenario_backup_restore_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_backup_restore_failure",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "unsupported_upgrade_path"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_config_entry_migration_after_core_update",
+      "references": {
+        "root_causes": [
+          "unsupported_upgrade_path"
+        ],
+        "scenarios": [
+          "scenario_config_entry_migration_after_core_update"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_config_entry_migration_after_core_update",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_config_entry_reload_availability_effects",
+      "references": {
+        "root_causes": [],
+        "scenarios": [
+          "scenario_config_entry_reload_availability_effects"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_config_entry_reload_availability_effects",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "dns_service_failure",
+        "incompatible_custom_integration",
+        "network_path_failure"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_config_entry_reload_phase_failure",
+      "references": {
+        "root_causes": [
+          "dns_service_failure",
+          "incompatible_custom_integration",
+          "network_path_failure"
+        ],
+        "scenarios": [
+          "scenario_config_entry_reload_phase_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_config_entry_reload_phase_failure",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "incompatible_custom_integration"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_config_entry_unload_failure",
+      "references": {
+        "root_causes": [
+          "incompatible_custom_integration"
+        ],
+        "scenarios": [
+          "scenario_config_entry_unload_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_config_entry_unload_failure",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "container_persistence_misconfigured"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_container_state_after_recreation",
+      "references": {
+        "root_causes": [
+          "container_persistence_misconfigured"
+        ],
+        "scenarios": [
+          "scenario_container_state_after_recreation"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_container_state_after_recreation",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "dns_service_failure",
+        "network_path_failure"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_coordinator_first_refresh_failure",
+      "references": {
+        "root_causes": [
+          "dns_service_failure",
+          "network_path_failure"
+        ],
+        "scenarios": [
+          "scenario_coordinator_first_refresh_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_coordinator_first_refresh_failure",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_coordinator_freshness_unknown",
+      "references": {
+        "root_causes": [],
+        "scenarios": [
+          "scenario_coordinator_freshness_unknown"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_coordinator_freshness_unknown",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "dns_service_failure",
+        "incompatible_custom_integration",
+        "network_path_failure"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_coordinator_runtime_update_failure",
+      "references": {
+        "root_causes": [
+          "dns_service_failure",
+          "incompatible_custom_integration",
+          "network_path_failure"
+        ],
+        "scenarios": [
+          "scenario_coordinator_runtime_update_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_coordinator_runtime_update_failure",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_diagnostic_payload_incomplete",
+      "references": {
+        "root_causes": [],
+        "scenarios": [
+          "scenario_diagnostic_payload_incomplete"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_diagnostic_payload_incomplete",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_disabled_not_loaded_or_unavailable",
+      "references": {
+        "root_causes": [],
+        "scenarios": [
+          "scenario_disabled_not_loaded_or_unavailable"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_disabled_not_loaded_or_unavailable",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "dns_service_failure",
+        "network_path_failure"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_discovery_or_downstream_setup_failure",
+      "references": {
+        "root_causes": [
+          "dns_service_failure",
+          "network_path_failure"
+        ],
+        "scenarios": [
+          "scenario_discovery_or_downstream_setup_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_discovery_or_downstream_setup_failure",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "dns_service_failure",
+        "network_path_failure"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_dns_filtering_api_or_client_path",
+      "references": {
+        "root_causes": [
+          "dns_service_failure",
+          "network_path_failure"
+        ],
+        "scenarios": [
+          "scenario_dns_filtering_api_or_client_path"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_dns_filtering_api_or_client_path",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_docker_container_boundary_divergence",
+      "references": {
+        "root_causes": [],
+        "scenarios": [
+          "scenario_docker_container_boundary_divergence"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_docker_container_boundary_divergence",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "mqtt_broker_unavailable",
+        "network_path_failure"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_esphome_lifecycle_divergence",
+      "references": {
+        "root_causes": [
+          "mqtt_broker_unavailable",
+          "network_path_failure"
+        ],
+        "scenarios": [
+          "scenario_esphome_lifecycle_divergence"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_esphome_lifecycle_divergence",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "container_persistence_misconfigured",
+        "dns_service_failure",
+        "host_storage_pressure",
+        "mqtt_broker_unavailable",
+        "network_path_failure"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_frigate_pipeline_surface_divergence",
+      "references": {
+        "root_causes": [
+          "container_persistence_misconfigured",
+          "dns_service_failure",
+          "host_storage_pressure",
+          "mqtt_broker_unavailable",
+          "network_path_failure"
+        ],
+        "scenarios": [
+          "scenario_frigate_pipeline_surface_divergence"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_frigate_pipeline_surface_divergence",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "host_storage_pressure",
+        "network_path_failure",
+        "unsupported_upgrade_path"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_home_assistant_os_update_not_completed",
+      "references": {
+        "root_causes": [
+          "host_storage_pressure",
+          "network_path_failure",
+          "unsupported_upgrade_path"
+        ],
+        "scenarios": [
+          "scenario_home_assistant_os_update_not_completed"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_home_assistant_os_update_not_completed",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "network_path_failure",
+        "zigbee_mesh_insufficient"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_hue_bridge_or_device_failure",
+      "references": {
+        "root_causes": [
+          "network_path_failure",
+          "zigbee_mesh_insufficient"
+        ],
+        "scenarios": [
+          "scenario_hue_bridge_or_device_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_hue_bridge_or_device_failure",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "matter_fabric_or_credential_mismatch",
+        "network_path_failure",
+        "zigbee_coordinator_unavailable"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_ikea_connection_path_mismatch",
+      "references": {
+        "root_causes": [
+          "matter_fabric_or_credential_mismatch",
+          "network_path_failure",
+          "zigbee_coordinator_unavailable"
+        ],
+        "scenarios": [
+          "scenario_ikea_connection_path_mismatch"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_ikea_connection_path_mismatch",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "dns_service_failure",
+        "network_path_failure"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_jellyfin_runtime_surface_degradation",
+      "references": {
+        "root_causes": [
+          "dns_service_failure",
+          "network_path_failure"
+        ],
+        "scenarios": [
+          "scenario_jellyfin_runtime_surface_degradation"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_jellyfin_runtime_surface_degradation",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "dns_service_failure",
+        "network_path_failure"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_jellyfin_setup_or_authentication_failure",
+      "references": {
+        "root_causes": [
+          "dns_service_failure",
+          "network_path_failure"
+        ],
+        "scenarios": [
+          "scenario_jellyfin_setup_or_authentication_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_jellyfin_setup_or_authentication_failure",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "matter_fabric_or_credential_mismatch",
+        "network_path_failure",
+        "thread_border_router_failure"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_matter_thread_layered_setup_failure",
+      "references": {
+        "root_causes": [
+          "matter_fabric_or_credential_mismatch",
+          "network_path_failure",
+          "thread_border_router_failure"
+        ],
+        "scenarios": [
+          "scenario_matter_thread_layered_setup_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_matter_thread_layered_setup_failure",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "dns_service_failure",
+        "network_path_failure"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_mikrotik_api_auth_or_path_failure",
+      "references": {
+        "root_causes": [
+          "dns_service_failure",
+          "network_path_failure"
+        ],
+        "scenarios": [
+          "scenario_mikrotik_api_auth_or_path_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_mikrotik_api_auth_or_path_failure",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_mikrotik_presence_ambiguity",
+      "references": {
+        "root_causes": [],
+        "scenarios": [
+          "scenario_mikrotik_presence_ambiguity"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_mikrotik_presence_ambiguity",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_mikrotik_runtime_or_sensor_failure",
+      "references": {
+        "root_causes": [],
+        "scenarios": [
+          "scenario_mikrotik_runtime_or_sensor_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_mikrotik_runtime_or_sensor_failure",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "dns_service_failure",
+        "mqtt_broker_unavailable",
+        "network_path_failure"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_mqtt_broker_or_network_failure",
+      "references": {
+        "root_causes": [
+          "dns_service_failure",
+          "mqtt_broker_unavailable",
+          "network_path_failure"
+        ],
+        "scenarios": [
+          "scenario_mqtt_broker_or_network_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_mqtt_broker_or_network_failure",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "dns_service_failure",
+        "mqtt_broker_unavailable",
+        "network_path_failure"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_mqtt_layered_boundary_divergence",
+      "references": {
+        "root_causes": [
+          "dns_service_failure",
+          "mqtt_broker_unavailable",
+          "network_path_failure"
+        ],
+        "scenarios": [
+          "scenario_mqtt_layered_boundary_divergence"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_mqtt_layered_boundary_divergence",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "dns_service_failure",
+        "host_storage_pressure",
+        "network_path_failure"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_music_assistant_surface_divergence",
+      "references": {
+        "root_causes": [
+          "dns_service_failure",
+          "host_storage_pressure",
+          "network_path_failure"
+        ],
+        "scenarios": [
+          "scenario_music_assistant_surface_divergence"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_music_assistant_surface_divergence",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "dns_service_failure",
+        "network_path_failure"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_nextcloud_monitoring_or_dependency_divergence",
+      "references": {
+        "root_causes": [
+          "dns_service_failure",
+          "network_path_failure"
+        ],
+        "scenarios": [
+          "scenario_nextcloud_monitoring_or_dependency_divergence"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_nextcloud_monitoring_or_dependency_divergence",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_post_restore_recovery_validation",
+      "references": {
+        "root_causes": [],
+        "scenarios": [
+          "scenario_post_restore_recovery_validation"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_post_restore_recovery_validation",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "dns_service_failure",
+        "network_path_failure"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_proxmox_api_node_or_guest_state",
+      "references": {
+        "root_causes": [
+          "dns_service_failure",
+          "network_path_failure"
+        ],
+        "scenarios": [
+          "scenario_proxmox_api_node_or_guest_state"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_proxmox_api_node_or_guest_state",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "dns_service_failure",
+        "network_path_failure"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_reauthentication_or_external_failure",
+      "references": {
+        "root_causes": [
+          "dns_service_failure",
+          "network_path_failure"
+        ],
+        "scenarios": [
+          "scenario_reauthentication_or_external_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_reauthentication_or_external_failure",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "automation_feedback_loop",
+        "excessive_state_churn",
+        "host_storage_pressure"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_recorder_growth_state_churn",
+      "references": {
+        "root_causes": [
+          "automation_feedback_loop",
+          "excessive_state_churn",
+          "host_storage_pressure"
+        ],
+        "scenarios": [
+          "scenario_recorder_growth_state_churn"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_recorder_growth_state_churn",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "dns_service_failure",
+        "network_path_failure"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_reolink_discovery_setup_or_authentication_failure",
+      "references": {
+        "root_causes": [
+          "dns_service_failure",
+          "network_path_failure"
+        ],
+        "scenarios": [
+          "scenario_reolink_discovery_setup_or_authentication_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_reolink_discovery_setup_or_authentication_failure",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "dns_service_failure",
+        "network_path_failure"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_reolink_entity_stream_or_event_degradation",
+      "references": {
+        "root_causes": [
+          "dns_service_failure",
+          "network_path_failure"
+        ],
+        "scenarios": [
+          "scenario_reolink_entity_stream_or_event_degradation"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_reolink_entity_stream_or_event_degradation",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_repair_issue_persists",
+      "references": {
+        "root_causes": [],
+        "scenarios": [
+          "scenario_repair_issue_persists"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_repair_issue_persists",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "network_path_failure"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_shelly_push_or_generation_failure",
+      "references": {
+        "root_causes": [
+          "network_path_failure"
+        ],
+        "scenarios": [
+          "scenario_shelly_push_or_generation_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_shelly_push_or_generation_failure",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_sonoff_connection_path_mismatch",
+      "references": {
+        "root_causes": [],
+        "scenarios": [
+          "scenario_sonoff_connection_path_mismatch"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_sonoff_connection_path_mismatch",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "matter_fabric_or_credential_mismatch",
+        "network_path_failure",
+        "zigbee_coordinator_unavailable",
+        "zigbee_mesh_insufficient"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_sonoff_path_availability_or_feature_mismatch",
+      "references": {
+        "root_causes": [
+          "matter_fabric_or_credential_mismatch",
+          "network_path_failure",
+          "zigbee_coordinator_unavailable",
+          "zigbee_mesh_insufficient"
+        ],
+        "scenarios": [
+          "scenario_sonoff_path_availability_or_feature_mismatch"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_sonoff_path_availability_or_feature_mismatch",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "supervisor_dependency_failure"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_supervisor_job_failure_context",
+      "references": {
+        "root_causes": [
+          "supervisor_dependency_failure"
+        ],
+        "scenarios": [
+          "scenario_supervisor_job_failure_context"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_supervisor_job_failure_context",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "dns_service_failure",
+        "network_path_failure"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_system_health_entity_divergence",
+      "references": {
+        "root_causes": [
+          "dns_service_failure",
+          "network_path_failure"
+        ],
+        "scenarios": [
+          "scenario_system_health_entity_divergence"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_system_health_entity_divergence",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "dns_service_failure",
+        "network_path_failure"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_tplink_discovery_or_setup_failure",
+      "references": {
+        "root_causes": [
+          "dns_service_failure",
+          "network_path_failure"
+        ],
+        "scenarios": [
+          "scenario_tplink_discovery_or_setup_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_tplink_discovery_or_setup_failure",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "dns_service_failure",
+        "network_path_failure"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_tplink_runtime_update_or_availability_failure",
+      "references": {
+        "root_causes": [
+          "dns_service_failure",
+          "network_path_failure"
+        ],
+        "scenarios": [
+          "scenario_tplink_runtime_update_or_availability_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_tplink_runtime_update_or_availability_failure",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_tuya_connection_path_or_exposure_mismatch",
+      "references": {
+        "root_causes": [],
+        "scenarios": [
+          "scenario_tuya_connection_path_or_exposure_mismatch"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_tuya_connection_path_or_exposure_mismatch",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_unifi_authentication_or_permission_failure",
+      "references": {
+        "root_causes": [],
+        "scenarios": [
+          "scenario_unifi_authentication_or_permission_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_unifi_authentication_or_permission_failure",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "network_path_failure"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_unifi_controller_available_device_or_action_failure",
+      "references": {
+        "root_causes": [
+          "network_path_failure"
+        ],
+        "scenarios": [
+          "scenario_unifi_controller_available_device_or_action_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_unifi_controller_available_device_or_action_failure",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "dns_service_failure",
+        "network_path_failure"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_unifi_controller_or_lifecycle_failure",
+      "references": {
+        "root_causes": [
+          "dns_service_failure",
+          "network_path_failure"
+        ],
+        "scenarios": [
+          "scenario_unifi_controller_or_lifecycle_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_unifi_controller_or_lifecycle_failure",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_unifi_presence_ambiguity",
+      "references": {
+        "root_causes": [],
+        "scenarios": [
+          "scenario_unifi_presence_ambiguity"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_unifi_presence_ambiguity",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "dns_service_failure",
+        "network_path_failure"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_unifiprotect_runtime_surface_degradation",
+      "references": {
+        "root_causes": [
+          "dns_service_failure",
+          "network_path_failure"
+        ],
+        "scenarios": [
+          "scenario_unifiprotect_runtime_surface_degradation"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_unifiprotect_runtime_surface_degradation",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "dns_service_failure",
+        "network_path_failure"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_unifiprotect_setup_or_authentication_failure",
+      "references": {
+        "root_causes": [
+          "dns_service_failure",
+          "network_path_failure"
+        ],
+        "scenarios": [
+          "scenario_unifiprotect_setup_or_authentication_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_unifiprotect_setup_or_authentication_failure",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "mqtt_broker_unavailable",
+        "network_path_failure",
+        "zigbee_coordinator_unavailable",
+        "zigbee_mesh_insufficient",
+        "zigbee_radio_interference"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_zigbee2mqtt_pipeline_divergence",
+      "references": {
+        "root_causes": [
+          "mqtt_broker_unavailable",
+          "network_path_failure",
+          "zigbee_coordinator_unavailable",
+          "zigbee_mesh_insufficient",
+          "zigbee_radio_interference"
+        ],
+        "scenarios": [
+          "scenario_zigbee2mqtt_pipeline_divergence"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_zigbee2mqtt_pipeline_divergence",
+      "type": "competing_causes"
+    },
+    {
+      "candidate_ids": [
+        "zigbee_coordinator_unavailable",
+        "zigbee_mesh_insufficient",
+        "zigbee_radio_interference"
+      ],
+      "claims": [],
+      "confirmed_candidate_ids": [],
+      "id": "competing_causes__scenario_zigbee_instability_competing_causes",
+      "references": {
+        "root_causes": [
+          "zigbee_coordinator_unavailable",
+          "zigbee_mesh_insufficient",
+          "zigbee_radio_interference"
+        ],
+        "scenarios": [
+          "scenario_zigbee_instability_competing_causes"
+        ]
+      },
+      "relationships": [],
+      "scenario_id": "scenario_zigbee_instability_competing_causes",
+      "type": "competing_causes"
+    }
+  ],
+  "metadata": {}
+}

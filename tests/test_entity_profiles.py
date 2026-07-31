@@ -1,6 +1,6 @@
-from src.hadocs.core.models import EntityModel
-from src.hadocs.intelligence.engine import profile_entity
-from src.hadocs.intelligence.profiles import ProfileKind
+from hadocs.core.models import EntityModel
+from hadocs.intelligence.engine import profile_entity
+from hadocs.intelligence.profiles import ProfileKind
 
 
 def make_entity(
