@@ -1,4 +1,4 @@
-from src.hadocs.html.explorer import render_index
+from hadocs.html.explorer import render_index
 
 
 def test_render_index_contains_counts():

@@ -13,7 +13,7 @@ from typing import Any
 from urllib.parse import unquote, urlparse
 
 
-from src.hadocs.core.device_overrides import (
+from hadocs.core.device_overrides import (
     device_override_to_mapping,
     load_device_overrides_file,
     override_from_mapping,
@@ -21,8 +21,8 @@ from src.hadocs.core.device_overrides import (
     resolve_device_overrides_file,
     upsert_device_override,
 )
-from src.hadocs.utils.config import load_config
-from src.hadocs.web.api.devices import load_device_summaries
+from hadocs.utils.config import load_config
+from hadocs.web.api.devices import load_device_summaries
 
 HOST = "0.0.0.0"
 PORT = 8099
@@ -124,7 +124,7 @@ class ScanManager:
                 [
                     sys.executable,
                     "-m",
-                    "src.hadocs.cli.main",
+                    "hadocs.cli.main",
                     "generate",
                 ],
                 stdout=subprocess.PIPE,
@@ -172,6 +172,10 @@ class HadocsRequestHandler(BaseHTTPRequestHandler):
             self._serve_web_file("index.html")
             return
 
+        if path == "/hask-preview":
+            self._serve_web_file("hask-preview.html")
+            return
+
         if path.startswith("/static/"):
             relative_name = path.removeprefix("/static/")
             self._serve_web_file(relative_name)
@@ -191,6 +195,10 @@ class HadocsRequestHandler(BaseHTTPRequestHandler):
 
         if path == "/api/summary":
             self._send_json(self._load_report_summary())
+            return
+
+        if path == "/api/hask-preview":
+            self._send_json(self._load_hask_preview())
             return
 
         if path == "/api/device-overrides":
@@ -357,6 +365,11 @@ class HadocsRequestHandler(BaseHTTPRequestHandler):
                 recommendations if isinstance(recommendations, list) else []
             ),
         }
+
+    def _load_hask_preview(self) -> dict[str, Any]:
+        from hadocs.application.hask_preview import HaskPreviewService
+
+        return HaskPreviewService().snapshot(load_config()).as_dict()
 
     def _read_json_body(self) -> dict[str, Any]:
         content_length = self.headers.get("Content-Length", "0")

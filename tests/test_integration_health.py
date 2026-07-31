@@ -1,10 +1,10 @@
 from datetime import datetime, timezone
 
-from src.hadocs.core.integration_health import (
+from hadocs.core.integration_health import (
     IntegrationHealthStatus,
     calculate_integration_health,
 )
-from src.hadocs.core.models import (
+from hadocs.core.models import (
     DeviceModel,
     EntityModel,
     InstallationModel,

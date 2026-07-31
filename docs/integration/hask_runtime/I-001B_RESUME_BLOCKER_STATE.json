@@ -1,0 +1,52 @@
+{
+  "program": "I-001B_RESUME Generic Metadata Collector Release 1 Capability Implementation",
+  "status": "blocked",
+  "conclusion": "RELEASE_1_RESUME_BLOCKED",
+  "governance_policy": "G-001",
+  "design_freeze": "DF-002",
+  "program_status_authority": "PS-001",
+  "collector_contract_version": "1.0.0",
+  "blocker": {
+    "type": "OBSERVATION_IDENTITY_CONTRACT_AMBIGUITY",
+    "affected_capabilities": 4,
+    "affected_observation_categories": 4,
+    "affected_fields": [
+      "canonical_key",
+      "observation_id",
+      "source_capability"
+    ],
+    "affected_relationship_predicates": 4,
+    "smallest_governance_correction": "Narrow Architecture Increment for observation identity, followed by review and a new Design Freeze."
+  },
+  "completed_work": [
+    "baseline_verification",
+    "historical_blocker_resolution",
+    "capability_inventory",
+    "contract_mapping_until_identity_blocker"
+  ],
+  "implementation": {
+    "production_source_changes": 0,
+    "capabilities_implemented": 0,
+    "observations_implemented": 0,
+    "relationships_implemented": 0,
+    "tests_changed": 0,
+    "fixtures_changed": 0
+  },
+  "preservation": {
+    "g001_changes": 0,
+    "df002_changes": 0,
+    "ps001_changes": 0,
+    "historical_i001b_changes": 0,
+    "hask_changes": 0,
+    "consumer_contract_changes": 0,
+    "pi2_changes": 0
+  },
+  "validation": {
+    "json_validation": "PASS",
+    "documentation_artifacts": 6,
+    "determinism_passes": 2,
+    "deterministic_outputs": true,
+    "non_state_artifact_aggregate_sha256": "d99537d597a0551830da485448bfcc678f9013982c99014970926483f0f76f63"
+  },
+  "exception_expired": true
+}

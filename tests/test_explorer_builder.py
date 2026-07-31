@@ -1,4 +1,4 @@
-from src.hadocs.explorer.builder import build_search_index
+from hadocs.explorer.builder import build_search_index
 
 
 def test_build_search_index():

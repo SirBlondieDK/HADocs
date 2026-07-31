@@ -1,10 +1,10 @@
 from datetime import UTC, datetime
-from src.hadocs.core.device_overrides import DeviceOverride
-from src.hadocs.core.device_reachability import ReachabilityStatus, determine_device_reachability
-from src.hadocs.core.health import calculate_device_health
-from src.hadocs.core.incidents_v2 import build_incidents_v2
-from src.hadocs.core.integration_health import calculate_integration_health
-from src.hadocs.core.models import DeviceModel, EntityModel, InstallationModel, IntegrationModel
+from hadocs.core.device_overrides import DeviceOverride
+from hadocs.core.device_reachability import ReachabilityStatus, determine_device_reachability
+from hadocs.core.health import calculate_device_health
+from hadocs.core.incidents_v2 import build_incidents_v2
+from hadocs.core.integration_health import calculate_integration_health
+from hadocs.core.models import DeviceModel, EntityModel, InstallationModel, IntegrationModel
 
 def model_and_device():
     e=EntityModel(entity_id="binary_sensor.wled_online",name="WLED online",domain="binary_sensor",

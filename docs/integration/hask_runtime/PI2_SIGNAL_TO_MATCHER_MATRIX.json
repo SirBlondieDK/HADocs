@@ -1,0 +1,40 @@
+{
+  "contract_version": "1.1.0",
+  "outcome": "PI2_NO_SAFE_EXECUTABLE_SLICE",
+  "classification_counts": {
+    "DIRECT_EXPLICIT_MATCH": 0,
+    "SAFE_NORMALIZATION_REQUIRED": 0,
+    "INSUFFICIENT_SIGNAL": 2,
+    "INFERENCE_REQUIRED": 3,
+    "SOURCE_NOT_COLLECTED": 15,
+    "CONTRACT_FIELD_MISMATCH": 5,
+    "APPLICABILITY_UNKNOWN": 0
+  },
+  "items": [
+    {"matcher_id":"automation_trigger_rate_anomaly","native_source":"automation traces/configuration","classification":"SOURCE_NOT_COLLECTED","reason":"Normal scan collects neither automation configuration nor trace/rate observations."},
+    {"matcher_id":"backup_absence_detected","native_source":"backup inventory","classification":"SOURCE_NOT_COLLECTED","reason":"Normal scan has no backup inventory or recovery-policy observation."},
+    {"matcher_id":"backup_restore_not_verified","native_source":"restore verification","classification":"SOURCE_NOT_COLLECTED","reason":"No explicit restore-verification result is collected."},
+    {"matcher_id":"container_persistence_unverified","native_source":"container mount inventory","classification":"SOURCE_NOT_COLLECTED","reason":"Normal Home Assistant scan does not collect host/container mount contracts."},
+    {"matcher_id":"dns_failure_correlated","native_source":"states/config","classification":"CONTRACT_FIELD_MISMATCH","reason":"No closed DNS evidence fields or correlation conditions are exported."},
+    {"matcher_id":"esphome_reconnect_pattern","native_source":"Home Assistant logs","classification":"SOURCE_NOT_COLLECTED","reason":"Reconnect events/logs and expected-sleep context are not collected."},
+    {"matcher_id":"matter_commissioning_layered_failure","native_source":"Matter commissioning result","classification":"SOURCE_NOT_COLLECTED","reason":"No commissioning-stage result is collected."},
+    {"matcher_id":"mikrotik_api_connectivity_failure","native_source":"states and registries","classification":"INSUFFICIENT_SIGNAL","reason":"No explicit API connection_result or problem_signal exists."},
+    {"matcher_id":"mqtt_broker_connection_loss","native_source":"Home Assistant logs/config entry","classification":"SOURCE_NOT_COLLECTED","reason":"Broker-session result is not collected; config-entry lifecycle is not equivalent."},
+    {"matcher_id":"mqtt_certificate_verify_failed","native_source":"Home Assistant MQTT log event","classification":"SOURCE_NOT_COLLECTED","reason":"Signature is precise but normal scan does not collect scoped Home Assistant logs."},
+    {"matcher_id":"mqtt_entity_unavailability_correlated","native_source":"entity states","classification":"INFERENCE_REQUIRED","reason":"Entity unavailability is available, but broker/shared-dependency correlation is not explicit."},
+    {"matcher_id":"persistent_high_disk_usage","native_source":"System Monitor entity state","classification":"CONTRACT_FIELD_MISMATCH","reason":"Metric may exist, but persistence window and threshold semantics are absent from the legacy contract."},
+    {"matcher_id":"recorder_database_write_errors","native_source":"Home Assistant Recorder logs","classification":"SOURCE_NOT_COLLECTED","reason":"Normal scan does not collect Recorder write-error events."},
+    {"matcher_id":"recorder_growth_without_retention_review","native_source":"state/config history","classification":"CONTRACT_FIELD_MISMATCH","reason":"No baseline, growth window, or retention-review condition is exported."},
+    {"matcher_id":"recorder_sqlite_corrupt_or_malformed","native_source":"Home Assistant Recorder log event","classification":"SOURCE_NOT_COLLECTED","reason":"Signature is precise but scoped logs are not collected."},
+    {"matcher_id":"supervisor_job_blocked_from_execution","native_source":"Supervisor log event","classification":"SOURCE_NOT_COLLECTED","reason":"Signature is precise but Supervisor logs are not collected."},
+    {"matcher_id":"supervisor_job_repeated_failure","native_source":"Supervisor job/log history","classification":"SOURCE_NOT_COLLECTED","reason":"No repeated-job event series is collected."},
+    {"matcher_id":"template_render_error_detected","native_source":"Home Assistant template log event","classification":"SOURCE_NOT_COLLECTED","reason":"Template render logs are not collected."},
+    {"matcher_id":"template_undefined_error","native_source":"Home Assistant template log event","classification":"SOURCE_NOT_COLLECTED","reason":"Signature is precise but scoped logs are not collected."},
+    {"matcher_id":"thread_border_router_missing","native_source":"states/registries","classification":"CONTRACT_FIELD_MISMATCH","reason":"No authoritative usable-border-router field or required conditions are exported."},
+    {"matcher_id":"thread_mdns_error_99","native_source":"OpenThread Border Router log event","classification":"SOURCE_NOT_COLLECTED","reason":"Signature is precise but scoped add-on/service logs are not collected."},
+    {"matcher_id":"unifi_controller_connectivity_failure","native_source":"states and registries","classification":"INSUFFICIENT_SIGNAL","reason":"No explicit controller connection_result or problem_signal exists."},
+    {"matcher_id":"zigbee_interview_repeated_failure","native_source":"ZHA/Zigbee2MQTT interview result","classification":"CONTRACT_FIELD_MISMATCH","reason":"No closed retry count, awake/close-range context, or conditions are exported or collected."},
+    {"matcher_id":"zigbee_multi_device_outage","native_source":"entity states","classification":"INFERENCE_REQUIRED","reason":"Simultaneous outage and shared-layer meaning require correlation and contextual inference."},
+    {"matcher_id":"zigbee_single_device_unavailability_contextual","native_source":"entity states","classification":"INFERENCE_REQUIRED","reason":"Unavailable state exists, but device-path context and exclusions are not explicit."}
+  ]
+}

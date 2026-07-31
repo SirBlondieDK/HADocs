@@ -1,5 +1,5 @@
 import unittest
-from src.hadocs.intelligence.health_score_v2 import HealthScoreV2
+from hadocs.intelligence.health_score_v2 import HealthScoreV2
 
 class HealthScoreV2Tests(unittest.TestCase):
     def test_empty_findings_gives_100(self):

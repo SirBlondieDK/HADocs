@@ -1,0 +1,38 @@
+{
+  "authority": "IM-001",
+  "batch": 2,
+  "status": "PASS",
+  "architecture": {
+    "acr_001_sha256": "9443b1cf4dee94ca642fe46be40d05e4bd00b76de2d16e066bd02798b06f9b76",
+    "db_001_sha256": "676e5cca648bf894eb69c1329371819e272fade44eba5ff9130fc3d1d0491e79",
+    "db_002_sha256": "6d754c18f3a1172c71e9b5be0d701535ff84598b8792ea61966e9a965e54b6b9"
+  },
+  "actual": {
+    "alternate_keys": 28,
+    "columns": 243,
+    "foreign_keys": 57,
+    "indexes": 18,
+    "lifecycle_history_columns": 14,
+    "logical_constraints": 30,
+    "migrations": 8,
+    "primary_keys": 25,
+    "tables": 25,
+    "trigger_contracts": 7,
+    "views": 1
+  },
+  "db002a": {
+    "audit_evidence_key": ["audit_id", "observation_id", "role"],
+    "audit_ordinal_check": "ordinal >= 0",
+    "audit_ordinal_contiguity_enforced": false,
+    "audit_ordinal_unique_enforced": false
+  },
+  "deviations": 0,
+  "integrity_check": "ok",
+  "quick_check": "ok",
+  "schema_sha256": "623d0fed0f626eea698c87d62af611ce2c90b5d4ae470cb576def99ad39a9673",
+  "tests": {
+    "full_suite_passed": 278,
+    "targeted_passed": 27
+  },
+  "user_version": 8
+}

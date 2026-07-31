@@ -1,0 +1,522 @@
+{
+  "_generated": "scripts/freeze_hadocs_pilot_baseline.py; DO NOT EDIT",
+  "baseline_id": "hadocs-main-590cc33-approved-dirty-2026-07-24",
+  "branch": "main",
+  "captured_at": "2026-07-24",
+  "captured_at_kind": "local_environment_metadata_date",
+  "files": [
+    {
+      "classification": "overlaps_pilot_scope",
+      "git_status": " M",
+      "overlap": {
+        "evidence": false,
+        "hudd": false,
+        "persistence": false,
+        "reports": false,
+        "root_causes": false,
+        "tests": false
+      },
+      "path": "pyproject.toml",
+      "purpose_and_strategy": "Package metadata and pytest configuration; preserve and extend only if required.",
+      "sha256": "ba0720d859fedc39030fd182c4a26b6f056ba87415db98ef8852458bdd2751b3",
+      "size_bytes": 418,
+      "tracked": true
+    },
+    {
+      "classification": "relevant_existing_work",
+      "git_status": " M",
+      "overlap": {
+        "evidence": false,
+        "hudd": false,
+        "persistence": false,
+        "reports": false,
+        "root_causes": false,
+        "tests": false
+      },
+      "path": "src/hadocs/core/builder.py",
+      "purpose_and_strategy": "Existing HUDD enrichment hook in the installation-model builder; avoid modification.",
+      "sha256": "1fc48dd8a74bbb10b91a0b1bd20b3afdd2e766bfdc9c1e143a1362facd99bed8",
+      "size_bytes": 6189,
+      "tracked": true
+    },
+    {
+      "classification": "relevant_existing_work",
+      "git_status": " M",
+      "overlap": {
+        "evidence": true,
+        "hudd": false,
+        "persistence": false,
+        "reports": false,
+        "root_causes": false,
+        "tests": false
+      },
+      "path": "src/hadocs/core/models.py",
+      "purpose_and_strategy": "Adds HUDD metadata to DeviceModel; preserve public shape.",
+      "sha256": "97d0efe980be8bde569c212d23a30d2168fbeef2a107861c630efcfa51214722",
+      "size_bytes": 4616,
+      "tracked": true
+    },
+    {
+      "classification": "relevant_existing_work",
+      "git_status": " M",
+      "overlap": {
+        "evidence": false,
+        "hudd": false,
+        "persistence": false,
+        "reports": true,
+        "root_causes": false,
+        "tests": false
+      },
+      "path": "src/hadocs/exporters/csv_exporter.py",
+      "purpose_and_strategy": "Existing HUDD report/export projection; outside pilot adapter path.",
+      "sha256": "e58d2221167d40fe18e51cac60a0ca58df36fe48412e40b0c2b55e3412318b48",
+      "size_bytes": 1881,
+      "tracked": true
+    },
+    {
+      "classification": "relevant_existing_work",
+      "git_status": " M",
+      "overlap": {
+        "evidence": false,
+        "hudd": false,
+        "persistence": false,
+        "reports": true,
+        "root_causes": false,
+        "tests": false
+      },
+      "path": "src/hadocs/reports/generator.py",
+      "purpose_and_strategy": "Existing HUDD report projection; do not mix pilot output into it.",
+      "sha256": "0272799331f9938a8f3f7c5638d5155a0245f91e24b28ea3de0969af0c4be808",
+      "size_bytes": 67652,
+      "tracked": true
+    },
+    {
+      "classification": "generated_or_temporary",
+      "git_status": "??",
+      "overlap": {
+        "evidence": false,
+        "hudd": false,
+        "persistence": false,
+        "reports": false,
+        "root_causes": false,
+        "tests": false
+      },
+      "path": "hadocs_file_inventory.txt",
+      "purpose_and_strategy": "Repository inventory; read-only and unrelated to runtime.",
+      "sha256": "cee9cd158e0d845b3eab2b1ee1dfff8010df5586eae10da11335350c74f6fbe8",
+      "size_bytes": 15953,
+      "tracked": false
+    },
+    {
+      "classification": "generated_or_temporary",
+      "git_status": "??",
+      "overlap": {
+        "evidence": false,
+        "hudd": false,
+        "persistence": false,
+        "reports": false,
+        "root_causes": false,
+        "tests": false
+      },
+      "path": "project_files.txt",
+      "purpose_and_strategy": "Repository inventory; read-only and unrelated to runtime.",
+      "sha256": "613ecac7e5f2897d39805d875f8a6ac45960db9f22627612950fb748be6f2265",
+      "size_bytes": 394202,
+      "tracked": false
+    },
+    {
+      "classification": "likely_prior_HADocs_feature_work",
+      "git_status": "??",
+      "overlap": {
+        "evidence": false,
+        "hudd": true,
+        "persistence": false,
+        "reports": false,
+        "root_causes": false,
+        "tests": false
+      },
+      "path": "src/hadocs/hudd/README.md",
+      "purpose_and_strategy": "HUDD feature documentation.",
+      "sha256": "21ef91a166feaf72d4c156a65ea37f26198e394899e659304f61fec0a4a087fb",
+      "size_bytes": 1833,
+      "tracked": false
+    },
+    {
+      "classification": "likely_prior_HADocs_feature_work",
+      "git_status": "??",
+      "overlap": {
+        "evidence": false,
+        "hudd": true,
+        "persistence": false,
+        "reports": false,
+        "root_causes": false,
+        "tests": false
+      },
+      "path": "src/hadocs/hudd/__init__.py",
+      "purpose_and_strategy": "HUDD public package exports.",
+      "sha256": "e4399748ec4649388b4fcbd5805eec7f2172568a709ada969d854d52d684853f",
+      "size_bytes": 229,
+      "tracked": false
+    },
+    {
+      "classification": "likely_prior_HADocs_feature_work",
+      "git_status": "??",
+      "overlap": {
+        "evidence": false,
+        "hudd": true,
+        "persistence": false,
+        "reports": false,
+        "root_causes": false,
+        "tests": false
+      },
+      "path": "src/hadocs/hudd/cli.py",
+      "purpose_and_strategy": "HUDD standalone query CLI.",
+      "sha256": "75496994023206e1487ce35d28e2e458ecc994cc85a6aa3d03447cef676ac085",
+      "size_bytes": 2129,
+      "tracked": false
+    },
+    {
+      "classification": "likely_prior_HADocs_feature_work",
+      "git_status": "??",
+      "overlap": {
+        "evidence": false,
+        "hudd": true,
+        "persistence": true,
+        "reports": false,
+        "root_causes": false,
+        "tests": false
+      },
+      "path": "src/hadocs/hudd/data/hudd.sqlite",
+      "purpose_and_strategy": "HUDD local persistence database; binary baseline asset.",
+      "sha256": "5913585def0017fa924d35534f94621ee74ce2fb10269d4269c719c0e93495d2",
+      "size_bytes": 430080,
+      "tracked": false
+    },
+    {
+      "classification": "likely_prior_HADocs_feature_work",
+      "git_status": "??",
+      "overlap": {
+        "evidence": false,
+        "hudd": true,
+        "persistence": false,
+        "reports": false,
+        "root_causes": false,
+        "tests": false
+      },
+      "path": "src/hadocs/hudd/data/masterlist.txt",
+      "purpose_and_strategy": "HUDD seed input; non-authoritative pilot input.",
+      "sha256": "baf37f0b5915fe599326cbb14f0bec24d3504d10260f324683a96e42b8967c41",
+      "size_bytes": 49961,
+      "tracked": false
+    },
+    {
+      "classification": "likely_prior_HADocs_feature_work",
+      "git_status": "??",
+      "overlap": {
+        "evidence": false,
+        "hudd": true,
+        "persistence": true,
+        "reports": false,
+        "root_causes": false,
+        "tests": false
+      },
+      "path": "src/hadocs/hudd/database.py",
+      "purpose_and_strategy": "HUDD SQLite connection boundary.",
+      "sha256": "c5ff37f721a45644e7ea7f499c7bf56db796c3cd8c3ce168c09e8e514b2794c2",
+      "size_bytes": 1238,
+      "tracked": false
+    },
+    {
+      "classification": "overlaps_pilot_scope",
+      "git_status": "??",
+      "overlap": {
+        "evidence": true,
+        "hudd": true,
+        "persistence": false,
+        "reports": false,
+        "root_causes": false,
+        "tests": false
+      },
+      "path": "src/hadocs/hudd/homeassistant.py",
+      "purpose_and_strategy": "Existing Home Assistant-to-HUDD enrichment adapter; separate from HASK evidence adapter.",
+      "sha256": "f7ca95022f90fd5efbd167043e43c20265b7ec7d601c14d4943b20038344e588",
+      "size_bytes": 3420,
+      "tracked": false
+    },
+    {
+      "classification": "likely_prior_HADocs_feature_work",
+      "git_status": "??",
+      "overlap": {
+        "evidence": false,
+        "hudd": true,
+        "persistence": false,
+        "reports": false,
+        "root_causes": false,
+        "tests": false
+      },
+      "path": "src/hadocs/hudd/importers/__init__.py",
+      "purpose_and_strategy": "HUDD importer package.",
+      "sha256": "f24c25dead52af1c00ea38423178a05b81dbd7c9f174e980cce285a4e968618b",
+      "size_bytes": 139,
+      "tracked": false
+    },
+    {
+      "classification": "likely_prior_HADocs_feature_work",
+      "git_status": "??",
+      "overlap": {
+        "evidence": false,
+        "hudd": true,
+        "persistence": false,
+        "reports": false,
+        "root_causes": false,
+        "tests": false
+      },
+      "path": "src/hadocs/hudd/importers/masterlist.py",
+      "purpose_and_strategy": "HUDD masterlist importer.",
+      "sha256": "3b9b52e1ca03f0baf6f3b4f7d893c2348983e0d8c0637f9007787bba5ccbeb49",
+      "size_bytes": 7292,
+      "tracked": false
+    },
+    {
+      "classification": "likely_prior_HADocs_feature_work",
+      "git_status": "??",
+      "overlap": {
+        "evidence": false,
+        "hudd": true,
+        "persistence": false,
+        "reports": false,
+        "root_causes": false,
+        "tests": false
+      },
+      "path": "src/hadocs/hudd/importers/ohf.py",
+      "purpose_and_strategy": "HUDD OHF staging importer.",
+      "sha256": "efc2c5b3ad20dfff6c163854ef305739c216caa295841954a1cddf63fa58f67d",
+      "size_bytes": 2198,
+      "tracked": false
+    },
+    {
+      "classification": "overlaps_pilot_scope",
+      "git_status": "??",
+      "overlap": {
+        "evidence": true,
+        "hudd": true,
+        "persistence": false,
+        "reports": false,
+        "root_causes": false,
+        "tests": false
+      },
+      "path": "src/hadocs/hudd/matcher.py",
+      "purpose_and_strategy": "Existing device identity matcher; must not be confused with canonical evidence matching.",
+      "sha256": "427981b777b45399fe6625441559de2bb91739ba2eb476207bf58b7a80110b83",
+      "size_bytes": 6549,
+      "tracked": false
+    },
+    {
+      "classification": "likely_prior_HADocs_feature_work",
+      "git_status": "??",
+      "overlap": {
+        "evidence": false,
+        "hudd": true,
+        "persistence": true,
+        "reports": false,
+        "root_causes": false,
+        "tests": false
+      },
+      "path": "src/hadocs/hudd/migrations/0002_device_matcher.sql",
+      "purpose_and_strategy": "HUDD persistence migration.",
+      "sha256": "e24d32a91641ae33d1304c1b18520d5f0e86dccaf75eabdfd15fc44cb8a98ef5",
+      "size_bytes": 566,
+      "tracked": false
+    },
+    {
+      "classification": "likely_prior_HADocs_feature_work",
+      "git_status": "??",
+      "overlap": {
+        "evidence": false,
+        "hudd": true,
+        "persistence": true,
+        "reports": false,
+        "root_causes": false,
+        "tests": false
+      },
+      "path": "src/hadocs/hudd/migrations/__init__.py",
+      "purpose_and_strategy": "HUDD migration package.",
+      "sha256": "da3e9853ab41c0a27182a7ebb7a95eb5f8b4bfff707d83aba6190371207375ab",
+      "size_bytes": 32,
+      "tracked": false
+    },
+    {
+      "classification": "overlaps_pilot_scope",
+      "git_status": "??",
+      "overlap": {
+        "evidence": true,
+        "hudd": true,
+        "persistence": false,
+        "reports": false,
+        "root_causes": false,
+        "tests": false
+      },
+      "path": "src/hadocs/hudd/models.py",
+      "purpose_and_strategy": "HUDD models are device identity models, not Evidence or Root Cause models.",
+      "sha256": "4f7ebafc147b43ec956c79227b87bec78df8faf0773a8ffd08ef1622c892ea54",
+      "size_bytes": 1457,
+      "tracked": false
+    },
+    {
+      "classification": "likely_prior_HADocs_feature_work",
+      "git_status": "??",
+      "overlap": {
+        "evidence": false,
+        "hudd": true,
+        "persistence": true,
+        "reports": false,
+        "root_causes": false,
+        "tests": false
+      },
+      "path": "src/hadocs/hudd/repository.py",
+      "purpose_and_strategy": "HUDD persistence repository.",
+      "sha256": "92f3c6d9a960a9a541071833e5d7b891d6d48a11d8caa0606143541aac5a608c",
+      "size_bytes": 5801,
+      "tracked": false
+    },
+    {
+      "classification": "likely_prior_HADocs_feature_work",
+      "git_status": "??",
+      "overlap": {
+        "evidence": false,
+        "hudd": true,
+        "persistence": true,
+        "reports": false,
+        "root_causes": false,
+        "tests": false
+      },
+      "path": "src/hadocs/hudd/schema/schema.sql",
+      "purpose_and_strategy": "HUDD database schema.",
+      "sha256": "710406cbaea41b8fab1187e1411a23d9a35330228e3f22ef12a04c9519e58e8a",
+      "size_bytes": 6001,
+      "tracked": false
+    },
+    {
+      "classification": "likely_prior_HADocs_feature_work",
+      "git_status": "??",
+      "overlap": {
+        "evidence": false,
+        "hudd": true,
+        "persistence": false,
+        "reports": false,
+        "root_causes": false,
+        "tests": false
+      },
+      "path": "src/hadocs/hudd/service.py",
+      "purpose_and_strategy": "HUDD service facade.",
+      "sha256": "40124870d71356b4d76ab1e762e1b1094f8b3a4404c83b090546e0a69b68fa55",
+      "size_bytes": 1852,
+      "tracked": false
+    },
+    {
+      "classification": "overlaps_pilot_scope",
+      "git_status": "??",
+      "overlap": {
+        "evidence": false,
+        "hudd": false,
+        "persistence": false,
+        "reports": false,
+        "root_causes": false,
+        "tests": true
+      },
+      "path": "tests/test_hudd.py",
+      "purpose_and_strategy": "Existing HUDD regression tests; preserve and run.",
+      "sha256": "4e446c80cda1c6bee256ce08ecaf1a88ccdf99f863204c1e130d0983806fcc7f",
+      "size_bytes": 1558,
+      "tracked": false
+    },
+    {
+      "classification": "overlaps_pilot_scope",
+      "git_status": "??",
+      "overlap": {
+        "evidence": true,
+        "hudd": false,
+        "persistence": false,
+        "reports": false,
+        "root_causes": false,
+        "tests": true
+      },
+      "path": "tests/test_hudd_homeassistant.py",
+      "purpose_and_strategy": "Existing HA/HUDD integration regression tests; preserve and run.",
+      "sha256": "18d614d3d8a548534f2d26fc767ce9e958f6e716e32cffc50ec2850a677b0fa7",
+      "size_bytes": 2378,
+      "tracked": false
+    }
+  ],
+  "git_status_short": [
+    " M pyproject.toml",
+    " M src/hadocs/core/builder.py",
+    " M src/hadocs/core/models.py",
+    " M src/hadocs/exporters/csv_exporter.py",
+    " M src/hadocs/reports/generator.py",
+    "?? hadocs_file_inventory.txt",
+    "?? project_files.txt",
+    "?? src/hadocs/hudd/README.md",
+    "?? src/hadocs/hudd/__init__.py",
+    "?? src/hadocs/hudd/cli.py",
+    "?? src/hadocs/hudd/data/hudd.sqlite",
+    "?? src/hadocs/hudd/data/masterlist.txt",
+    "?? src/hadocs/hudd/database.py",
+    "?? src/hadocs/hudd/homeassistant.py",
+    "?? src/hadocs/hudd/importers/__init__.py",
+    "?? src/hadocs/hudd/importers/masterlist.py",
+    "?? src/hadocs/hudd/importers/ohf.py",
+    "?? src/hadocs/hudd/matcher.py",
+    "?? src/hadocs/hudd/migrations/0002_device_matcher.sql",
+    "?? src/hadocs/hudd/migrations/__init__.py",
+    "?? src/hadocs/hudd/models.py",
+    "?? src/hadocs/hudd/repository.py",
+    "?? src/hadocs/hudd/schema/schema.sql",
+    "?? src/hadocs/hudd/service.py",
+    "?? tests/test_hudd.py",
+    "?? tests/test_hudd_homeassistant.py"
+  ],
+  "head_commit": "590cc33a9762c4d22699f20c60d136ef2c4de00c",
+  "merge_conflicts": [],
+  "modified_tracked_files": [
+    "pyproject.toml",
+    "src/hadocs/core/builder.py",
+    "src/hadocs/core/models.py",
+    "src/hadocs/exporters/csv_exporter.py",
+    "src/hadocs/reports/generator.py"
+  ],
+  "preservation_policy": "approved dirty baseline; no reset, clean, stash, restore, checkout, or deletion",
+  "repository_path": "C:/HomeAssistantDocs",
+  "repository_path_kind": "local_environment_metadata",
+  "tracked_diff_summary": [
+    "pyproject.toml                       |  2 +-",
+    " src/hadocs/core/builder.py           | 10 ++++++++++",
+    " src/hadocs/core/models.py            |  1 +",
+    " src/hadocs/exporters/csv_exporter.py | 10 +++++++++-",
+    " src/hadocs/reports/generator.py      |  7 +++++++",
+    " 5 files changed, 28 insertions(+), 2 deletions(-)"
+  ],
+  "untracked_files": [
+    "hadocs_file_inventory.txt",
+    "project_files.txt",
+    "src/hadocs/hudd/README.md",
+    "src/hadocs/hudd/__init__.py",
+    "src/hadocs/hudd/cli.py",
+    "src/hadocs/hudd/data/hudd.sqlite",
+    "src/hadocs/hudd/data/masterlist.txt",
+    "src/hadocs/hudd/database.py",
+    "src/hadocs/hudd/homeassistant.py",
+    "src/hadocs/hudd/importers/__init__.py",
+    "src/hadocs/hudd/importers/masterlist.py",
+    "src/hadocs/hudd/importers/ohf.py",
+    "src/hadocs/hudd/matcher.py",
+    "src/hadocs/hudd/migrations/0002_device_matcher.sql",
+    "src/hadocs/hudd/migrations/__init__.py",
+    "src/hadocs/hudd/models.py",
+    "src/hadocs/hudd/repository.py",
+    "src/hadocs/hudd/schema/schema.sql",
+    "src/hadocs/hudd/service.py",
+    "tests/test_hudd.py",
+    "tests/test_hudd_homeassistant.py"
+  ]
+}

@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from src.hadocs.core.rules import RulesEngine
-from src.hadocs.core.rulesets.default import load_builtin_rulesets
-from src.hadocs.utils.normalize import normalize_text
+from hadocs.core.rules import RulesEngine
+from hadocs.core.rulesets.default import load_builtin_rulesets
+from hadocs.utils.normalize import normalize_text
 
 
 IGNORED_DOMAINS = {

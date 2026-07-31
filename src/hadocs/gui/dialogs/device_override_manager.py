@@ -2,7 +2,7 @@ from pathlib import Path
 import tkinter as tk
 from tkinter import ttk, messagebox
 
-from src.hadocs.core.device_overrides import (
+from hadocs.core.device_overrides import (
     DeviceOverride,
     OWNERSHIP_VALUES,
     POLICY_TYPES,
@@ -12,8 +12,8 @@ from src.hadocs.core.device_overrides import (
     resolve_device_overrides_file,
     upsert_device_override,
 )
-from src.hadocs.gui.data import safe_read_json
-from src.hadocs.gui.theme import Theme
+from hadocs.gui.data import safe_read_json
+from hadocs.gui.theme import Theme
 
 class DeviceOverrideManager(tk.Toplevel):
     """Graphical editor for config/device_overrides.json."""

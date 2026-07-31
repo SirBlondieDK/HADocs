@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from src.hadocs.gui.theme import COLORS, Theme
+from hadocs.gui.theme import COLORS, Theme
 
 class LogWindow(tk.Toplevel):
     def __init__(self, master, source_text):

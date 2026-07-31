@@ -1,78 +1,73 @@
-# Local configuration / secrets
+# Local configuration and secrets
+.env
 config.json
 config.local.json
-.env
+device_overrides.json
+device_overrides.local.json
+config/config.json
+config/device_overrides.json
+config/device_overrides.local.json
+docker/hadocs.env
+docker/config/config.json
+.hadocs/credentials/
+config/.hadocs/credentials/
 
-# HADocs local development context
+# Local development context and backups
 DEV_CONTEXT.md
 CURRENT_SPRINT.md
 HADocs_Development_Context.md
-
-# Local backups
 *.bak
 
-# Generated data
+# Runtime data and reports
 cache/
 output/
 reports/
-.pytest_tmp/
+logs/
+docker/cache/
+docker/output/
+*.log
+*.sqlite
+*.sqlite3
+*.db
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite3-wal
+*.sqlite3-shm
+*.db-wal
+*.db-shm
+!src/hadocs/hudd/data/hudd.sqlite
 
-# Generated archives
-*.zip
-*.tar
-*.tar.gz
-*.7z
-
-# Python
+# Python and test artifacts
 __pycache__/
-*.pyc
+*.py[cod]
 .pytest_cache/
+.pytest_tmp/
+.pytest_tmp_*/
+.mypy_cache/
+.ruff_cache/
 .venv/
 venv/
 
-# OS/editor
-.DS_Store
-Thumbs.db
-.vscode/
-.idea/
-
-# HADocs generated/runtime files
+# Build, package, and release verification output
 build/
 dist/
-*.spec
+*.egg-info/
+release-verification*/
+HADocs-verification*/
 *.toc
 *.pyz
 *.pkg
 xref-*.html
-# Local config/runtime state
-*.log
-*.py[cod]
-# Release packages
-HADocs-*.zip
 HADocs-*.exe
-docker/hadocs.env
-docker/output/
-docker/cache/
-docker/config/config.json
-
-# Runtime
-cache/
-output/
-logs/
-
-# User configuration
-config/config.json
-config/device_overrides.json
-config/device_overrides.local.json
-
-# Legacy 
-config.json
-device_overrides.json
-device_overrides.local.json
-
-# Build
-build/
-dist/
+HADocs-*.zip
+*.msi
+*.tar
+*.tar.gz
+*.7z
 *.zip
 
-
+# OS and editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

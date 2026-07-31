@@ -1,6 +1,6 @@
 import html
 
-from src.hadocs.explain.engine import explain_incident
+from hadocs.explain.engine import explain_incident
 
 
 def esc(value) -> str:

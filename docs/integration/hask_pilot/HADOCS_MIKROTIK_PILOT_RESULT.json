@@ -1,0 +1,262 @@
+{
+  "candidates": [
+    {
+      "applicability": [
+        {
+          "claim_id": "causal_boundary",
+          "claims": [],
+          "id": "applicability__dns_service_failure__causal_boundary",
+          "record_id": "dns_service_failure",
+          "references": {},
+          "relationships": [],
+          "type": "applicability",
+          "verification_status": "verified",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app version boundary is asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Current documentation reviewed; symptom or cause is not bounded to an exact Core release."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration versions are not exactly bounded."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Host and installation applicability must be established from context."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor applicability depends on installation type and observed component."
+            }
+          }
+        }
+      ],
+      "candidate_id": "dns_service_failure",
+      "competing_causes": [
+        "network_path_failure"
+      ],
+      "confirmed": false,
+      "conflicts": [
+        {
+          "claim_ref": "diagnose_mikrotik_api_path_safely__layered_api_recovery",
+          "claims": [],
+          "id": "conflict__diagnose_mikrotik_api_path_safely__layered_api_recovery",
+          "record_id": "diagnose_mikrotik_api_path_safely",
+          "references": {
+            "claims": [
+              "diagnose_mikrotik_api_path_safely__layered_api_recovery"
+            ]
+          },
+          "relationships": [],
+          "resolution": "unresolved",
+          "statement": "Safe MikroTik recovery requires evidence-driven separation of endpoint, service, TLS, authentication, authorization, command and coordinator branches, including the current documentation-to-Core TLS conflict.",
+          "type": "conflict"
+        }
+      ],
+      "contradicting_evidence": [],
+      "default_knowledge_weight": 0.9,
+      "description": "The configured DNS resolver is unreachable or returns responses Home Assistant cannot use.",
+      "known_gaps": [],
+      "metadata": {
+        "confirmation_owner": "HADocs",
+        "hadocs_score_impact": null,
+        "pilot_only": true
+      },
+      "missing_evidence": [
+        "config_entry_setup_retry",
+        "mikrotik_client_presence_state",
+        "mikrotik_router_authorization_scope",
+        "mikrotik_runtime_resource_state"
+      ],
+      "provenance": [
+        "source_home_assistant_docs_dns_issue"
+      ],
+      "recommendations": [
+        "complete_and_verify_reauthentication_safely",
+        "diagnose_mikrotik_api_path_safely",
+        "inspect_config_entry_lifecycle_before_change",
+        "verify_mikrotik_permissions_and_capabilities",
+        "verify_mikrotik_presence_inputs"
+      ],
+      "scenarios": [
+        "scenario_mikrotik_api_auth_or_path_failure"
+      ],
+      "supporting_canonical_evidence": [
+        "config_entry_reauthentication_required",
+        "entity_unavailable_state",
+        "mikrotik_api_connection_state"
+      ],
+      "title": "DNS service failure",
+      "verification": [
+        "verification__complete_and_verify_reauthentication_safely",
+        "verification__diagnose_mikrotik_api_path_safely",
+        "verification__inspect_config_entry_lifecycle_before_change",
+        "verification__verify_mikrotik_permissions_and_capabilities",
+        "verification__verify_mikrotik_presence_inputs"
+      ]
+    },
+    {
+      "applicability": [
+        {
+          "claim_id": "causal_boundary",
+          "claims": [],
+          "id": "applicability__network_path_failure__causal_boundary",
+          "record_id": "network_path_failure",
+          "references": {},
+          "relationships": [],
+          "type": "applicability",
+          "verification_status": "needs_manual_verification",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app version boundary is asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Current documentation reviewed; symptom or cause is not bounded to an exact Core release."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration versions are not exactly bounded."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Host and installation applicability must be established from context."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor applicability depends on installation type and observed component."
+            }
+          }
+        }
+      ],
+      "candidate_id": "network_path_failure",
+      "competing_causes": [
+        "dns_service_failure"
+      ],
+      "confirmed": false,
+      "conflicts": [
+        {
+          "claim_ref": "diagnose_mikrotik_api_path_safely__layered_api_recovery",
+          "claims": [],
+          "id": "conflict__diagnose_mikrotik_api_path_safely__layered_api_recovery",
+          "record_id": "diagnose_mikrotik_api_path_safely",
+          "references": {
+            "claims": [
+              "diagnose_mikrotik_api_path_safely__layered_api_recovery"
+            ]
+          },
+          "relationships": [],
+          "resolution": "unresolved",
+          "statement": "Safe MikroTik recovery requires evidence-driven separation of endpoint, service, TLS, authentication, authorization, command and coordinator branches, including the current documentation-to-Core TLS conflict.",
+          "type": "conflict"
+        }
+      ],
+      "contradicting_evidence": [],
+      "default_knowledge_weight": 0.4,
+      "description": "Routing, addressing, firewalling, link state, or local network reachability prevents communication between required components.",
+      "known_gaps": [],
+      "metadata": {
+        "confirmation_owner": "HADocs",
+        "hadocs_score_impact": null,
+        "pilot_only": true
+      },
+      "missing_evidence": [
+        "config_entry_setup_retry",
+        "mikrotik_client_presence_state",
+        "mikrotik_router_authorization_scope",
+        "mikrotik_runtime_resource_state"
+      ],
+      "provenance": [
+        "source_home_assistant_docs_dns_issue"
+      ],
+      "recommendations": [
+        "complete_and_verify_reauthentication_safely",
+        "diagnose_mikrotik_api_path_safely",
+        "inspect_config_entry_lifecycle_before_change",
+        "verify_mikrotik_permissions_and_capabilities",
+        "verify_mikrotik_presence_inputs"
+      ],
+      "scenarios": [
+        "scenario_mikrotik_api_auth_or_path_failure"
+      ],
+      "supporting_canonical_evidence": [
+        "config_entry_reauthentication_required",
+        "entity_unavailable_state",
+        "mikrotik_api_connection_state"
+      ],
+      "title": "Network path failure",
+      "verification": [
+        "verification__complete_and_verify_reauthentication_safely",
+        "verification__diagnose_mikrotik_api_path_safely",
+        "verification__inspect_config_entry_lifecycle_before_change",
+        "verification__verify_mikrotik_permissions_and_capabilities",
+        "verification__verify_mikrotik_presence_inputs"
+      ]
+    }
+  ],
+  "canonical_evidence": [
+    {
+      "ambiguous": false,
+      "canonical_ids": [
+        "mikrotik_api_connection_state"
+      ],
+      "local_evidence_id": "mikrotik_api_unreachable",
+      "status": "matched"
+    },
+    {
+      "ambiguous": false,
+      "canonical_ids": [
+        "config_entry_reauthentication_required"
+      ],
+      "local_evidence_id": "reauthentication_required",
+      "status": "matched"
+    },
+    {
+      "ambiguous": false,
+      "canonical_ids": [
+        "entity_unavailable_state"
+      ],
+      "local_evidence_id": "entity_unavailable",
+      "status": "matched"
+    }
+  ],
+  "confirmed_candidates": [],
+  "contract_version": "1.0.0",
+  "health_score_impact": null,
+  "local_evidence": [
+    {
+      "details": "Pilot fixture only",
+      "evidence_id": "mikrotik_api_unreachable",
+      "state": "observed"
+    },
+    {
+      "details": "Unknown is preserved",
+      "evidence_id": "reauthentication_required",
+      "state": "unknown"
+    },
+    {
+      "details": "Does not prove cause",
+      "evidence_id": "entity_unavailable",
+      "state": "observed"
+    }
+  ],
+  "platform": "mikrotik",
+  "production_scoring_changed": false,
+  "scan_impact": "none",
+  "status": "candidate_only"
+}

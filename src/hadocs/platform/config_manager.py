@@ -5,8 +5,8 @@ import os
 from pathlib import Path
 from urllib.parse import urlparse
 
-from src.hadocs.runtime import RuntimeEnvironment, detect_runtime
-from src.hadocs.security.credential_store import (
+from hadocs.runtime import RuntimeEnvironment, detect_runtime
+from hadocs.security.credential_store import (
     inject_token_into_runtime_config,
     migrate_plaintext_token_from_config,
 )
@@ -21,6 +21,11 @@ DEFAULT_CONFIG = {
     "cache_dir": "cache",
     "save_raw_cache": False,
     "open_dashboard_after_scan": True,
+    "hask_database_enabled": False,
+    "hask_enabled": False,
+    "hask_preview_enabled": False,
+    "hask_candidate_evidence_enabled": False,
+    "hask_native_integration_status_enabled": False,
 }
 
 INSECURE_HTTP_WARNING = (
@@ -73,17 +78,53 @@ class ConfigManager:
         """Apply optional HADOCS_* environment variables."""
         result = dict(config or {})
 
-        mapping = {
+        text_mapping = {
             "HADOCS_HA_URL": "ha_url",
             "HADOCS_OUTPUT_DIR": "output_dir",
             "HADOCS_CACHE_DIR": "cache_dir",
             "HADOCS_PROJECT_NAME": "project_name",
+            "HADOCS_HASK_DATABASE_PATH": "hask_database_path",
+            "HADOCS_HASK_DATABASE_INSTALLATION_REF": (
+                "hask_database_installation_ref"
+            ),
+            "HADOCS_HASK_DATABASE_SECRET_BACKEND": (
+                "hask_database_secret_backend"
+            ),
+            "HADOCS_HASK_CREDENTIAL_STORE_PATH": (
+                "hask_database_credential_store_path"
+            ),
+            "HADOCS_HASK_BUNDLE_PATH": "hask_bundle_path",
         }
 
-        for environment_name, config_name in mapping.items():
+        for environment_name, config_name in text_mapping.items():
             value = os.environ.get(environment_name)
             if value:
                 result[config_name] = value.strip()
+
+        boolean_mapping = {
+            "HADOCS_HASK_DATABASE_ENABLED": "hask_database_enabled",
+            "HADOCS_HASK_ENABLED": "hask_enabled",
+            "HADOCS_HASK_PREVIEW_ENABLED": "hask_preview_enabled",
+            "HADOCS_HASK_CANDIDATE_EVIDENCE_ENABLED": (
+                "hask_candidate_evidence_enabled"
+            ),
+            "HADOCS_HASK_NATIVE_INTEGRATION_STATUS_ENABLED": (
+                "hask_native_integration_status_enabled"
+            ),
+        }
+        for environment_name, config_name in boolean_mapping.items():
+            value = os.environ.get(environment_name)
+            if value is None:
+                continue
+            normalized = value.strip().casefold()
+            if normalized in {"1", "true", "yes", "on"}:
+                result[config_name] = True
+            elif normalized in {"0", "false", "no", "off", ""}:
+                result[config_name] = False
+            else:
+                raise ValueError(
+                    f"{environment_name} must be a boolean value"
+                )
 
         token = os.environ.get("HADOCS_TOKEN")
         if token:

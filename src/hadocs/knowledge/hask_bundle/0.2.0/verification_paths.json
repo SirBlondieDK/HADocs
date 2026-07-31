@@ -1,0 +1,1419 @@
+{
+  "_generated": "scripts/build_hadocs_contract.py; DO NOT EDIT",
+  "artifact_kind": "verification_paths",
+  "contract_version": "1.1.0",
+  "items": [
+    {
+      "claims": [],
+      "id": "verification__audit_container_persistence",
+      "recommendation_id": "audit_container_persistence",
+      "references": {
+        "recommendations": [
+          "audit_container_persistence"
+        ],
+        "scenarios": []
+      },
+      "relationships": [],
+      "scenario_ids": [],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Verify those destinations are persistent and included in a tested backup without deleting or pruning containers or volumes."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__audit_custom_integration_compatibility",
+      "recommendation_id": "audit_custom_integration_compatibility",
+      "references": {
+        "recommendations": [
+          "audit_custom_integration_compatibility"
+        ],
+        "scenarios": []
+      },
+      "relationships": [],
+      "scenario_ids": [],
+      "type": "verification_path",
+      "verification_status": "incomplete",
+      "verification_steps": []
+    },
+    {
+      "claims": [],
+      "id": "verification__complete_and_verify_reauthentication_safely",
+      "recommendation_id": "complete_and_verify_reauthentication_safely",
+      "references": {
+        "recommendations": [
+          "complete_and_verify_reauthentication_safely"
+        ],
+        "scenarios": [
+          "scenario_reauthentication_or_external_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_reauthentication_or_external_failure"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Confirm that the flow is linked to the expected existing config entry and integration identity.",
+        "Confirm service reachability and account status through a trusted official interface when an external outage is plausible.",
+        "Verify that the flow updates the existing entry rather than creating a duplicate identity.",
+        "After completion, verify entry reload and loaded state, representative entity updates, and a safe action."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__create_or_verify_recent_backup",
+      "recommendation_id": "create_or_verify_recent_backup",
+      "references": {
+        "recommendations": [
+          "create_or_verify_recent_backup"
+        ],
+        "scenarios": [
+          "scenario_backup_creation_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_backup_creation_failure"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Check the last successful automatic-backup timestamp and the current creation state, stage, and non-secret failure context.",
+        "Verify the expected artifact separately at every intended recovery location; do not infer integrity or restorability from discovery."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__debug_template_with_input_context",
+      "recommendation_id": "debug_template_with_input_context",
+      "references": {
+        "recommendations": [
+          "debug_template_with_input_context"
+        ],
+        "scenarios": []
+      },
+      "relationships": [],
+      "scenario_ids": [],
+      "type": "verification_path",
+      "verification_status": "incomplete",
+      "verification_steps": []
+    },
+    {
+      "claims": [],
+      "id": "verification__diagnose_adguard_surfaces_safely",
+      "recommendation_id": "diagnose_adguard_surfaces_safely",
+      "references": {
+        "recommendations": [
+          "diagnose_adguard_surfaces_safely"
+        ],
+        "scenarios": [
+          "scenario_adguard_management_dns_or_upstream_failure",
+          "scenario_dns_filtering_api_or_client_path"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_adguard_management_dns_or_upstream_failure",
+        "scenario_dns_filtering_api_or_client_path"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Confirm that the target is the official AdGuard Home integration and its applicable AdGuard Home server, not AdGuard public DNS, a browser/desktop product, another resolver, reverse proxy, host or container runtime.",
+        "Compare management reachability, current entity operation and management-reported DNS-server state without treating one as a proxy for another.",
+        "Verify DNS resolution and filtering behavior separately using a privacy-safe test; do not retain queried domains, client identity, addresses, logs, lists or rules.",
+        "Verify recovery on the same supported surface that failed; success on one surface does not prove all other surfaces healthy."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__diagnose_backup_creation_safely",
+      "recommendation_id": "diagnose_backup_creation_safely",
+      "references": {
+        "recommendations": [
+          "diagnose_backup_creation_safely"
+        ],
+        "scenarios": [
+          "scenario_backup_creation_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_backup_creation_failure"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Confirm the expected artifact separately at each selected documented location; do not convert absence automatically into creation failure.",
+        "Confirm applicable storage availability without inventing a capacity threshold or attributing mount-point use to one workload."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__diagnose_backup_restore_safely",
+      "recommendation_id": "diagnose_backup_restore_safely",
+      "references": {
+        "recommendations": [
+          "diagnose_backup_restore_safely"
+        ],
+        "scenarios": [
+          "scenario_backup_exists_restore_unverified",
+          "scenario_backup_restore_failure",
+          "scenario_post_restore_recovery_validation"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_backup_exists_restore_unverified",
+        "scenario_backup_restore_failure",
+        "scenario_post_restore_recovery_validation"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Confirm the expected artifact is discoverable and the matching emergency kit or key is available, but never copy its contents into evidence or logs.",
+        "Verify that the documented current-system or onboarding workflow and available target storage apply to the installation method.",
+        "After a reported completion, check only the functions selected by the restore scope, including applicable Core, Supervisor, app, integration, storage, network, and radio boundaries.",
+        "Record pass, fail, partial, or not checked per recovery check; investigate failures independently and preserve evidence before retrying, deleting, resetting, or reinstalling."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__diagnose_config_entry_unload_reload_safely",
+      "recommendation_id": "diagnose_config_entry_unload_reload_safely",
+      "references": {
+        "recommendations": [
+          "diagnose_config_entry_unload_reload_safely"
+        ],
+        "scenarios": [
+          "scenario_config_entry_reload_availability_effects",
+          "scenario_config_entry_reload_phase_failure",
+          "scenario_config_entry_unload_failure",
+          "scenario_system_health_entity_divergence"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_config_entry_reload_availability_effects",
+        "scenario_config_entry_reload_phase_failure",
+        "scenario_config_entry_unload_failure",
+        "scenario_system_health_entity_divergence"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Use only integration-documented recovery appropriate to the evidenced phase; do not delete the entry, edit storage, disable security checks, or repeat restart/reload as a generic first step.",
+        "Verify recovery by confirming the final lifecycle state and separately observing a fresh representative entity update and one safe supported action when applicable."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__diagnose_dns_before_service_reset",
+      "recommendation_id": "diagnose_dns_before_service_reset",
+      "references": {
+        "recommendations": [
+          "diagnose_dns_before_service_reset"
+        ],
+        "scenarios": [
+          "scenario_discovery_or_downstream_setup_failure",
+          "scenario_dns_filtering_api_or_client_path"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_discovery_or_downstream_setup_failure",
+        "scenario_dns_filtering_api_or_client_path"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Confirm the configured DNS server is reachable.",
+        "Test required name resolution and response status behavior.",
+        "When filtering is involved, test the affected client resolver path separately from the server management API.",
+        "When discovery is involved, test unicast DNS separately from mDNS/DNS-SD and SSDP visibility."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__diagnose_docker_container_boundaries_safely",
+      "recommendation_id": "diagnose_docker_container_boundaries_safely",
+      "references": {
+        "recommendations": [
+          "diagnose_docker_container_boundaries_safely"
+        ],
+        "scenarios": [
+          "scenario_docker_container_boundary_divergence"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_docker_container_boundary_divergence"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Confirm whether ownership is user-managed Home Assistant Container, an external application, Home Assistant OS, or a Supervisor-managed App before selecting the diagnostic surface.",
+        "Compare configured resource boundaries and authoritative termination evidence before classifying resource pressure; do not infer out-of-memory termination from an ordinary exit.",
+        "Inspect only the least-sensitive relevant daemon, container stdout/stderr, health-check or application log surface and retain classifications rather than literal sensitive output."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__diagnose_esphome_lifecycle_safely",
+      "recommendation_id": "diagnose_esphome_lifecycle_safely",
+      "references": {
+        "recommendations": [
+          "diagnose_esphome_lifecycle_safely"
+        ],
+        "scenarios": [
+          "scenario_discovery_or_downstream_setup_failure",
+          "scenario_esphome_lifecycle_divergence",
+          "scenario_mqtt_broker_or_network_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_discovery_or_downstream_setup_failure",
+        "scenario_esphome_lifecycle_divergence",
+        "scenario_mqtt_broker_or_network_failure"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Record parsing/validation, code-generation, compilation and artifact-production results separately without retaining YAML, secrets, paths, logs or firmware.",
+        "Verify API reachability, protocol/session and encryption compatibility separately without retaining endpoints, payloads or keys.",
+        "Verify discovery/manual setup, config-entry state, device connection and entity availability independently."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__diagnose_esphome_power_and_network",
+      "recommendation_id": "diagnose_esphome_power_and_network",
+      "references": {
+        "recommendations": [
+          "diagnose_esphome_power_and_network"
+        ],
+        "scenarios": []
+      },
+      "relationships": [],
+      "scenario_ids": [],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Check device power and network presence.",
+        "Verify host, native-API port, and encryption credentials without assuming firmware failure."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__diagnose_frigate_pipeline_safely",
+      "recommendation_id": "diagnose_frigate_pipeline_safely",
+      "references": {
+        "recommendations": [
+          "diagnose_frigate_pipeline_safely"
+        ],
+        "scenarios": [
+          "scenario_container_state_after_recreation",
+          "scenario_frigate_pipeline_surface_divergence",
+          "scenario_mqtt_broker_or_network_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_container_state_after_recreation",
+        "scenario_frigate_pipeline_surface_divergence",
+        "scenario_mqtt_broker_or_network_failure"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Verify source acquisition, detect-role and record-role behavior independently, and treat optional go2rtc/restream as its own layer when applicable.",
+        "Distinguish detector availability from motion, object analysis, tracking and review creation; do not classify absent activity as failure without a controlled expected test event.",
+        "Verify snapshots, recordings, media storage and database applicability independently; do not delete or recreate persistence as a generic first action.",
+        "Verify Frigate API separately from MQTT, then distinguish broker reachability, Frigate publication, Home Assistant consumption and entity/media representation.",
+        "Preserve evidence before restart or configuration changes, and verify recovery on the same supported surface without generalizing to the full pipeline."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__diagnose_hue_connection_path_safely",
+      "recommendation_id": "diagnose_hue_connection_path_safely",
+      "references": {
+        "recommendations": [
+          "diagnose_hue_connection_path_safely"
+        ],
+        "scenarios": [
+          "scenario_hue_bridge_or_device_failure",
+          "scenario_zigbee2mqtt_pipeline_divergence"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_hue_bridge_or_device_failure",
+        "scenario_zigbee2mqtt_pipeline_divergence"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "For native Hue, verify discovery/manual host, bridge reachability, local API, authorization and config-entry state separately without retaining the host, bridge identifier or application key.",
+        "Compare bridge-wide evidence with bridge-reported child reachability and Home Assistant entity availability before selecting a bridge, Zigbee or physical-device branch.",
+        "For Hue Bridge Matter exposure, verify bridge capability, Matter commissioning/fabric and bridged exposure separately from underlying bridge Zigbee and native Hue API state.",
+        "Apply native Matter checks only when authoritative product evidence identifies a Matter-enabled Hue bulb and keep Thread Border Router and Matter fabric evidence separate.",
+        "Check bridge generation, product class and path-specific update applicability before considering an update; do not update speculatively."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__diagnose_jellyfin_surfaces_safely",
+      "recommendation_id": "diagnose_jellyfin_surfaces_safely",
+      "references": {
+        "recommendations": [
+          "diagnose_jellyfin_surfaces_safely"
+        ],
+        "scenarios": [
+          "scenario_jellyfin_runtime_surface_degradation",
+          "scenario_jellyfin_setup_or_authentication_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_jellyfin_runtime_surface_degradation",
+        "scenario_jellyfin_setup_or_authentication_failure"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Confirm that the target is the official Jellyfin integration and its configured Jellyfin Server, not a client, generic media player, DLNA, Cast, Kodi, Plex, Emby, Music Assistant, proxy, host/container or storage backend.",
+        "Compare integration update, entity availability, current session presence and playback category independently; treat no session or no active playback as neutral.",
+        "Verify recovery on the same supported surface that failed; avoid integration recreation, database deletion, library rebuild, container recreation or permission expansion as generic first actions."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__diagnose_matter_dependency_layers",
+      "recommendation_id": "diagnose_matter_dependency_layers",
+      "references": {
+        "recommendations": [
+          "diagnose_matter_dependency_layers"
+        ],
+        "scenarios": []
+      },
+      "relationships": [],
+      "scenario_ids": [],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Confirm the device actually supports Matter.",
+        "Verify the Matter integration and Matter Server connection.",
+        "For Thread devices, verify border router, credentials, IPv6, and phone proximity separately."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__diagnose_mikrotik_api_path_safely",
+      "recommendation_id": "diagnose_mikrotik_api_path_safely",
+      "references": {
+        "recommendations": [
+          "diagnose_mikrotik_api_path_safely"
+        ],
+        "scenarios": [
+          "scenario_mikrotik_api_auth_or_path_failure",
+          "scenario_mikrotik_runtime_or_sensor_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_mikrotik_api_auth_or_path_failure",
+        "scenario_mikrotik_runtime_or_sensor_failure"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Test DNS only for a hostname, then route, RouterOS API service exposure, configured port and plain-versus-API-SSL mode as separate layers.",
+        "Apply only the identified recovery, then verify entry load, repeated fresh coordinator updates, entity availability and an independent safe router observation."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__diagnose_mqtt_broker_path",
+      "recommendation_id": "diagnose_mqtt_broker_path",
+      "references": {
+        "recommendations": [
+          "diagnose_mqtt_broker_path"
+        ],
+        "scenarios": []
+      },
+      "relationships": [],
+      "scenario_ids": [],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Confirm the configured broker endpoint and whether the broker is running.",
+        "Test name resolution and network reachability from the Home Assistant context.",
+        "Review authentication and TLS validation without disabling security as a first response."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__diagnose_mqtt_layers_safely",
+      "recommendation_id": "diagnose_mqtt_layers_safely",
+      "references": {
+        "recommendations": [
+          "diagnose_mqtt_layers_safely"
+        ],
+        "scenarios": [
+          "scenario_mqtt_broker_or_network_failure",
+          "scenario_mqtt_layered_boundary_divergence"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_mqtt_broker_or_network_failure",
+        "scenario_mqtt_layered_boundary_divergence"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Confirm the applicable broker listener and then evaluate DNS applicability, route, TCP and optional TLS independently."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__diagnose_music_assistant_surfaces_safely",
+      "recommendation_id": "diagnose_music_assistant_surfaces_safely",
+      "references": {
+        "recommendations": [
+          "diagnose_music_assistant_surfaces_safely"
+        ],
+        "scenarios": [
+          "scenario_music_assistant_surface_divergence"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_music_assistant_surface_divergence"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Identify the selected Music Assistant Server deployment and verify runtime state separately from privacy-safe API connection outcome.",
+        "Verify each applicable provider path's local, cloud, account, storage, network and DNS dependencies from its current authoritative documentation.",
+        "Compare request, queue state, player acknowledgement, stream creation, stream delivery, reported playback and endpoint-level audible evidence separately."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__diagnose_nextcloud_service_layers_safely",
+      "recommendation_id": "diagnose_nextcloud_service_layers_safely",
+      "references": {
+        "recommendations": [
+          "diagnose_nextcloud_service_layers_safely"
+        ],
+        "scenarios": [
+          "scenario_nextcloud_monitoring_or_dependency_divergence"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_nextcloud_monitoring_or_dependency_divergence"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Verify the Monitoring path, authentication and documented authorization scope separately; do not broaden access or disable TLS verification as a generic test.",
+        "Check configured background-job mode separately from attributable execution evidence; apply no invented freshness interval."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__diagnose_proxmox_infrastructure_safely",
+      "recommendation_id": "diagnose_proxmox_infrastructure_safely",
+      "references": {
+        "recommendations": [
+          "diagnose_proxmox_infrastructure_safely"
+        ],
+        "scenarios": [
+          "scenario_proxmox_api_node_or_guest_state"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_proxmox_api_node_or_guest_state"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Verify API reachability separately from TLS trust, authentication and effective authorization; do not disable certificate verification or broaden privileges as a generic test.",
+        "Verify intended guest runtime state before treating stopped or suspended status as a fault, then use guest- or application-level evidence for workload health.",
+        "Preserve evidence before node reboot, guest restart, migration, storage or cluster change and verify recovery on the same attributable surface."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__diagnose_reolink_runtime_surfaces_safely",
+      "recommendation_id": "diagnose_reolink_runtime_surfaces_safely",
+      "references": {
+        "recommendations": [
+          "diagnose_reolink_runtime_surfaces_safely"
+        ],
+        "scenarios": [
+          "scenario_reolink_entity_stream_or_event_degradation"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_reolink_entity_stream_or_event_degradation"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Compare phase-scoped connection outcome, generic entity availability, and directly observed supported privacy mode.",
+        "Verify current official product and feature applicability before treating a missing entity or media surface as a fault.",
+        "Preserve evidence before reconfiguration and verify recovery on the same supported surface that failed."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__diagnose_reolink_setup_path_safely",
+      "recommendation_id": "diagnose_reolink_setup_path_safely",
+      "references": {
+        "recommendations": [
+          "diagnose_reolink_setup_path_safely"
+        ],
+        "scenarios": [
+          "scenario_reolink_discovery_setup_or_authentication_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_reolink_discovery_setup_or_authentication_failure"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Verify the exact product category and whether Home Assistant should connect directly or through an NVR/Home Hub using current official information.",
+        "Confirm that device initialization is complete and that the supported device-local admin credential path—not a cloud account—is being used, without recording credentials.",
+        "Preserve evidence before reconfiguration and verify recovery with successful setup plus an initial supported state refresh."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__diagnose_shelly_generation_transport_safely",
+      "recommendation_id": "diagnose_shelly_generation_transport_safely",
+      "references": {
+        "recommendations": [
+          "diagnose_shelly_generation_transport_safely"
+        ],
+        "scenarios": [
+          "scenario_shelly_push_or_generation_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_shelly_push_or_generation_failure"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "For supported Gen1 only, verify the local HTTP request path separately from CoIoT enablement, peer mode, update delivery, freshness and any Repair issue.",
+        "For supported Gen2+ only, verify RPC channel, request, correlated result/error and component method separately from WebSocket establishment and notification delivery.",
+        "Compare device-wide evidence with the affected component, channel and entity before selecting a whole-device branch.",
+        "Verify authentication as its own phase and never log, export, reproduce or disable credentials.",
+        "Apply Bluetooth checks only to documented non-battery Gen2+ proxy behavior or an explicit BLU/BTHome/gateway path; do not infer Bluetooth control transport.",
+        "Apply Matter checks only after official product- and generation-specific evidence establishes native Matter applicability and then use the separate Matter integration boundary.",
+        "Compare installed firmware only with exact documented generation/product minimums and do not update speculatively."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__diagnose_sonoff_connection_path_safely",
+      "recommendation_id": "diagnose_sonoff_connection_path_safely",
+      "references": {
+        "recommendations": [
+          "diagnose_sonoff_connection_path_safely"
+        ],
+        "scenarios": [
+          "scenario_sonoff_connection_path_mismatch",
+          "scenario_sonoff_path_availability_or_feature_mismatch"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_sonoff_connection_path_mismatch",
+        "scenario_sonoff_path_availability_or_feature_mismatch"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Confirm official versus community/custom ownership and verify exact-device applicability using the authoritative project for that path.",
+        "Verify recovery on the same path and operation; explain possible identity, entity, automation and feature changes before any path migration."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__diagnose_system_health_entity_divergence",
+      "recommendation_id": "diagnose_system_health_entity_divergence",
+      "references": {
+        "recommendations": [
+          "diagnose_system_health_entity_divergence"
+        ],
+        "scenarios": [
+          "scenario_config_entry_reload_availability_effects",
+          "scenario_coordinator_freshness_unknown",
+          "scenario_coordinator_runtime_update_failure",
+          "scenario_system_health_entity_divergence"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_config_entry_reload_availability_effects",
+        "scenario_coordinator_freshness_unknown",
+        "scenario_coordinator_runtime_update_failure",
+        "scenario_system_health_entity_divergence"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Check whether the entity exists in the runtime state machine, whether its entity-registry entry is enabled, and whether that entry links to the expected config entry and device; do not edit registry storage.",
+        "Compare the backend entity state with the current frontend presentation; record a frontend-only divergence without treating UI or cache state as a root cause.",
+        "Test the actual service or device path with an integration-supported, non-destructive check where available; keep endpoint, service, device, and entity reachability conclusions separate.",
+        "Verify recovery independently by refreshing System Health, confirming the config-entry state, observing a fresh entity update, and testing one safe representative action where the entity supports control."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__diagnose_tplink_runtime_state_safely",
+      "recommendation_id": "diagnose_tplink_runtime_state_safely",
+      "references": {
+        "recommendations": [
+          "diagnose_tplink_runtime_state_safely"
+        ],
+        "scenarios": [
+          "scenario_tplink_runtime_update_or_availability_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_tplink_runtime_update_or_availability_failure"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Compare the attributable authentication result, communication result, coordinator update-success context, and entity availability; do not derive one from another.",
+        "Verify the exact current supported model and feature boundary, including documented removed or limited entities, before treating absence as device failure.",
+        "Preserve evidence before reconfiguration and verify recovery with a successful update plus current behavior of the affected supported capability."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__diagnose_tplink_setup_path_safely",
+      "recommendation_id": "diagnose_tplink_setup_path_safely",
+      "references": {
+        "recommendations": [
+          "diagnose_tplink_setup_path_safely"
+        ],
+        "scenarios": [
+          "scenario_tplink_discovery_or_setup_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_tplink_discovery_or_setup_failure"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Confirm that the visible product belongs to the current official TP-Link Smart Home supported-device list and distinguish the Tapo virtual presentation from the tplink runtime.",
+        "Review only redacted integration diagnostics, remove credentials and identifiers, and verify recovery through config-entry loading plus an attributable device update."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__diagnose_tuya_connection_path_safely",
+      "recommendation_id": "diagnose_tuya_connection_path_safely",
+      "references": {
+        "recommendations": [
+          "diagnose_tuya_connection_path_safely"
+        ],
+        "scenarios": [
+          "scenario_tuya_connection_path_or_exposure_mismatch"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_tuya_connection_path_or_exposure_mismatch"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Verify exact-device handler, converter, certification or project applicability using the authority for the selected path.",
+        "Verify recovery on the same path and phase; explain possible identity and feature discontinuity before any migration."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__diagnose_unifi_controller_path",
+      "recommendation_id": "diagnose_unifi_controller_path",
+      "references": {
+        "recommendations": [
+          "diagnose_unifi_controller_path"
+        ],
+        "scenarios": [
+          "scenario_unifi_controller_available_device_or_action_failure",
+          "scenario_unifi_controller_or_lifecycle_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_unifi_controller_available_device_or_action_failure",
+        "scenario_unifi_controller_or_lifecycle_failure"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Test DNS only when a hostname is configured, then test routing, TCP reachability, TLS validation, API login, selected-site visibility, and WebSocket state as separate layers.",
+        "Compare controller availability with the affected managed device's power, address, VLAN, routing, inform, adoption, provisioning, and upgrade state.",
+        "Apply only the recovery documented for the identified layer, then verify config-entry load, WebSocket restoration, fresh events, entity availability, and an independent safe device observation."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__diagnose_unifiprotect_surfaces_safely",
+      "recommendation_id": "diagnose_unifiprotect_surfaces_safely",
+      "references": {
+        "recommendations": [
+          "diagnose_unifiprotect_surfaces_safely"
+        ],
+        "scenarios": [
+          "scenario_unifiprotect_runtime_surface_degradation",
+          "scenario_unifiprotect_setup_or_authentication_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_unifiprotect_runtime_surface_degradation",
+        "scenario_unifiprotect_setup_or_authentication_failure"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Confirm that the target is the Protect application on a supported UniFi OS Console and not UniFi Network, Site Manager, ONVIF, Frigate, go2rtc, Reolink, or another integration.",
+        "Verify current official minimum Protect version, Stable-channel scope, category capability, and console-local user/API-key requirements without recording secret or identifying values.",
+        "Preserve evidence before reconfiguration and verify recovery on the same supported surface that failed."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__diagnose_zigbee2mqtt_pipeline_safely",
+      "recommendation_id": "diagnose_zigbee2mqtt_pipeline_safely",
+      "references": {
+        "recommendations": [
+          "diagnose_zigbee2mqtt_pipeline_safely"
+        ],
+        "scenarios": [
+          "scenario_mqtt_broker_or_network_failure",
+          "scenario_zigbee2mqtt_pipeline_divergence",
+          "scenario_zigbee_instability_competing_causes"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_mqtt_broker_or_network_failure",
+        "scenario_zigbee2mqtt_pipeline_divergence",
+        "scenario_zigbee_instability_competing_causes"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Identify the selected deployment and verify process, application-startup and frontend states independently.",
+        "Verify coordinator hardware/firmware applicability, transport category and adapter-initialization result without retaining identifiers, paths, URLs or firmware versions.",
+        "Verify broker reachability, Zigbee2MQTT client connection and publication separately from Home Assistant MQTT connection, discovery processing and entity availability."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__diagnose_zigbee_scope_before_repair",
+      "recommendation_id": "diagnose_zigbee_scope_before_repair",
+      "references": {
+        "recommendations": [
+          "diagnose_zigbee_scope_before_repair"
+        ],
+        "scenarios": []
+      },
+      "relationships": [],
+      "scenario_ids": [],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Verify coordinator and mesh conditions before removing or re-pairing devices."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__inspect_automation_trace_path",
+      "recommendation_id": "inspect_automation_trace_path",
+      "references": {
+        "recommendations": [
+          "inspect_automation_trace_path"
+        ],
+        "scenarios": []
+      },
+      "relationships": [],
+      "scenario_ids": [],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Open the relevant retained trace and confirm whether the expected trigger appears.",
+        "If no trace is retained, verify YAML automation ID and trace-retention configuration before concluding that no run occurred."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__inspect_config_entry_lifecycle_before_change",
+      "recommendation_id": "inspect_config_entry_lifecycle_before_change",
+      "references": {
+        "recommendations": [
+          "inspect_config_entry_lifecycle_before_change"
+        ],
+        "scenarios": [
+          "scenario_config_entry_migration_after_core_update",
+          "scenario_config_entry_reload_phase_failure",
+          "scenario_config_entry_unload_failure",
+          "scenario_disabled_not_loaded_or_unavailable"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_config_entry_migration_after_core_update",
+        "scenario_config_entry_reload_phase_failure",
+        "scenario_config_entry_unload_failure",
+        "scenario_disabled_not_loaded_or_unavailable"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Check whether the integration supports unload, reload, reconfigure, or reauth and use only the action matching the observed branch.",
+        "Verify the final config-entry state, expected entities, and a safe representative action after recovery."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__inspect_coordinator_update_state",
+      "recommendation_id": "inspect_coordinator_update_state",
+      "references": {
+        "recommendations": [
+          "inspect_coordinator_update_state"
+        ],
+        "scenarios": [
+          "scenario_coordinator_first_refresh_failure",
+          "scenario_coordinator_freshness_unknown",
+          "scenario_coordinator_runtime_update_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_coordinator_first_refresh_failure",
+        "scenario_coordinator_freshness_unknown",
+        "scenario_coordinator_runtime_update_failure"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Confirm whether the observation concerns config-entry first refresh or a later runtime update.",
+        "Compare the preserved exception with the integration-defined external dependency and test only that documented path using a non-destructive supported check.",
+        "Verify recovery with a later successful refresh and a representative fresh entity update before closing the incident."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__inspect_repair_issue_context",
+      "recommendation_id": "inspect_repair_issue_context",
+      "references": {
+        "recommendations": [
+          "inspect_repair_issue_context"
+        ],
+        "scenarios": [
+          "scenario_repair_issue_persists"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_repair_issue_persists"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Confirm that the issue is actionable and read its integration-specific explanation before changing configuration.",
+        "If a repair flow is offered, verify prerequisites and preserve a recoverable configuration or backup appropriate to the proposed change.",
+        "After the flow or manual fix, verify both the underlying behavior and issue deletion; do not treat either one alone as complete recovery."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__inspect_supervisor_job_context",
+      "recommendation_id": "inspect_supervisor_job_context",
+      "references": {
+        "recommendations": [
+          "inspect_supervisor_job_context"
+        ],
+        "scenarios": [
+          "scenario_supervisor_job_failure_context"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_supervisor_job_failure_context"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Verify the next observable job completion state and named-layer evidence before treating a retry or recovery action as successful."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__inspect_supervisor_resolution_state",
+      "recommendation_id": "inspect_supervisor_resolution_state",
+      "references": {
+        "recommendations": [
+          "inspect_supervisor_resolution_state"
+        ],
+        "scenarios": [
+          "scenario_supervisor_job_failure_context"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_supervisor_job_failure_context"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Record the relevant unsupported, unhealthy, issue, suggestion, and check entries with their non-secret type, context, reference, and identity fields."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__inspect_zigbee_radio_environment",
+      "recommendation_id": "inspect_zigbee_radio_environment",
+      "references": {
+        "recommendations": [
+          "inspect_zigbee_radio_environment"
+        ],
+        "scenarios": []
+      },
+      "relationships": [],
+      "scenario_ids": [],
+      "type": "verification_path",
+      "verification_status": "incomplete",
+      "verification_steps": []
+    },
+    {
+      "claims": [],
+      "id": "verification__investigate_host_disk_usage",
+      "recommendation_id": "investigate_host_disk_usage",
+      "references": {
+        "recommendations": [
+          "investigate_host_disk_usage"
+        ],
+        "scenarios": []
+      },
+      "relationships": [],
+      "scenario_ids": [],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Confirm the affected mount point and whether the high value persists."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__investigate_recorder_write_failure",
+      "recommendation_id": "investigate_recorder_write_failure",
+      "references": {
+        "recommendations": [
+          "investigate_recorder_write_failure"
+        ],
+        "scenarios": []
+      },
+      "relationships": [],
+      "scenario_ids": [],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Check free storage and backend reachability without deleting the database."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__perform_unifi_privileged_action_safely",
+      "recommendation_id": "perform_unifi_privileged_action_safely",
+      "references": {
+        "recommendations": [
+          "perform_unifi_privileged_action_safely"
+        ],
+        "scenarios": [
+          "scenario_unifi_authentication_or_permission_failure",
+          "scenario_unifi_controller_available_device_or_action_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_unifi_authentication_or_permission_failure",
+        "scenario_unifi_controller_available_device_or_action_failure"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Confirm the selected local user has the required site and write permission and that the target device, port, firmware state, and action are supported.",
+        "Verify controller acknowledgement, fresh event state, port and PoE recovery, device reachability, downstream service recovery, and Home Assistant entity state independently."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__protect_and_test_backup_restore",
+      "recommendation_id": "protect_and_test_backup_restore",
+      "references": {
+        "recommendations": [
+          "protect_and_test_backup_restore"
+        ],
+        "scenarios": [
+          "scenario_backup_exists_restore_unverified",
+          "scenario_post_restore_recovery_validation"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_backup_exists_restore_unverified",
+        "scenario_post_restore_recovery_validation"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Confirm the backup can be downloaded from its storage location.",
+        "Confirm matching encryption or emergency-kit material is preserved outside Home Assistant without exposing it.",
+        "Confirm the documented current-system or onboarding workflow, target storage, credentials, and selected content apply to the installation method.",
+        "After an actual restore, record installation-specific recovery checks separately from the restore result."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__restrict_proxmox_integration_privileges",
+      "recommendation_id": "restrict_proxmox_integration_privileges",
+      "references": {
+        "recommendations": [
+          "restrict_proxmox_integration_privileges"
+        ],
+        "scenarios": [
+          "scenario_proxmox_api_node_or_guest_state"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_proxmox_api_node_or_guest_state"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Grant the minimum role needed, verify expected entities, and tighten custom permissions where practical."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__review_diagnostics_before_sharing",
+      "recommendation_id": "review_diagnostics_before_sharing",
+      "references": {
+        "recommendations": [
+          "review_diagnostics_before_sharing"
+        ],
+        "scenarios": [
+          "scenario_diagnostic_payload_incomplete"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_diagnostic_payload_incomplete"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Verify that the recipient can diagnose with the reduced payload; provide additional data only when justified."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__review_recorder_retention_and_inclusions",
+      "recommendation_id": "review_recorder_retention_and_inclusions",
+      "references": {
+        "recommendations": [
+          "review_recorder_retention_and_inclusions"
+        ],
+        "scenarios": []
+      },
+      "relationships": [],
+      "scenario_ids": [],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Compare growth with the configured retention period and purge behavior."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__separate_broker_from_integration_diagnosis",
+      "recommendation_id": "separate_broker_from_integration_diagnosis",
+      "references": {
+        "recommendations": [
+          "separate_broker_from_integration_diagnosis"
+        ],
+        "scenarios": []
+      },
+      "relationships": [],
+      "scenario_ids": [],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Check the Home Assistant client connection independently from device availability."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__stop_and_trace_automation_feedback",
+      "recommendation_id": "stop_and_trace_automation_feedback",
+      "references": {
+        "recommendations": [
+          "stop_and_trace_automation_feedback"
+        ],
+        "scenarios": []
+      },
+      "relationships": [],
+      "scenario_ids": [],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Add guards or redesign the feedback path after confirming causality."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__verify_coordinator_data_freshness",
+      "recommendation_id": "verify_coordinator_data_freshness",
+      "references": {
+        "recommendations": [
+          "verify_coordinator_data_freshness"
+        ],
+        "scenarios": [
+          "scenario_coordinator_freshness_unknown",
+          "scenario_coordinator_runtime_update_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_coordinator_freshness_unknown",
+        "scenario_coordinator_runtime_update_failure"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Confirm whether the integration documents polling, push, or hybrid updates and record its supported or configured cadence without converting it into a universal threshold.",
+        "Check whether polling has active listeners, because the documented coordinator schedules periodic polling only while subscribed listeners exist.",
+        "Verify that a representative entity receives fresh source-backed data; an unchanged value can still be a successful update and must not be labeled stale solely because it did not change."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__verify_database_backend_connectivity",
+      "recommendation_id": "verify_database_backend_connectivity",
+      "references": {
+        "recommendations": [
+          "verify_database_backend_connectivity"
+        ],
+        "scenarios": []
+      },
+      "relationships": [],
+      "scenario_ids": [],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Confirm the configured database engine is supported.",
+        "Verify the database exists and the Home Assistant account has required permissions.",
+        "Test network and DNS paths separately from recorder configuration."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__verify_home_assistant_os_update_state",
+      "recommendation_id": "verify_home_assistant_os_update_state",
+      "references": {
+        "recommendations": [
+          "verify_home_assistant_os_update_state"
+        ],
+        "scenarios": [
+          "scenario_home_assistant_os_update_not_completed"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_home_assistant_os_update_not_completed"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Verify active and inactive slot state, last-boot status, and installed version after the update attempt."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__verify_mikrotik_permissions_and_capabilities",
+      "recommendation_id": "verify_mikrotik_permissions_and_capabilities",
+      "references": {
+        "recommendations": [
+          "verify_mikrotik_permissions_and_capabilities"
+        ],
+        "scenarios": [
+          "scenario_mikrotik_api_auth_or_path_failure",
+          "scenario_mikrotik_runtime_or_sensor_failure"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_mikrotik_api_auth_or_path_failure",
+        "scenario_mikrotik_runtime_or_sensor_failure"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Compare the current feature with documented read, api and test policy requirements without recording account or network details.",
+        "Do not assign broad or full privileges merely to test a hypothesis.",
+        "After a bounded correction, verify the specific command, repeated polling and only the expected entity or tracker behavior."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__verify_mikrotik_presence_inputs",
+      "recommendation_id": "verify_mikrotik_presence_inputs",
+      "references": {
+        "recommendations": [
+          "verify_mikrotik_presence_inputs"
+        ],
+        "scenarios": [
+          "scenario_mikrotik_presence_ambiguity"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_mikrotik_presence_ambiguity"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Compare last-seen age with the configured detection interval and separate not_home from coordinator unavailable.",
+        "Verify client reachability or presence through an independent non-destructive observation without treating either as physical-location proof.",
+        "Change source or ARP options only for the evidenced failure branch, then verify across multiple polling intervals."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__verify_recorder_maintenance_space",
+      "recommendation_id": "verify_recorder_maintenance_space",
+      "references": {
+        "recommendations": [
+          "verify_recorder_maintenance_space"
+        ],
+        "scenarios": []
+      },
+      "relationships": [],
+      "scenario_ids": [],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Compare free space with the current database size before starting maintenance."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__verify_supported_upgrade_path",
+      "recommendation_id": "verify_supported_upgrade_path",
+      "references": {
+        "recommendations": [
+          "verify_supported_upgrade_path"
+        ],
+        "scenarios": []
+      },
+      "relationships": [],
+      "scenario_ids": [],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Confirm the target is offered for the affected component."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__verify_thread_border_router_and_credentials",
+      "recommendation_id": "verify_thread_border_router_and_credentials",
+      "references": {
+        "recommendations": [
+          "verify_thread_border_router_and_credentials"
+        ],
+        "scenarios": []
+      },
+      "relationships": [],
+      "scenario_ids": [],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Confirm Home Assistant knows the same network credentials.",
+        "Verify a usable border router and local IPv6 path."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__verify_unifi_presence_inputs",
+      "recommendation_id": "verify_unifi_presence_inputs",
+      "references": {
+        "recommendations": [
+          "verify_unifi_presence_inputs"
+        ],
+        "scenarios": [
+          "scenario_unifi_presence_ambiguity"
+        ]
+      },
+      "relationships": [],
+      "scenario_ids": [
+        "scenario_unifi_presence_ambiguity"
+      ],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Check roaming and delayed controller disconnect, the wired-client workaround, tracking options, multiple interfaces, and private or randomized MAC identity continuity.",
+        "Compare controller client state with a fresh network observation without treating either as proof of a person's physical location.",
+        "After a targeted change, verify a disconnect and reconnect cycle, fresh last-seen data, expiry behavior, and automation behavior separately."
+      ]
+    },
+    {
+      "claims": [],
+      "id": "verification__verify_zigbee_coordinator_path",
+      "recommendation_id": "verify_zigbee_coordinator_path",
+      "references": {
+        "recommendations": [
+          "verify_zigbee_coordinator_path"
+        ],
+        "scenarios": []
+      },
+      "relationships": [],
+      "scenario_ids": [],
+      "type": "verification_path",
+      "verification_status": "complete",
+      "verification_steps": [
+        "Confirm the expected adapter identity and path."
+      ]
+    }
+  ],
+  "metadata": {
+    "incomplete_count": 3
+  }
+}

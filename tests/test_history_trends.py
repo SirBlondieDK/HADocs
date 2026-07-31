@@ -1,4 +1,4 @@
-from src.hadocs.core.history import build_trend_summary, compare_snapshots, sparkline
+from hadocs.core.history import build_trend_summary, compare_snapshots, sparkline
 
 
 def test_sparkline_returns_text():

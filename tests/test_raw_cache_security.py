@@ -1,4 +1,4 @@
-from src.hadocs.utils.config import DEFAULT_CONFIG
+from hadocs.utils.config import DEFAULT_CONFIG
 
 
 def test_raw_cache_is_disabled_by_default():

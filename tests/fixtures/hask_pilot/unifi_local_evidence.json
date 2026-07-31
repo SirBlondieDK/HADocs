@@ -1,0 +1,5 @@
+[
+  {"evidence_id": "unifi_controller_unreachable", "state": "observed", "details": "Pilot fixture only"},
+  {"evidence_id": "config_entry_setup_retry", "state": "observed", "details": "Pilot fixture only"},
+  {"evidence_id": "entity_unavailable", "state": "observed", "details": "Does not prove cause"}
+]

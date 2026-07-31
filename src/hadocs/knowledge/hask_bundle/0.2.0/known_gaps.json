@@ -1,0 +1,565 @@
+{
+  "_generated": "scripts/build_hadocs_contract.py; DO NOT EDIT",
+  "artifact_kind": "known_gaps",
+  "contract_version": "1.1.0",
+  "items": [
+    {
+      "claim_ref": "automation_trace_store__trace_content_and_retention",
+      "claims": [],
+      "id": "gap__automation_trace_store__trace_content_and_retention",
+      "record_id": "automation_trace_store",
+      "references": {
+        "claims": [
+          "automation_trace_store__trace_content_and_retention"
+        ]
+      },
+      "relationships": [],
+      "statement": "Absence of a retained trace does not prove the automation never ran; retention and missing YAML IDs can remove diagnostic visibility.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "automation_trace_trigger_seen__trace_records_trigger",
+      "claims": [],
+      "id": "gap__automation_trace_trigger_seen__trace_records_trigger",
+      "record_id": "automation_trace_trigger_seen",
+      "references": {
+        "claims": [
+          "automation_trace_trigger_seen__trace_records_trigger"
+        ]
+      },
+      "relationships": [],
+      "statement": "Trace retention gaps or missing YAML IDs can make this observation unavailable.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "backup_creation_failure__failure_is_outcome",
+      "claims": [],
+      "id": "gap__backup_creation_failure__failure_is_outcome",
+      "record_id": "backup_creation_failure",
+      "references": {
+        "claims": [
+          "backup_creation_failure__failure_is_outcome"
+        ]
+      },
+      "relationships": [],
+      "statement": "Do not infer one cause from the generic failure state or from absence of an expected artifact.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "backup_missing__evidence_boundary",
+      "claims": [],
+      "id": "gap__backup_missing__evidence_boundary",
+      "record_id": "backup_missing",
+      "references": {
+        "claims": [
+          "backup_missing__evidence_boundary"
+        ]
+      },
+      "relationships": [],
+      "statement": "A location listing or access failure can hide an artifact; absence must be evaluated across the configured methods and selected locations.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "backup_not_created__causal_boundary",
+      "claims": [],
+      "id": "gap__backup_not_created__causal_boundary",
+      "record_id": "backup_not_created",
+      "references": {
+        "claims": [
+          "backup_not_created__causal_boundary"
+        ]
+      },
+      "relationships": [],
+      "statement": "This record does not identify storage, network, permission, filesystem, app, database, Supervisor, hardware, or corruption as the underlying cause.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "config_entry_not_loaded__not_loaded_state_scope",
+      "claims": [],
+      "id": "gap__config_entry_not_loaded__not_loaded_state_scope",
+      "record_id": "config_entry_not_loaded",
+      "references": {
+        "claims": [
+          "config_entry_not_loaded__not_loaded_state_scope"
+        ]
+      },
+      "relationships": [],
+      "statement": "A not-loaded entry may be intentional or transitional; absence of runtime entities does not by itself imply failure.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "diagnose_system_health_entity_divergence__layered_divergence_diagnosis",
+      "claims": [],
+      "id": "gap__diagnose_system_health_entity_divergence__layered_divergence_diagnosis",
+      "record_id": "diagnose_system_health_entity_divergence",
+      "references": {
+        "claims": [
+          "diagnose_system_health_entity_divergence__layered_divergence_diagnosis"
+        ]
+      },
+      "relationships": [],
+      "statement": "A layer may be absent or intentionally unsupported; absence alone is not failure, and this procedure does not identify a root cause without integration-specific evidence.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "diagnose_tplink_runtime_state_safely__runtime_evidence_before_recovery",
+      "claims": [],
+      "id": "gap__diagnose_tplink_runtime_state_safely__runtime_evidence_before_recovery",
+      "record_id": "diagnose_tplink_runtime_state_safely",
+      "references": {
+        "claims": [
+          "diagnose_tplink_runtime_state_safely__runtime_evidence_before_recovery"
+        ]
+      },
+      "relationships": [],
+      "statement": "Successful recovery of one update or entity does not establish every capability, future stability, or absence of a separate intermittent cause.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "diagnostic_payload_available__supported_payload_scopes",
+      "claims": [],
+      "id": "gap__diagnostic_payload_available__supported_payload_scopes",
+      "record_id": "diagnostic_payload_available",
+      "references": {
+        "claims": [
+          "diagnostic_payload_available__supported_payload_scopes"
+        ]
+      },
+      "relationships": [],
+      "statement": "A device-page download may contain config-entry rather than device-specific data; field absence can be an implementation boundary.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "entity_unavailable_state__unavailable_not_unknown",
+      "claims": [],
+      "id": "gap__entity_unavailable_state__unavailable_not_unknown",
+      "record_id": "entity_unavailable_state",
+      "references": {
+        "claims": [
+          "entity_unavailable_state__unavailable_not_unknown"
+        ]
+      },
+      "relationships": [],
+      "statement": "Some integrations may not implement current quality guidance fully; standby can have documented exceptions.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "frigate_home_assistant_app__not_home_assistant_owned_app",
+      "claims": [],
+      "id": "gap__frigate_home_assistant_app__not_home_assistant_owned_app",
+      "record_id": "frigate_home_assistant_app",
+      "references": {
+        "claims": [
+          "frigate_home_assistant_app__not_home_assistant_owned_app"
+        ]
+      },
+      "relationships": [],
+      "statement": "Absence from the official repository does not deny upstream support or installation through a separate repository; it classifies ownership only.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "integration_diagnostics_framework__integration_scoped_payloads",
+      "claims": [],
+      "id": "gap__integration_diagnostics_framework__integration_scoped_payloads",
+      "record_id": "integration_diagnostics_framework",
+      "references": {
+        "claims": [
+          "integration_diagnostics_framework__integration_scoped_payloads"
+        ]
+      },
+      "relationships": [],
+      "statement": "Availability or content of a payload does not establish integration health, completeness, or absence of sensitive information.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "jellyfin_session_state__session_scoped_entity_boundary",
+      "claims": [],
+      "id": "gap__jellyfin_session_state__session_scoped_entity_boundary",
+      "record_id": "jellyfin_session_state",
+      "references": {
+        "claims": [
+          "jellyfin_session_state__session_scoped_entity_boundary"
+        ]
+      },
+      "relationships": [],
+      "statement": "Session absence is not a failure signal, and a present session does not prove playback, media access, remote commands or client-wide health.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "mikrotik__integration_contract",
+      "claims": [],
+      "id": "gap__mikrotik__integration_contract",
+      "record_id": "mikrotik",
+      "references": {
+        "claims": [
+          "mikrotik__integration_contract"
+        ]
+      },
+      "relationships": [],
+      "statement": "Current absence of actions, diagnostics, Repairs or discovery does not prove historical or future absence.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "mikrotik_api_connectivity_failure__detection_boundary",
+      "claims": [],
+      "id": "gap__mikrotik_api_connectivity_failure__detection_boundary",
+      "record_id": "mikrotik_api_connectivity_failure",
+      "references": {
+        "claims": [
+          "mikrotik_api_connectivity_failure__detection_boundary"
+        ]
+      },
+      "relationships": [],
+      "statement": "Exclude wrong-platform, successful, absent, conflicting, transient-only, and unknown-applicability inputs; never infer a specific failed layer from this match.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "mikrotik_runtime_resource_state__conditional_resources",
+      "claims": [],
+      "id": "gap__mikrotik_runtime_resource_state__conditional_resources",
+      "record_id": "mikrotik_runtime_resource_state",
+      "references": {
+        "claims": [
+          "mikrotik_runtime_resource_state__conditional_resources"
+        ]
+      },
+      "relationships": [],
+      "statement": "Entity absence or unknown is not automatically a router fault; the device-registry firmware field has unresolved RouterOS/RouterBOOT semantics.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "music_assistant_player_provider_state__player_provider_precedes_player",
+      "claims": [],
+      "id": "gap__music_assistant_player_provider_state__player_provider_precedes_player",
+      "record_id": "music_assistant_player_provider_state",
+      "references": {
+        "claims": [
+          "music_assistant_player_provider_state__player_provider_precedes_player"
+        ]
+      },
+      "relationships": [],
+      "statement": "Discovery absence or provider unavailability does not identify a network, protocol, vendor, server or player root cause.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "nextcloud_maintenance_mode_state__maintenance_mode_is_an_intentional_lifecycle_state",
+      "claims": [],
+      "id": "gap__nextcloud_maintenance_mode_state__maintenance_mode_is_an_intentional_lifecycle_state",
+      "record_id": "nextcloud_maintenance_mode_state",
+      "references": {
+        "claims": [
+          "nextcloud_maintenance_mode_state__maintenance_mode_is_an_intentional_lifecycle_state"
+        ]
+      },
+      "relationships": [],
+      "statement": "Maintenance-mode presence needs lifecycle context; absence does not prove upgrade completion or service health.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "perform_unifi_privileged_action_safely__guarded_control_action",
+      "claims": [],
+      "id": "gap__perform_unifi_privileged_action_safely__guarded_control_action",
+      "record_id": "perform_unifi_privileged_action_safely",
+      "references": {
+        "claims": [
+          "perform_unifi_privileged_action_safely__guarded_control_action"
+        ]
+      },
+      "relationships": [],
+      "statement": "Action absence or rejection can be intentional permission, option, entity-default, capability, or transient-state behavior.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "proxmox_authorization_scope__privilege_scope_controls_visibility",
+      "claims": [],
+      "id": "gap__proxmox_authorization_scope__privilege_scope_controls_visibility",
+      "record_id": "proxmox_authorization_scope",
+      "references": {
+        "claims": [
+          "proxmox_authorization_scope__privilege_scope_controls_visibility"
+        ]
+      },
+      "relationships": [],
+      "statement": "Entity absence may reflect permission, unsupported data, offline-node fetch behavior or inventory change; it is not proof of deletion or failure.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "recorder_mariadb_database__supported_version_and_requirements",
+      "claims": [],
+      "id": "gap__recorder_mariadb_database__supported_version_and_requirements",
+      "record_id": "recorder_mariadb_database",
+      "references": {
+        "claims": [
+          "recorder_mariadb_database__supported_version_and_requirements"
+        ]
+      },
+      "relationships": [],
+      "statement": "Meeting the minimum version does not prove correct charset, engine, privileges, connectivity, or absence of a listed regression.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "reolink_event_delivery_state__ordered_event_paths",
+      "claims": [],
+      "id": "gap__reolink_event_delivery_state__ordered_event_paths",
+      "record_id": "reolink_event_delivery_state",
+      "references": {
+        "claims": [
+          "reolink_event_delivery_state__ordered_event_paths"
+        ]
+      },
+      "relationships": [],
+      "statement": "Fallback method use can be valid operation; absence of an expected real-world event has no meaning without event occurrence, capability, configuration, and time context.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "repair_issue_ignored__ignore_lifecycle",
+      "claims": [],
+      "id": "gap__repair_issue_ignored__ignore_lifecycle",
+      "record_id": "repair_issue_ignored",
+      "references": {
+        "claims": [
+          "repair_issue_ignored__ignore_lifecycle"
+        ]
+      },
+      "relationships": [],
+      "statement": "A hidden or ignored issue can still represent an unresolved condition; absence from the visible list is not resolution evidence.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "scenario_coordinator_freshness_unknown__freshness_requires_model_context",
+      "claims": [],
+      "id": "gap__scenario_coordinator_freshness_unknown__freshness_requires_model_context",
+      "record_id": "scenario_coordinator_freshness_unknown",
+      "references": {
+        "claims": [
+          "scenario_coordinator_freshness_unknown__freshness_requires_model_context"
+        ]
+      },
+      "relationships": [],
+      "statement": "UNKNOWN means the generic evidence is insufficient; it does not mean data is stale, fresh, failed, or healthy.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "scenario_diagnostic_payload_incomplete__scope_and_redaction_boundaries",
+      "claims": [],
+      "id": "gap__scenario_diagnostic_payload_incomplete__scope_and_redaction_boundaries",
+      "record_id": "scenario_diagnostic_payload_incomplete",
+      "references": {
+        "claims": [
+          "scenario_diagnostic_payload_incomplete__scope_and_redaction_boundaries"
+        ]
+      },
+      "relationships": [],
+      "statement": "The official page does not enumerate every omission or failure mode; unsupported explanations remain unknown.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "scenario_mikrotik_runtime_or_sensor_failure__resource_divergence",
+      "claims": [],
+      "id": "gap__scenario_mikrotik_runtime_or_sensor_failure__resource_divergence",
+      "record_id": "scenario_mikrotik_runtime_or_sensor_failure",
+      "references": {
+        "claims": [
+          "scenario_mikrotik_runtime_or_sensor_failure__resource_divergence"
+        ]
+      },
+      "relationships": [],
+      "statement": "Missing sensor entities and unavailable entities require different diagnosis.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "scenario_music_assistant_surface_divergence__layer_and_phase_evidence_required",
+      "claims": [],
+      "id": "gap__scenario_music_assistant_surface_divergence__layer_and_phase_evidence_required",
+      "record_id": "scenario_music_assistant_surface_divergence",
+      "references": {
+        "claims": [
+          "scenario_music_assistant_surface_divergence__layer_and_phase_evidence_required"
+        ]
+      },
+      "relationships": [],
+      "statement": "The scenario preserves competing causes and does not make absence, unavailability, action failure or inaudibility a confirmed cause.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "scenario_reolink_entity_stream_or_event_degradation__runtime_surfaces_are_independent",
+      "claims": [],
+      "id": "gap__scenario_reolink_entity_stream_or_event_degradation__runtime_surfaces_are_independent",
+      "record_id": "scenario_reolink_entity_stream_or_event_degradation",
+      "references": {
+        "claims": [
+          "scenario_reolink_entity_stream_or_event_degradation__runtime_surfaces_are_independent"
+        ]
+      },
+      "relationships": [],
+      "statement": "The scenario preserves competing branches and never confirms a cause from unavailability, missing media, or event absence alone.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "scenario_tuya_connection_path_or_exposure_mismatch__identity_path_and_phase_required",
+      "claims": [],
+      "id": "gap__scenario_tuya_connection_path_or_exposure_mismatch__identity_path_and_phase_required",
+      "record_id": "scenario_tuya_connection_path_or_exposure_mismatch",
+      "references": {
+        "claims": [
+          "scenario_tuya_connection_path_or_exposure_mismatch__identity_path_and_phase_required"
+        ]
+      },
+      "relationships": [],
+      "statement": "The scenario preserves uncertainty and does not promote absence, unavailability or limited exposure to a confirmed cause.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "scenario_unifiprotect_setup_or_authentication_failure__setup_branches_are_distinct",
+      "claims": [],
+      "id": "gap__scenario_unifiprotect_setup_or_authentication_failure__setup_branches_are_distinct",
+      "record_id": "scenario_unifiprotect_setup_or_authentication_failure",
+      "references": {
+        "claims": [
+          "scenario_unifiprotect_setup_or_authentication_failure__setup_branches_are_distinct"
+        ]
+      },
+      "relationships": [],
+      "statement": "The scenario routes evidence and never confirms a root cause from discovery absence, setup retry, or a missing entity.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "sonoff_feature_exposure_result__feature_parity_not_implied",
+      "claims": [],
+      "id": "gap__sonoff_feature_exposure_result__feature_parity_not_implied",
+      "record_id": "sonoff_feature_exposure_result",
+      "references": {
+        "claims": [
+          "sonoff_feature_exposure_result__feature_parity_not_implied"
+        ]
+      },
+      "relationships": [],
+      "statement": "Feature absence is not a universal incompatibility or root-cause signal.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "statistics_pipeline__short_and_long_term_cadence",
+      "claims": [],
+      "id": "gap__statistics_pipeline__short_and_long_term_cadence",
+      "record_id": "statistics_pipeline",
+      "references": {
+        "claims": [
+          "statistics_pipeline__short_and_long_term_cadence"
+        ]
+      },
+      "relationships": [],
+      "statement": "Statistics absence can reflect eligibility, metadata, unit, compilation, retention, query, or database problems; it is not a single-cause signal.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "unifi__current_implementation_gaps",
+      "claims": [],
+      "id": "gap__unifi__current_implementation_gaps",
+      "record_id": "unifi",
+      "references": {
+        "claims": [
+          "unifi__current_implementation_gaps"
+        ]
+      },
+      "relationships": [],
+      "statement": "Missing code in the reviewed branch is a scoped gap and does not prove future or historical absence.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "unifi_controller_connectivity_failure__detection_boundary",
+      "claims": [],
+      "id": "gap__unifi_controller_connectivity_failure__detection_boundary",
+      "record_id": "unifi_controller_connectivity_failure",
+      "references": {
+        "claims": [
+          "unifi_controller_connectivity_failure__detection_boundary"
+        ]
+      },
+      "relationships": [],
+      "statement": "Exclude wrong-platform, successful, absent, conflicting, transient-only, and unknown-applicability inputs; never infer a specific failed layer from this match.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "unifiprotect_event_delivery_state__public_event_capability_boundary",
+      "claims": [],
+      "id": "gap__unifiprotect_event_delivery_state__public_event_capability_boundary",
+      "record_id": "unifiprotect_event_delivery_state",
+      "references": {
+        "claims": [
+          "unifiprotect_event_delivery_state__public_event_capability_boundary"
+        ]
+      },
+      "relationships": [],
+      "statement": "Event absence lacks meaning without an expected event and supported surface; event receipt does not prove stream, recording, device-wide, or control health.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "zha__documented_scope",
+      "claims": [],
+      "id": "gap__zha__documented_scope",
+      "record_id": "zha",
+      "references": {
+        "claims": [
+          "zha__documented_scope"
+        ]
+      },
+      "relationships": [],
+      "statement": "This scope statement does not establish that every deployment, device, or dependent service is currently healthy.",
+      "type": "known_gap"
+    },
+    {
+      "claim_ref": "zigbee2mqtt_home_assistant_discovery_state__discovery_publication_and_consumption_are_separate",
+      "claims": [],
+      "id": "gap__zigbee2mqtt_home_assistant_discovery_state__discovery_publication_and_consumption_are_separate",
+      "record_id": "zigbee2mqtt_home_assistant_discovery_state",
+      "references": {
+        "claims": [
+          "zigbee2mqtt_home_assistant_discovery_state__discovery_publication_and_consumption_are_separate"
+        ]
+      },
+      "relationships": [],
+      "statement": "No dedicated Zigbee2MQTT Core integration, device health or entity correctness is inferred.",
+      "type": "known_gap"
+    },
+    {
+      "claims": [],
+      "id": "gap__verification__audit_custom_integration_compatibility",
+      "record_id": "audit_custom_integration_compatibility",
+      "references": {
+        "recommendations": [
+          "audit_custom_integration_compatibility"
+        ]
+      },
+      "relationships": [],
+      "statement": "Recommendation has no explicit verification action in the authoritative record.",
+      "type": "known_gap"
+    },
+    {
+      "claims": [],
+      "id": "gap__verification__debug_template_with_input_context",
+      "record_id": "debug_template_with_input_context",
+      "references": {
+        "recommendations": [
+          "debug_template_with_input_context"
+        ]
+      },
+      "relationships": [],
+      "statement": "Recommendation has no explicit verification action in the authoritative record.",
+      "type": "known_gap"
+    },
+    {
+      "claims": [],
+      "id": "gap__verification__inspect_zigbee_radio_environment",
+      "record_id": "inspect_zigbee_radio_environment",
+      "references": {
+        "recommendations": [
+          "inspect_zigbee_radio_environment"
+        ]
+      },
+      "relationships": [],
+      "statement": "Recommendation has no explicit verification action in the authoritative record.",
+      "type": "known_gap"
+    }
+  ],
+  "metadata": {}
+}

@@ -1,8 +1,8 @@
-from src.hadocs.core.device_reachability import (
+from hadocs.core.device_reachability import (
     ReachabilityStatus,
     determine_device_reachability,
 )
-from src.hadocs.core.models import DeviceModel, EntityModel
+from hadocs.core.models import DeviceModel, EntityModel
 
 
 def make_entity(

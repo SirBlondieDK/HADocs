@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HASK Preview · HADocs</title>
+  <link rel="stylesheet" href="./static/style.css">
+  <style>
+    .preview-shell{max-width:1100px;margin:0 auto;padding:32px}.preview-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}.preview-list{padding-left:20px}.preview-notice{border-left:4px solid #8b5cf6;padding:16px;background:rgba(139,92,246,.1)}.candidate{border:1px solid var(--border-color,#334155);border-radius:12px;padding:16px;margin:12px 0}.neutral-badge{display:inline-block;padding:6px 10px;border-radius:999px;background:#334155;color:#f8fafc}.back-link{display:inline-block;margin-bottom:20px}
+  </style>
+</head>
+<body>
+  <main class="preview-shell">
+    <a class="back-link" href="./">← HADocs Overview</a>
+    <section class="card"><span class="neutral-badge">Experimental · default disabled</span><h1>HASK Preview</h1><p id="notice" class="preview-notice">Loading candidate-only status…</p></section>
+    <section class="card"><h2>HASK status</h2><div id="status" class="preview-grid"></div></section>
+    <section class="card"><h2>Bundle information</h2><div id="bundle" class="preview-grid"></div></section>
+    <section class="card"><h2>Knowledge coverage</h2><ul id="coverage" class="preview-list"></ul></section>
+    <section class="card"><h2>Relevant knowledge for this installation</h2><ul id="knowledge" class="preview-list"></ul></section>
+    <section class="card"><h2>Candidate insights</h2><div id="candidates"></div></section>
+    <section class="card"><h2>Supporting and missing evidence</h2><p>Only validated evidence categories are shown. Protected installation identifiers and database IDs are never exposed.</p></section>
+    <section class="card"><h2>Conflicts and limitations</h2><ul id="limitations" class="preview-list"></ul></section>
+    <section class="card"><h2>Analytical impact</h2><p id="impact"></p></section>
+    <section class="card"><h2>Enablement</h2><p>Enable HASK Preview and the HASK runtime explicitly in settings. Candidate evaluation retains the separate operational database, candidate-evidence, and native-status controls.</p></section>
+  </main>
+  <script>
+    const esc=v=>String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+    const metric=(label,value)=>`<article><span>${esc(label)}</span><strong>${esc(value)}</strong></article>`;
+    fetch(new URL("api/hask-preview", document.baseURI)).then(r=>r.json()).then(p=>{
+      document.getElementById("notice").textContent=p.notice;
+      document.getElementById("status").innerHTML=metric("Classification",p.classification)+metric("Preview enabled",p.feature_enabled)+metric("Runtime enabled",p.hask_runtime_enabled)+metric("Validation",p.validation_state);
+      document.getElementById("bundle").innerHTML=metric("Source",p.bundle_source)+metric("Contract",p.contract_version||"not loaded")+metric("Knowledge version",p.knowledge_content_version||"not loaded")+metric("Checksum",p.checksum_prefix||"not checked");
+      document.getElementById("coverage").innerHTML=p.coverage.length?p.coverage.map(x=>`<li><strong>${esc(x.artifact)}</strong>: ${esc(x.item_count)}</li>`).join(""):"<li>No validated coverage is available.</li>";
+      document.getElementById("knowledge").innerHTML=p.relevant_knowledge.length?p.relevant_knowledge.map(x=>`<li><strong>${esc(x.title)}</strong> — ${esc(x.summary)}</li>`).join(""):"<li>No relevant platform knowledge has been evaluated.</li>";
+      document.getElementById("candidates").innerHTML=p.candidates.length?p.candidates.map(x=>`<article class="candidate"><h3>${esc(x.classification)}</h3><p>${esc(x.explanation)}</p><p><strong>HASK record:</strong> ${esc(x.hask_record_ref)} · <strong>Matcher:</strong> ${esc(x.matcher_id)} ${esc(x.matcher_version)}</p><p><strong>Supporting:</strong> ${esc(x.supporting_evidence_categories.join(", ")||"none")}</p><p><strong>Missing:</strong> ${esc(x.missing_evidence_categories.join(", ")||"none")}</p></article>`).join(""):"<p>No candidate evidence has been evaluated.</p>";
+      document.getElementById("limitations").innerHTML=p.limitations.map(x=>`<li>${esc(x)}</li>`).join("");
+      document.getElementById("impact").textContent=p.analytical_impact_statement;
+    }).catch(()=>{document.getElementById("notice").textContent="HASK Preview status is unavailable. Normal HADocs analysis is unaffected.";});
+  </script>
+</body>
+</html>

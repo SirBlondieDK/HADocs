@@ -1,0 +1,255 @@
+{
+  "_generated": "scripts/build_hadocs_pi1_preflight.py; DO NOT EDIT",
+  "approved_baseline": {
+    "file_count": 26,
+    "manifest": "dist/hadocs_pilot/HADOCS_APPROVED_DIRTY_BASELINE.json",
+    "mismatch_count": 0
+  },
+  "branch": "main",
+  "captured_on": "2026-07-24",
+  "completed_pilot": {
+    "file_count": 32,
+    "files": [
+      {
+        "path": "CHANGELOG.md",
+        "sha256": "292616584f9085fbd446e20b8046a6a27af9afd1807d26b3b9c9e44832250cbc",
+        "size_bytes": 1780
+      },
+      {
+        "path": "ROADMAP.md",
+        "sha256": "50c9c3fe766fdc85b7dbb018a7fc2ab028ed0245437f31b742c4b5a1a323b42d",
+        "size_bytes": 1984
+      },
+      {
+        "path": "docs/architecture/Decisions.md",
+        "sha256": "86debfec1ae905437bf6bc552402e3f7838a9d40770620beffa9bfd52dabf66b",
+        "size_bytes": 1187
+      },
+      {
+        "path": "docs/integration/hask_pilot/HADOCS_APPROVED_DIRTY_BASELINE.json",
+        "sha256": "db463f31565bfb7572724260847192690655c680b29dde215388596eaa50629d",
+        "size_bytes": 17632
+      },
+      {
+        "path": "docs/integration/hask_pilot/HADOCS_APPROVED_DIRTY_BASELINE.md",
+        "sha256": "62f3d359e42051104be2f01a47824f5d2148fef722dbe06b93671065a305fece",
+        "size_bytes": 4199
+      },
+      {
+        "path": "docs/integration/hask_pilot/HADOCS_APPROVED_DIRTY_BASELINE.patch",
+        "sha256": "a6f2e1346a104b8123576571dfe6b059a971605932c5ef51ffc4f32904be54a9",
+        "size_bytes": 4774
+      },
+      {
+        "path": "docs/integration/hask_pilot/HADOCS_BASELINE_TEST_REPORT.md",
+        "sha256": "cf84a3527f548f45eba18e56e00c44c8bfd77ec27c464ea60e3597a0bdc5a82a",
+        "size_bytes": 759
+      },
+      {
+        "path": "docs/integration/hask_pilot/HADOCS_DIRTY_BASELINE_CLASSIFICATION.md",
+        "sha256": "55ee3cf1eea6bc63f9ab2303ecf5b8457b4cd3b8f101c12b885a8a2d6fde5d2a",
+        "size_bytes": 5897
+      },
+      {
+        "path": "docs/integration/hask_pilot/HADOCS_EVIDENCE_MODEL_REPORT.md",
+        "sha256": "19ccff4a6d6a11a374a0e5ff53830d690b2333dab513e421afe0782db565f9a4",
+        "size_bytes": 1205
+      },
+      {
+        "path": "docs/integration/hask_pilot/HADOCS_HASK_SCORING_BOUNDARY_REPORT.md",
+        "sha256": "f87bf19996d55adfbd18bacddc68b0525032849bbaa44c0d5d31c9d36ffb3589",
+        "size_bytes": 623
+      },
+      {
+        "path": "docs/integration/hask_pilot/HADOCS_HEALTH_SCORE_INTERFACE_REPORT.md",
+        "sha256": "9f66bc63f7191afa1e02561d3783235b2ab4696409a5149097d2d4939c67b2e3",
+        "size_bytes": 571
+      },
+      {
+        "path": "docs/integration/hask_pilot/HADOCS_INTEGRATION_PILOT_PREFLIGHT.md",
+        "sha256": "c5b41d2c515a322094297d25e21dfcb505cd6c35303ebb46e8f9628f1f8cb1c2",
+        "size_bytes": 846
+      },
+      {
+        "path": "docs/integration/hask_pilot/HADOCS_MIKROTIK_PILOT_RESULT.json",
+        "sha256": "17009187b58aba4171f1657754c679aaf94976ae52dc5d09964482f472408a9f",
+        "size_bytes": 9518
+      },
+      {
+        "path": "docs/integration/hask_pilot/HADOCS_MIKROTIK_PILOT_TRACE.md",
+        "sha256": "e80ce5d006aca78c65b62ae68060b121a01c1c8aaadc56792a724545198c29e4",
+        "size_bytes": 1621
+      },
+      {
+        "path": "docs/integration/hask_pilot/HADOCS_REPORT_INTERFACE_REPORT.md",
+        "sha256": "c4760df2968490b1d0dfdb8aee6a5b0f4ff57ae054b89215a6c5ccb646aacaa0",
+        "size_bytes": 598
+      },
+      {
+        "path": "docs/integration/hask_pilot/HADOCS_ROOT_CAUSE_MODEL_REPORT.md",
+        "sha256": "052d53acf94a43f0917c0f2eb89d1f8bbb6304022e3297efd46a25eb8aa62cf2",
+        "size_bytes": 883
+      },
+      {
+        "path": "docs/integration/hask_pilot/HADOCS_UNIFI_PILOT_RESULT.json",
+        "sha256": "6a7f94ab41cd4cf28b5068ab1222910455ed7f4ef273509814863636f8cb3d5c",
+        "size_bytes": 9311
+      },
+      {
+        "path": "docs/integration/hask_pilot/HADOCS_UNIFI_PILOT_TRACE.md",
+        "sha256": "cbedbc6fc01a7119d9fbae6425cc5a39c20387eba1ae9f5e6368266e6ac83421",
+        "size_bytes": 1639
+      },
+      {
+        "path": "docs/integration/hask_pilot/HASK_HADOCS_ADAPTER_ARCHITECTURE.md",
+        "sha256": "11e2ac7840b18f0a6a51ad974c393fdc67ff83868b98aa0547d4a8019a08307a",
+        "size_bytes": 694
+      },
+      {
+        "path": "docs/integration/hask_pilot/HASK_HADOCS_DISTRIBUTION_TRUST_PREFLIGHT.md",
+        "sha256": "02ade870dc49053cfadc0cfcde7ab8d89e56b9e952d0d276b22b6a0f38adb61d",
+        "size_bytes": 660
+      },
+      {
+        "path": "docs/integration/hask_pilot/HASK_HADOCS_FIELD_MAPPING_MATRIX.md",
+        "sha256": "acf5ad23cae4e0ae0cd82607751db703c410697d19679428fae0ac7c22842f0b",
+        "size_bytes": 1464
+      },
+      {
+        "path": "docs/integration/hask_pilot/HASK_HADOCS_ISOLATED_INTEGRATION_PILOT_FINAL_REPORT.md",
+        "sha256": "0783209ca13d9b882f4427289c80f247a66a867869517e51ca24146c006f40bd",
+        "size_bytes": 2196
+      },
+      {
+        "path": "src/hadocs/knowledge/hask_pilot/__init__.py",
+        "sha256": "2ee0a5f2aa0397e32c138b7755e8788aa2884dd1801e211aaa085bb3c9255c45",
+        "size_bytes": 265
+      },
+      {
+        "path": "src/hadocs/knowledge/hask_pilot/adapters.py",
+        "sha256": "0d162dac099724cba89c5dddd429f2b62a3aba6f0152f1244ff1317a5b1ba85a",
+        "size_bytes": 3983
+      },
+      {
+        "path": "src/hadocs/knowledge/hask_pilot/config.py",
+        "sha256": "8f91a0edc72793f287add59d06806c221b7ff2764f09c9e80ad2d5bc78f0da79",
+        "size_bytes": 795
+      },
+      {
+        "path": "src/hadocs/knowledge/hask_pilot/loader.py",
+        "sha256": "f9fb7d0134176c339cb02b3f3a317a85cbb9a658b15fffcae6c58062f296c69c",
+        "size_bytes": 4792
+      },
+      {
+        "path": "src/hadocs/knowledge/hask_pilot/models.py",
+        "sha256": "03b75150b9ad205f6aef519abcb6865ba31b39ae877272dfca436c7d41552251",
+        "size_bytes": 1072
+      },
+      {
+        "path": "src/hadocs/knowledge/hask_pilot/runner.py",
+        "sha256": "aaa739605694738a01c72859d9f1cdc8e3c41d5b597a866a710f6e072812f2ce",
+        "size_bytes": 1481
+      },
+      {
+        "path": "tests/fixtures/hask_pilot/mikrotik_local_evidence.json",
+        "sha256": "cbf82edaf09569c626f27c829f7cafef36490d8a05577cac415b162833751f6b",
+        "size_bytes": 304
+      },
+      {
+        "path": "tests/fixtures/hask_pilot/unifi_local_evidence.json",
+        "sha256": "ee328d49f031542d53065ae592973e5c01e4e7dbea4e2189f8732e0bc59ef970",
+        "size_bytes": 306
+      },
+      {
+        "path": "tests/test_hask_pilot.py",
+        "sha256": "b055f605c538b5df721623b300f8764d1c454b977d03e259f6807a82d5808170",
+        "size_bytes": 6920
+      },
+      {
+        "path": "tools/build_hask_pilot.py",
+        "sha256": "05aeaee0fc46b1438dfb6a2d723a653b894e06aded721f59d001761b7bb8abe7",
+        "size_bytes": 13901
+      }
+    ],
+    "mismatch_count": 0
+  },
+  "decision": "PASS",
+  "git_status_short": [
+    " M CHANGELOG.md",
+    " M ROADMAP.md",
+    " M docs/architecture/Decisions.md",
+    " M pyproject.toml",
+    " M src/hadocs/core/builder.py",
+    " M src/hadocs/core/models.py",
+    " M src/hadocs/exporters/csv_exporter.py",
+    " M src/hadocs/reports/generator.py",
+    "?? docs/integration/hask_pilot/HADOCS_APPROVED_DIRTY_BASELINE.json",
+    "?? docs/integration/hask_pilot/HADOCS_APPROVED_DIRTY_BASELINE.md",
+    "?? docs/integration/hask_pilot/HADOCS_APPROVED_DIRTY_BASELINE.patch",
+    "?? docs/integration/hask_pilot/HADOCS_BASELINE_TEST_REPORT.md",
+    "?? docs/integration/hask_pilot/HADOCS_DIRTY_BASELINE_CLASSIFICATION.md",
+    "?? docs/integration/hask_pilot/HADOCS_EVIDENCE_MODEL_REPORT.md",
+    "?? docs/integration/hask_pilot/HADOCS_HASK_SCORING_BOUNDARY_REPORT.md",
+    "?? docs/integration/hask_pilot/HADOCS_HEALTH_SCORE_INTERFACE_REPORT.md",
+    "?? docs/integration/hask_pilot/HADOCS_INTEGRATION_PILOT_PREFLIGHT.md",
+    "?? docs/integration/hask_pilot/HADOCS_MIKROTIK_PILOT_RESULT.json",
+    "?? docs/integration/hask_pilot/HADOCS_MIKROTIK_PILOT_TRACE.md",
+    "?? docs/integration/hask_pilot/HADOCS_REPORT_INTERFACE_REPORT.md",
+    "?? docs/integration/hask_pilot/HADOCS_ROOT_CAUSE_MODEL_REPORT.md",
+    "?? docs/integration/hask_pilot/HADOCS_UNIFI_PILOT_RESULT.json",
+    "?? docs/integration/hask_pilot/HADOCS_UNIFI_PILOT_TRACE.md",
+    "?? docs/integration/hask_pilot/HASK_HADOCS_ADAPTER_ARCHITECTURE.md",
+    "?? docs/integration/hask_pilot/HASK_HADOCS_DISTRIBUTION_TRUST_PREFLIGHT.md",
+    "?? docs/integration/hask_pilot/HASK_HADOCS_FIELD_MAPPING_MATRIX.md",
+    "?? docs/integration/hask_pilot/HASK_HADOCS_ISOLATED_INTEGRATION_PILOT_FINAL_REPORT.md",
+    "?? hadocs_file_inventory.txt",
+    "?? project_files.txt",
+    "?? src/hadocs/hudd/README.md",
+    "?? src/hadocs/hudd/__init__.py",
+    "?? src/hadocs/hudd/cli.py",
+    "?? src/hadocs/hudd/data/hudd.sqlite",
+    "?? src/hadocs/hudd/data/masterlist.txt",
+    "?? src/hadocs/hudd/database.py",
+    "?? src/hadocs/hudd/homeassistant.py",
+    "?? src/hadocs/hudd/importers/__init__.py",
+    "?? src/hadocs/hudd/importers/masterlist.py",
+    "?? src/hadocs/hudd/importers/ohf.py",
+    "?? src/hadocs/hudd/matcher.py",
+    "?? src/hadocs/hudd/migrations/0002_device_matcher.sql",
+    "?? src/hadocs/hudd/migrations/__init__.py",
+    "?? src/hadocs/hudd/models.py",
+    "?? src/hadocs/hudd/repository.py",
+    "?? src/hadocs/hudd/schema/schema.sql",
+    "?? src/hadocs/hudd/service.py",
+    "?? src/hadocs/knowledge/hask_pilot/__init__.py",
+    "?? src/hadocs/knowledge/hask_pilot/adapters.py",
+    "?? src/hadocs/knowledge/hask_pilot/config.py",
+    "?? src/hadocs/knowledge/hask_pilot/loader.py",
+    "?? src/hadocs/knowledge/hask_pilot/models.py",
+    "?? src/hadocs/knowledge/hask_pilot/runner.py",
+    "?? tests/fixtures/hask_pilot/mikrotik_local_evidence.json",
+    "?? tests/fixtures/hask_pilot/unifi_local_evidence.json",
+    "?? tests/test_hask_pilot.py",
+    "?? tests/test_hudd.py",
+    "?? tests/test_hudd_homeassistant.py",
+    "?? tools/build_hask_pilot.py"
+  ],
+  "hadocs_runtime": {
+    "python": "3.14.3",
+    "version": "0.15.0-rc1"
+  },
+  "hask_contract": {
+    "artifact_sha256": "69c887a67c946da02a86a38fa2600278bc3441bf44c5f2a2fd34cf7cb2ff7024",
+    "maximum_tested_hadocs_version": "0.15.0",
+    "minimum_hadocs_version": "0.15.0",
+    "version": "1.0.0"
+  },
+  "head_commit": "590cc33a9762c4d22699f20c60d136ef2c4de00c",
+  "merge_conflicts": [],
+  "pre_pi1_tests": {
+    "command_profile": "Python 3.14, explicit src/root PYTHONPATH, cacheprovider disabled, isolated basetemp",
+    "failed": 0,
+    "passed": 232
+  },
+  "program": "Production Integration Phase 1 - Runtime Integration Foundation"
+}

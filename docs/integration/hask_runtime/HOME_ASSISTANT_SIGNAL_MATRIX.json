@@ -1,0 +1,17 @@
+{
+  "classification_counts": {"AUTHORITATIVE_FACT":15,"STRUCTURED_CONTEXT_DEPENDENT":13,"UNSAFE_INFERENCE":1,"NOT_USABLE":21},
+  "opportunities": [
+    {"domain":"configuration_validation","capabilities":["POST /api/config/core/check_config","validate_config"],"potential":"high","classification":"AUTHORITATIVE_FACT"},
+    {"domain":"registry_integrity","capabilities":["config/entity_registry/list","config/device_registry/list","config/area_registry/list","extract_from_target"],"potential":"high","classification":"STRUCTURED_CONTEXT_DEPENDENT"},
+    {"domain":"entity_consistency","capabilities":["GET /api/states","get_states","config/entity_registry/list_for_display"],"potential":"high","classification":"STRUCTURED_CONTEXT_DEPENDENT"},
+    {"domain":"device_consistency","capabilities":["config/device_registry/list","extract_from_target"],"potential":"high","classification":"STRUCTURED_CONTEXT_DEPENDENT"},
+    {"domain":"area_consistency","capabilities":["config/area_registry/list","extract_from_target"],"potential":"high","classification":"STRUCTURED_CONTEXT_DEPENDENT"},
+    {"domain":"automation_validation","capabilities":["validate_config","get_triggers_for_target","get_conditions_for_target","get_services_for_target"],"potential":"high","classification":"AUTHORITATIVE_FACT"},
+    {"domain":"script_validation","capabilities":["validate_config","extract_from_target"],"potential":"high","classification":"AUTHORITATIVE_FACT"},
+    {"domain":"service_validation","capabilities":["GET /api/services","get_services","get_services_for_target"],"potential":"high","classification":"AUTHORITATIVE_FACT"},
+    {"domain":"dependency_presence","capabilities":["GET /api/components","GET /api/services","get_panels"],"potential":"medium","classification":"AUTHORITATIVE_FACT"},
+    {"domain":"runtime_health","capabilities":["GET /api/","GET /api/events","subscribe_events"],"potential":"medium","classification":"STRUCTURED_CONTEXT_DEPENDENT"},
+    {"domain":"connectivity_validation","capabilities":[],"potential":"none","classification":"UNSAFE_INFERENCE"},
+    {"domain":"repair_diagnostics","capabilities":[],"potential":"none","classification":"NOT_USABLE"}
+  ]
+}

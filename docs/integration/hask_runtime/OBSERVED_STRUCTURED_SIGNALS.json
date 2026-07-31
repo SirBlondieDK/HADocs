@@ -1,0 +1,30 @@
+{
+  "core_version": "2026.7.3",
+  "value_storage": "none",
+  "anonymization": "allowlist structural schema only",
+  "documented_and_observed": [
+    {"capability":"GET /api/","shape":"object","item_count":1},
+    {"capability":"GET /api/config","shape":"object","item_count":1},
+    {"capability":"GET /api/states","shape":"array","item_count":1023},
+    {"capability":"GET /api/services","shape":"array","item_count":79},
+    {"capability":"GET /api/events","shape":"array","item_count":28},
+    {"capability":"GET /api/calendars","shape":"array","item_count":10},
+    {"capability":"get_config","shape":"object","item_count":1},
+    {"capability":"get_states","shape":"array","item_count":1023},
+    {"capability":"get_services","shape":"object","item_count":null},
+    {"capability":"get_panels","shape":"object","item_count":null},
+    {"capability":"config/entity_registry/list","shape":"array","item_count":1648},
+    {"capability":"config/device_registry/list","shape":"array","item_count":178},
+    {"capability":"config/area_registry/list","shape":"array","item_count":18}
+  ],
+  "observed_undocumented": [
+    {"capability":"config/floor_registry/list","shape":"array","item_count":2,"authoritative":false},
+    {"capability":"config/label_registry/list","shape":"array","item_count":0,"authoritative":false},
+    {"capability":"config_entries/get","shape":"array","item_count":68,"authoritative":false},
+    {"capability":"system_health/info","shape":"null","item_count":0,"authoritative":false}
+  ],
+  "failed_not_observed": [{"capability":"repairs/issues","result":"unknown_command","meaning":"none"}],
+  "secrets_persisted": false,
+  "raw_responses_persisted": false
+}
+

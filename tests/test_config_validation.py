@@ -1,4 +1,4 @@
-from src.hadocs.utils.config import validate_config
+from hadocs.utils.config import validate_config
 
 
 def test_validate_config_requires_token():

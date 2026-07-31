@@ -1,0 +1,54 @@
+{
+  "program": "AI-001",
+  "title": "Observation Identity Architecture Increment",
+  "status": "completed",
+  "completed_on": "2026-07-24",
+  "conclusion": "OBSERVATION_IDENTITY_ARCHITECTURE_PROPOSED",
+  "authority": {
+    "governance": "G-001",
+    "active_implementation_baseline": "DF-002",
+    "initiating_blocker": "I-001B_RESUME",
+    "approval_claimed": false,
+    "baseline_superseded": false
+  },
+  "scope": {
+    "release_1_capabilities": 4,
+    "observation_categories": 4,
+    "relationship_predicates": 4,
+    "replacement_observations": 0,
+    "replacement_capabilities": 0
+  },
+  "identity_architecture": {
+    "canonical_key": "normative_proposal",
+    "installation_scope": "normative_proposal",
+    "source_capability_vocabulary": "closed_release_1_proposal",
+    "observation_id": "byte_level_normative_proposal",
+    "category_profiles": 4,
+    "relationship_reference_rules": "complete",
+    "stability_rules": "complete",
+    "privacy_review": "pass_with_bounded_residual_risk",
+    "collision_behavior": "complete",
+    "absence_behavior": "complete",
+    "invalid_input_behavior": "complete"
+  },
+  "contract_version_recommendation": "RETAIN_1.0.0_PENDING_R003_DF003",
+  "implementation_authorized": false,
+  "next_required_increment": "R-003",
+  "subsequent_required_freeze": "DF-003",
+  "validation": {
+    "required_deliverables": "pass",
+    "deliverable_count": 17,
+    "json": "pass",
+    "test_vectors": "pass",
+    "determinism": "pass",
+    "determinism_passes": 2,
+    "non_state_documentation_aggregate_sha256": "1132e6a300d28b8dff07eada5106cb0d5d45e9278a61c6c7b4d36773246be293",
+    "production_code_changes": 0,
+    "tests_changed": 0,
+    "fixtures_changed": 0,
+    "hask_changes": 0,
+    "consumer_contract_changes": 0,
+    "pi2_changes": 0
+  },
+  "exception_expired": true
+}

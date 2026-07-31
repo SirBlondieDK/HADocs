@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
-from src.hadocs.providers import HomeAssistantProvider
+from hadocs.providers import HomeAssistantProvider
 
 
 LogFunction = Callable[[str], None]

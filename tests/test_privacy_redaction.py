@@ -1,4 +1,4 @@
-from src.hadocs.privacy.redaction import redact_dict, redact_text
+from hadocs.privacy.redaction import redact_dict, redact_text
 
 
 def test_redact_ip():

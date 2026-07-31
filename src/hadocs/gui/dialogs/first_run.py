@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
-from src.hadocs.gui.assets import load_logo_image
-from src.hadocs.gui.theme import Theme
-from src.hadocs.utils.config import save_config
+from hadocs.gui.assets import load_logo_image
+from hadocs.gui.theme import Theme
+from hadocs.utils.config import save_config
 
 class FirstRunWizard(tk.Toplevel):
     def __init__(self, master, cfg, on_finish):

@@ -1,5 +1,5 @@
-from src.hadocs.advisor.models import ActionPlan, ExecutiveSummary, Insight
-from src.hadocs.core.incidents import CollapsedIncident, Incident, collapse_incidents
+from hadocs.advisor.models import ActionPlan, ExecutiveSummary, Insight
+from hadocs.core.incidents import CollapsedIncident, Incident, collapse_incidents
 
 
 def health_status(score: int) -> str:
@@ -150,6 +150,6 @@ def build_executive_summary_from_incidents(score: int, incidents: list[Incident 
 
 
 def build_executive_summary(model, graph, device_health, recommendations, score: int) -> ExecutiveSummary:
-    from src.hadocs.core.incidents import build_incidents
+    from hadocs.core.incidents import build_incidents
     incidents = collapse_incidents(build_incidents(model, graph))
     return build_executive_summary_from_incidents(score, incidents)

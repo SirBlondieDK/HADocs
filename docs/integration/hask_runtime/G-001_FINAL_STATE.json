@@ -1,0 +1,41 @@
+{
+  "program": "G-001 Governance Preservation Policy",
+  "completed_on": "2026-07-24",
+  "status": "completed",
+  "conclusion": "PERMANENT_GOVERNANCE_ESTABLISHED",
+  "policy_status": "PERMANENT_UNTIL_EXPLICITLY_SUPERSEDED",
+  "authoritative_implementation_baseline": "DF-002",
+  "collector_contract_version": "1.0.0",
+  "principles": [
+    "architecture_precedes_implementation",
+    "design_freeze_is_authoritative",
+    "implementation_follows_frozen_baseline",
+    "ambiguity_produces_blockers",
+    "architecture_changes_require_governance",
+    "implementation_cannot_redefine_contracts",
+    "verification_precedes_consumer_adoption"
+  ],
+  "historical_references": [
+    "A-001",
+    "R-002",
+    "DF-002"
+  ],
+  "validation": {
+    "production_code_changes": 0,
+    "architecture_changes": 0,
+    "implementation_changes": 0,
+    "contract_changes": 0,
+    "runtime_changes": 0,
+    "dependency_changes": 0,
+    "hask_changes": 0,
+    "consumer_contract_changes": 0,
+    "pi2_changes": 0,
+    "governance_artifacts": 6,
+    "json_validation": "PASS",
+    "determinism_passes": 2,
+    "deterministic_outputs": true,
+    "non_state_artifact_aggregate_sha256": "22b4520052aa5c5913cc1ecea7cc64e337866f969a2cf6e2259d8a2867204ed1"
+  },
+  "future_increment_rule": "All implementation, verification, and consumer increments shall follow G-001 unless explicitly superseded by a future governance increment.",
+  "exception_expired": true
+}

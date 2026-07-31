@@ -3,19 +3,20 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
 
-from src.hadocs.core.device_overrides import DeviceOverride, get_device_policy
-from src.hadocs.core.models import DeviceModel, EntityModel
-from src.hadocs.core.state_interpreter import (
+from hadocs.core.device_overrides import DeviceOverride, get_device_policy
+from hadocs.core.models import DeviceModel, EntityModel
+from hadocs.core.entity_eligibility import is_disabled_entity
+from hadocs.core.state_interpreter import (
     StateMeaning,
     interpret_entity_state,
 )
-from src.hadocs.intelligence.engine import profile_entity
-from src.hadocs.intelligence.freshness import (
+from hadocs.intelligence.engine import profile_entity
+from hadocs.intelligence.freshness import (
     FreshnessStatus,
     determine_entity_freshness,
 )
-from src.hadocs.intelligence.profiles import ProfileKind
-from src.hadocs.utils.normalize import normalize_text
+from hadocs.intelligence.profiles import ProfileKind
+from hadocs.utils.normalize import normalize_text
 
 
 class ReachabilityStatus(str, Enum):
@@ -176,7 +177,7 @@ def determine_device_reachability(
     relevant_entities = [
         entity
         for entity in device.entities
-        if not entity.is_ignored
+        if not entity.is_ignored and not is_disabled_entity(entity)
     ]
 
     for entity in relevant_entities:

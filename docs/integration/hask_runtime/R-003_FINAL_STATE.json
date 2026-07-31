@@ -1,0 +1,72 @@
+{
+  "program": "R-003",
+  "title": "Observation Identity Architecture Review",
+  "status": "completed",
+  "completed_on": "2026-07-24",
+  "conclusion": "OBSERVATION_IDENTITY_REVIEW_CHANGES_REQUIRED",
+  "governance": "G-001",
+  "active_implementation_baseline": "DF-002",
+  "proposal_reviewed": "AI-001",
+  "proposal_status_before_review": "OBSERVATION_IDENTITY_ARCHITECTURE_PROPOSED",
+  "review_decision": "AI001_CHANGES_REQUIRED",
+  "scope": {
+    "release_1_capabilities": 4,
+    "observation_categories": 4,
+    "relationship_predicates": 4
+  },
+  "gates": {
+    "scope_compliance": "PASS",
+    "normative_completeness": "FAIL",
+    "cross_document_consistency": "FAIL",
+    "df002_compatibility": "FAIL",
+    "canonical_key": "PASS",
+    "installation_scope": "FAIL",
+    "source_capability": "PASS",
+    "observation_id": "PASS",
+    "category_profiles_passed": 1,
+    "category_profiles_required": 4,
+    "relationship_reference": "FAIL",
+    "stability": "FAIL",
+    "privacy": "FAIL",
+    "collision_model": "PASS",
+    "independent_test_vectors": "PASS"
+  },
+  "findings": {
+    "total": 5,
+    "critical": 1,
+    "major": 4,
+    "minor": 0,
+    "info": 0,
+    "normative_defects": 2,
+    "compatibility_defects": 3,
+    "evidence_defects": 0
+  },
+  "version_recommendation": "INCREMENT_MAJOR_VERSION",
+  "df003_readiness": "NOT_READY_FOR_DF003",
+  "architecture_decisions_introduced": 0,
+  "changes": {
+    "production_code": 0,
+    "tests": 0,
+    "fixtures": 0,
+    "configuration": 0,
+    "dependencies": 0,
+    "ai001": 0,
+    "df002": 0,
+    "g001": 0,
+    "ps001": 0,
+    "collector_contract_version": 0
+  },
+  "next_required_increment": "AI-002_OBSERVATION_IDENTITY_COMPATIBILITY_CORRECTION",
+  "implementation_authorized": false,
+  "validation": {
+    "required_deliverables": "PASS",
+    "deliverable_count": 24,
+    "json": "PASS",
+    "internal_consistency": "PASS",
+    "traceability": "PASS",
+    "determinism": "PASS",
+    "determinism_passes": 2,
+    "non_state_documentation_aggregate_sha256": "1ac877f5e1d2f02c1831651db3518909c5484640a0b4bc20decb663a454da636"
+  },
+  "exception_expired": true
+}

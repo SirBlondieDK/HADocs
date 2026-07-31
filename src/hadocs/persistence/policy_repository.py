@@ -3,8 +3,8 @@ import json
 from dataclasses import asdict
 from datetime import datetime
 from enum import Enum
-from src.hadocs.domain.findings import FindingCategory, FindingSeverity, TargetType
-from src.hadocs.domain.policies import Policy, PolicyAction, PolicyScope
+from hadocs.domain.findings import FindingCategory, FindingSeverity, TargetType
+from hadocs.domain.policies import Policy, PolicyAction, PolicyScope
 
 class PolicyRepository:
     def __init__(self, database) -> None:

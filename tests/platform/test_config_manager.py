@@ -1,14 +1,14 @@
 import json
 from pathlib import Path
 
-import src.hadocs.platform.config_manager as config_module
-from src.hadocs.platform.config_manager import (
+import hadocs.platform.config_manager as config_module
+from hadocs.platform.config_manager import (
     DEFAULT_CONFIG,
     INSECURE_HTTP_WARNING,
     ConfigManager,
 )
-from src.hadocs.platform.paths import AppPaths
-from src.hadocs.runtime import RuntimeEnvironment
+from hadocs.platform.paths import AppPaths
+from hadocs.runtime import RuntimeEnvironment
 
 
 NON_ADDON_RUNTIME = object()

@@ -1,4 +1,4 @@
-from src.hadocs.utils.display import area_filename
+from hadocs.utils.display import area_filename
 
 
 def fake_slugify(value):

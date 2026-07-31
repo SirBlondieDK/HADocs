@@ -1,0 +1,40 @@
+{
+  "program": "HADocs Native Observation Increment - Integration Connectivity Observation Foundation",
+  "captured_on": "2026-07-24",
+  "decision": "PREFLIGHT_PASS_SOURCE_SELECTION_BLOCKED",
+  "hadocs": {
+    "branch": "main",
+    "head": "590cc33a9762c4d22699f20c60d136ef2c4de00c",
+    "merge_conflicts": 0,
+    "tests_passed": 251,
+    "tests_failed": 0
+  },
+  "preservation": {
+    "approved_baseline_mismatches": 0,
+    "completed_pilot_unexpected_mismatches": 0,
+    "completed_pi1_unexpected_mismatches": 0,
+    "compatibility_increment_mismatches": 0,
+    "pi2_blocker_boundary_mismatches": 0,
+    "confirmed_candidates": 0,
+    "health_score_changes": 0,
+    "hask_changes": 0,
+    "consumer_contract_changes": 0
+  },
+  "frozen_manifests": {
+    "docs/integration/hask_pilot/HADOCS_APPROVED_DIRTY_BASELINE.json": "db463f31565bfb7572724260847192690655c680b29dde215388596eaa50629d",
+    "docs/integration/hask_runtime/PI1_STARTING_STATE_MANIFEST.json": "fa0790e904dd79799d7fa44b2ef7cf89ec9b6d77fb21c90324eba883e70dc46c",
+    "docs/integration/hask_runtime/PI2_COMPATIBILITY_TEST_INCREMENT_STATE.json": "5f6dc990a44189d179a41de71f677eab902dcd4bb8e9c9ab94433f7b0965dd3d",
+    "docs/integration/hask_runtime/PI2_RESUME_STARTING_STATE.json": "9a1fe0dc772ef292ef72838098bd064bd95270029a273316790b9eb6fd164608",
+    "docs/integration/hask_runtime/PI2_EVIDENCE_PIPELINE_BLOCKER_REPORT.md": "78740829ebbdc2c20ac3ab5222893788a52da03cf205a2f8ad46c8152331b15a"
+  },
+  "hask_read_only_snapshot": {
+    "consumer_manifest_sha256": "0f1494f3a18453316c2056444b21555be85ac5bdc6bc2c6f33d82394c752228d",
+    "knowledge_file_count": 333,
+    "knowledge_tree_sha256": "e57fd05be405e6b7e3fe95fbec619c05badf2d65b188e92f87ed41ea47f6d2d3",
+    "schema_file_count": 34,
+    "schema_tree_sha256": "caaea776e7afc185e2d6a99c468c8d92b4610a4b0e3534111a2a169a46018128",
+    "consumer_bundle_file_count": 14,
+    "consumer_bundle_tree_sha256": "c02ed280675b6b71d3cb37d8e137246ffaa098f9d9d60608527d2807af9366d7"
+  }
+}
+

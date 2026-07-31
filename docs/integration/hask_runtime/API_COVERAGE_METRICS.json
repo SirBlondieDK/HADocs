@@ -1,0 +1,25 @@
+{
+  "methodology_version": "1.0.0",
+  "denominator": 50,
+  "categories": {
+    "ALREADY_COLLECTED": {"count":9,"percent":18.0},
+    "COLLECTABLE_WITH_GENERIC_COLLECTOR": {"count":13,"percent":26.0},
+    "REQUIRES_NEW_COLLECTOR": {"count":4,"percent":8.0},
+    "BLOCKED_BY_SEMANTICS": {"count":0,"percent":0.0},
+    "BLOCKED_BY_PRIVACY": {"count":8,"percent":16.0},
+    "NOT_RELEVANT": {"count":16,"percent":32.0}
+  },
+  "coverage": {
+    "current_hadocs_api_coverage_percent":18.0,
+    "potential_coverage_percent":44.0,
+    "maximum_practical_coverage_percent":52.0,
+    "authoritative_coverage_percent":40.0
+  },
+  "formulae": {
+    "current":"ALREADY_COLLECTED / denominator",
+    "potential":"(ALREADY_COLLECTED + COLLECTABLE_WITH_GENERIC_COLLECTOR) / denominator",
+    "maximum_practical":"(ALREADY_COLLECTED + COLLECTABLE_WITH_GENERIC_COLLECTOR + REQUIRES_NEW_COLLECTOR) / denominator",
+    "authoritative":"capabilities with at least one safely reusable AUTHORITATIVE_FACT / denominator"
+  }
+}
+

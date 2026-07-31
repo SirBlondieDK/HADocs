@@ -22,7 +22,7 @@ def replace_function(source: str, name: str, replacement: str) -> str:
 
 
 def remove_html_hook_usage(source: str) -> str:
-    source = source.replace("from src.hadocs.reports.html_hook import generate_html_dashboard\n", "")
+    source = source.replace("from hadocs.reports.html_hook import generate_html_dashboard\n", "")
     lines = source.splitlines(True)
     out = []
     i = 0
@@ -68,7 +68,7 @@ Internal report generation no longer uses this module.
 
 
 def generate_html_dashboard(*args, **kwargs):
-    from src.hadocs.reports.generator import generate_executive_dashboard
+    from hadocs.reports.generator import generate_executive_dashboard
     return generate_executive_dashboard(*args, **kwargs)
 """
         HOOK.write_text(hook_text, encoding="utf-8")

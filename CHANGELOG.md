@@ -2,6 +2,58 @@
 
 Notable changes to HADocs are documented in this file. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) where practical.
 
+## Unreleased — HASK Preview release candidate
+
+### Added
+
+- Added a shared immutable, redacted HASK Preview model used by web and generated HTML report surfaces.
+- Added a dedicated web route, overview link, Windows setting, and Home Assistant App option; all remain default-disabled.
+- Packaged the validated HASK consumer bundle `0.2.0` as a versioned, checksum-bound read-only resource.
+
+### Changed
+
+- Established `hadocs.version` as the documented version authority for source, wheel, CLI, GUI, frozen runtime, and HASK compatibility checks.
+- Consolidated ignore rules and external temporary-test behavior for recovery-safe repository hygiene.
+
+### Security and isolation
+
+- Preview serialization excludes protected installation identifiers, raw entity/device IDs, database keys, credentials, addresses, and configuration URLs.
+- HASK candidates remain experimental and cannot change findings, incidents, Root Causes, recommendations, severity, Health Score, Potential Health Score, or estimated gain.
+
+## Unreleased — HADocs/HASK product consolidation
+
+### Added
+
+- Documented the canonical default-disabled operational database and read-only HASK product boundary.
+- Added explicit Windows wheel and Home Assistant App initialization, enablement, verification, and disablement workflows.
+- Added independent Home Assistant App options for repeat-safe identity initialization, operational persistence, HASK bundle use, candidate evidence, and native integration status.
+
+### Clarified
+
+- Protected installation, entity, and relationship persistence and restart-safe replay are implemented.
+- UniFi and MikroTik remain `INSUFFICIENT_EVIDENCE` because authenticated controller/API probes are intentionally deferred.
+- HASK candidate evidence does not alter findings, recommendations, Root Causes, or Health Score.
+- Historical integration governance records are retained as evidence and do not control current normal product execution.
+
+See the [canonical integration status](docs/integration/HASK_INTEGRATION_STATUS.md).
+
+## Unreleased — HASK isolated integration pilot
+
+### Added
+
+- Added a disabled-by-default, read-only HASK contract loader and bounded UniFi/MikroTik evidence and candidate adapters.
+- Added checksum, version, structure and reference validation plus isolated pilot fixtures, traces and reports.
+- Added regression coverage for failure modes and candidate-only semantics without changing normal scans or Health Score.
+
+## Unreleased — HASK runtime integration foundation
+
+### Added
+
+- Added disabled-by-default local bundle discovery, lifecycle management and internal runtime diagnostics.
+- Added immutable process-local caching with checksum-based invalidation.
+- Added contract, HADocs-version, manifest, typed structure, checksum and reference validation with a future signature-verifier interface.
+- Added graceful startup/reload/shutdown behavior without connecting HASK to normal scans.
+
 ## [0.13.0] - Smart Home Intelligence Dashboard
 
 ### Added

@@ -1,7 +1,7 @@
 import math
 from collections import Counter, defaultdict
-from src.hadocs.domain.findings import FindingCategory, FindingSeverity
-from src.hadocs.domain.scoring import CategoryScore, HealthScoreResult
+from hadocs.domain.findings import FindingCategory, FindingSeverity
+from hadocs.domain.scoring import CategoryScore, HealthScoreResult
 
 class HealthScoreV2:
     VERSION = 2

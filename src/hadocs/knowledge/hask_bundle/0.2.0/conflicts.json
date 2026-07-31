@@ -1,0 +1,145 @@
+{
+  "_generated": "scripts/build_hadocs_contract.py; DO NOT EDIT",
+  "artifact_kind": "conflicts",
+  "contract_version": "1.1.0",
+  "items": [
+    {
+      "claim_ref": "diagnose_docker_container_boundaries_safely__reversible_layered_investigation",
+      "claims": [],
+      "id": "conflict__diagnose_docker_container_boundaries_safely__reversible_layered_investigation",
+      "record_id": "diagnose_docker_container_boundaries_safely",
+      "references": {
+        "claims": [
+          "diagnose_docker_container_boundaries_safely__reversible_layered_investigation"
+        ]
+      },
+      "relationships": [],
+      "resolution": "unresolved",
+      "statement": "Docker and Compose expose separate architecture, lifecycle, health, network, mount, restart and service-definition surfaces, so non-destructive inspection can localize the boundary without changing runtime state.",
+      "type": "conflict"
+    },
+    {
+      "claim_ref": "diagnose_mikrotik_api_path_safely__layered_api_recovery",
+      "claims": [],
+      "id": "conflict__diagnose_mikrotik_api_path_safely__layered_api_recovery",
+      "record_id": "diagnose_mikrotik_api_path_safely",
+      "references": {
+        "claims": [
+          "diagnose_mikrotik_api_path_safely__layered_api_recovery"
+        ]
+      },
+      "relationships": [],
+      "resolution": "unresolved",
+      "statement": "Safe MikroTik recovery requires evidence-driven separation of endpoint, service, TLS, authentication, authorization, command and coordinator branches, including the current documentation-to-Core TLS conflict.",
+      "type": "conflict"
+    },
+    {
+      "claim_ref": "diagnose_system_health_entity_divergence__layered_divergence_diagnosis",
+      "claims": [],
+      "id": "conflict__diagnose_system_health_entity_divergence__layered_divergence_diagnosis",
+      "record_id": "diagnose_system_health_entity_divergence",
+      "references": {
+        "claims": [
+          "diagnose_system_health_entity_divergence__layered_divergence_diagnosis"
+        ]
+      },
+      "relationships": [],
+      "resolution": "unresolved",
+      "statement": "System Health contains integration-selected information, diagnostics may be scoped to a config entry or device, config-entry lifecycle is separate from entity and registry state, and entity availability represents the integration's ability to read or control the underlying target; these layers must therefore be inspected separately before configuration-changing recovery.",
+      "type": "conflict"
+    },
+    {
+      "claim_ref": "mikrotik__documented_divergences",
+      "claims": [],
+      "id": "conflict__mikrotik__documented_divergences",
+      "record_id": "mikrotik",
+      "references": {
+        "claims": [
+          "mikrotik__documented_divergences"
+        ]
+      },
+      "relationships": [],
+      "resolution": "unresolved",
+      "statement": "Public documentation lists presence detection and describes certificate verification, while reviewed Core dev also exposes conditional sensors and uses TLS with certificate and hostname verification disabled when its SSL option is enabled.",
+      "type": "conflict"
+    },
+    {
+      "claim_ref": "mikrotik_api_connectivity_failure__detection_boundary",
+      "claims": [],
+      "id": "conflict__mikrotik_api_connectivity_failure__detection_boundary",
+      "record_id": "mikrotik_api_connectivity_failure",
+      "references": {
+        "claims": [
+          "mikrotik_api_connectivity_failure__detection_boundary"
+        ]
+      },
+      "relationships": [],
+      "resolution": "unresolved",
+      "statement": "Current Core exposes distinct MikroTik connection, timeout, closure, credential-rejection, RouterOS reply and coordinator outcomes, so an explicitly failed structured API-connection result supports connection-state evidence while the failed layer remains unresolved.",
+      "type": "conflict"
+    },
+    {
+      "claim_ref": "nextcloud_service_surface_mismatch__surface_divergence_does_not_identify_cause",
+      "claims": [],
+      "id": "conflict__nextcloud_service_surface_mismatch__surface_divergence_does_not_identify_cause",
+      "record_id": "nextcloud_service_surface_mismatch",
+      "references": {
+        "claims": [
+          "nextcloud_service_surface_mismatch__surface_divergence_does_not_identify_cause"
+        ]
+      },
+      "relationships": [],
+      "resolution": "unresolved",
+      "statement": "Official Home Assistant and Nextcloud sources expose monitoring, returned metadata, update availability, maintenance lifecycle and background-job configuration as distinct surfaces; divergence among them scopes investigation but does not establish one root cause.",
+      "type": "conflict"
+    },
+    {
+      "claim_ref": "scenario_mikrotik_runtime_or_sensor_failure__resource_divergence",
+      "claims": [],
+      "id": "conflict__scenario_mikrotik_runtime_or_sensor_failure__resource_divergence",
+      "record_id": "scenario_mikrotik_runtime_or_sensor_failure",
+      "references": {
+        "claims": [
+          "scenario_mikrotik_runtime_or_sensor_failure__resource_divergence"
+        ]
+      },
+      "relationships": [],
+      "resolution": "unresolved",
+      "statement": "Current Core conditionally creates RouterOS sensors from returned health/system data, while absent data, zero denominators, malformed uptime and coordinator failure produce distinct missing, unknown or unavailable outcomes.",
+      "type": "conflict"
+    },
+    {
+      "claim_ref": "scenario_system_health_entity_divergence__reload_lifecycle_context_is_separate",
+      "claims": [],
+      "id": "conflict__scenario_system_health_entity_divergence__reload_lifecycle_context_is_separate",
+      "record_id": "scenario_system_health_entity_divergence",
+      "references": {
+        "claims": [
+          "scenario_system_health_entity_divergence__reload_lifecycle_context_is_separate"
+        ]
+      },
+      "relationships": [],
+      "resolution": "unresolved",
+      "statement": "Config-entry unload/reload state, integration-selected System Health, coordinator state, and entity availability are separate evidence surfaces; loaded setup does not guarantee entity recovery, and failed unload does not establish the remaining runtime condition.",
+      "type": "conflict"
+    },
+    {
+      "claim_ref": "unifi_controller_connectivity_failure__detection_boundary",
+      "claims": [],
+      "id": "conflict__unifi_controller_connectivity_failure__detection_boundary",
+      "record_id": "unifi_controller_connectivity_failure",
+      "references": {
+        "claims": [
+          "unifi_controller_connectivity_failure__detection_boundary"
+        ]
+      },
+      "relationships": [],
+      "resolution": "unresolved",
+      "statement": "Current Core exposes separate UniFi connection, authentication-required, retry and WebSocket-loss outcomes, so an explicitly failed structured controller-connection result supports connection-state evidence while the failed layer remains unresolved.",
+      "type": "conflict"
+    }
+  ],
+  "metadata": {
+    "policy": "preserve_unresolved"
+  }
+}

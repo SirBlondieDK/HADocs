@@ -1,7 +1,7 @@
 import unittest
-from src.hadocs.domain.findings import Finding, FindingCategory, FindingSeverity, TargetType
-from src.hadocs.domain.policies import Policy, PolicyAction, PolicyScope
-from src.hadocs.intelligence.policy_engine import PolicyEngine
+from hadocs.domain.findings import Finding, FindingCategory, FindingSeverity, TargetType
+from hadocs.domain.policies import Policy, PolicyAction, PolicyScope
+from hadocs.intelligence.policy_engine import PolicyEngine
 
 class PolicyEngineTests(unittest.TestCase):
     def test_suppresses_matching_device(self):

@@ -1,7 +1,7 @@
 import csv
 from pathlib import Path
 
-from src.hadocs.core.models import HADocsModel
+from hadocs.core.models import HADocsModel
 
 
 def export_entities_csv(out: Path, model: HADocsModel) -> None:
@@ -29,10 +29,18 @@ def export_devices_csv(out: Path, model: HADocsModel) -> None:
 
     with (csv_dir / "devices.csv").open("w", encoding="utf-8", newline="") as f:
         writer = csv.writer(f, delimiter=";")
-        writer.writerow(["device_id", "name", "area_id", "manufacturer", "model", "classification", "entity_count"])
+        writer.writerow([
+            "device_id", "name", "area_id", "manufacturer", "model",
+            "classification", "entity_count", "hudd_id", "hudd_level",
+            "hudd_confidence", "hudd_reason",
+        ])
 
         for device in sorted(model.devices.values(), key=lambda d: d.name):
             writer.writerow([
                 device.device_id, device.name, device.area_id, device.manufacturer,
                 device.model, device.classification, len(device.entities),
+                (device.hudd.get("device") or {}).get("hudd_id", ""),
+                device.hudd.get("level", "unknown"),
+                device.hudd.get("confidence", 0.0),
+                device.hudd.get("reason", ""),
             ])

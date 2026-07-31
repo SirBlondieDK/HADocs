@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from src.hadocs.providers import HomeAssistantProvider
+from hadocs.providers import HomeAssistantProvider
 
 
 class EntitiesCollector:

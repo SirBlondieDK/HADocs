@@ -1,6 +1,7 @@
-from src.hadocs.core.device_overrides import DeviceOverride, get_device_policy
-from src.hadocs.core.models import DeviceHealth, HADocsModel
-from src.hadocs.core.state_interpreter import (
+from hadocs.core.device_overrides import DeviceOverride, get_device_policy
+from hadocs.core.entity_eligibility import is_disabled_entity
+from hadocs.core.models import DeviceHealth, HADocsModel
+from hadocs.core.state_interpreter import (
     StateMeaning,
     interpret_entity_state,
 )
@@ -37,6 +38,7 @@ def calculate_device_health(
             for entity in device.entities
             if (
                 not entity.is_ignored
+                and not is_disabled_entity(entity)
                 and entity.is_physical
                 and entity.importance != "diagnostic"
             )
@@ -187,6 +189,7 @@ def calculate_health_score(model: HADocsModel, device_health: list[DeviceHealth]
     ignored_bad = [
         e for e in model.entities.values()
         if e.is_ignored and e.state in ("unknown", "unavailable")
+        and not is_disabled_entity(e)
     ]
     if ignored_bad:
         notes.append(f"{len(ignored_bad)} ignored diagnostic/system entities are unknown/unavailable")
@@ -198,7 +201,11 @@ def find_duplicate_names_by_domain(model: HADocsModel) -> dict[tuple[str, str], 
     grouped: dict[tuple[str, str], list[str]] = {}
 
     for entity in model.entities.values():
-        if entity.is_ignored or entity.importance == "diagnostic":
+        if (
+            entity.is_ignored
+            or entity.importance == "diagnostic"
+            or is_disabled_entity(entity)
+        ):
             continue
         if entity.domain in {"device_tracker", "sensor"}:
             continue
@@ -213,7 +220,11 @@ def get_critical_entities(model: HADocsModel):
     for entity in model.entities.values():
         if entity.state not in ("unknown", "unavailable"):
             continue
-        if entity.is_ignored or entity.importance == "diagnostic":
+        if (
+            entity.is_ignored
+            or entity.importance == "diagnostic"
+            or is_disabled_entity(entity)
+        ):
             continue
         eid = entity.entity_id.lower()
         if any(pattern in eid for pattern in CRITICAL_PATTERNS):
@@ -275,22 +286,6 @@ def _hs_list(value: Any) -> list[Any]:
     return []
 
 
-def is_disabled_entity(entity: Any) -> bool:
-    disabled_by = _hs_get(entity, "disabled_by")
-    if disabled_by:
-        return True
-
-    registry = _hs_get(entity, "entity_registry", {})
-    if isinstance(registry, dict) and registry.get("disabled_by"):
-        return True
-
-    if bool(_hs_get(entity, "disabled", False)):
-        return True
-
-    state = str(_hs_get(entity, "state", "")).lower()
-    return state in {"disabled", "unavailable_disabled"}
-
-
 def _hs_severity(incident: Any) -> str:
     severity = str(_hs_get(incident, "severity", "")).lower()
     if severity in {"critical", "error"}:
@@ -320,7 +315,9 @@ def calculate_health_score_v2(model: Any, incidents: list[Any]) -> HealthScoreBr
     - Disabled entities are ignored as problems.
     """
 
-    entities = _hs_list(_hs_get(model, "entities", []))
+    model_entities = _hs_get(model, "entities", [])
+    entity_lookup = model_entities if isinstance(model_entities, dict) else {}
+    entities = _hs_list(model_entities)
     enabled_entities = [entity for entity in entities if not is_disabled_entity(entity)]
     disabled_entities = max(0, len(entities) - len(enabled_entities))
     enabled_count = max(1, len(enabled_entities))
@@ -328,12 +325,19 @@ def calculate_health_score_v2(model: Any, incidents: list[Any]) -> HealthScoreBr
     affected_active: set[str] = set()
     disabled_problem_entities = 0
 
+    eligible_incidents: list[Any] = []
     for incident in incidents or []:
-        for entity in _hs_list(_hs_get(incident, "affected_entities", [])):
-            if is_disabled_entity(entity):
+        incident_entities = _hs_list(_hs_get(incident, "affected_entities", []))
+        active_incident_entities = 0
+        for entity in incident_entities:
+            resolved = entity_lookup.get(entity, entity) if isinstance(entity, str) else entity
+            if is_disabled_entity(resolved):
                 disabled_problem_entities += 1
                 continue
-            affected_active.add(_hs_entity_key(entity))
+            active_incident_entities += 1
+            affected_active.add(_hs_entity_key(resolved))
+        if not incident_entities or active_incident_entities:
+            eligible_incidents.append(incident)
 
     affected_count = len(affected_active)
 
@@ -348,7 +352,7 @@ def calculate_health_score_v2(model: Any, incidents: list[Any]) -> HealthScoreBr
     warning = 0
     maintenance = 0
 
-    for incident in incidents or []:
+    for incident in eligible_incidents:
         severity = _hs_severity(incident)
         if severity == "critical":
             critical += 1
@@ -362,7 +366,7 @@ def calculate_health_score_v2(model: Any, incidents: list[Any]) -> HealthScoreBr
 
     # Root causes indicate cleanup scope. Keep this capped so 15-20 root causes
     # is "needs attention", not automatically "critical".
-    root_cause_penalty = min(6, round(len(incidents or []) * 0.25))
+    root_cause_penalty = min(6, round(len(eligible_incidents) * 0.25))
 
     total_penalty = min(45, normalized_penalty + severity_penalty + root_cause_penalty)
     score = max(45, 100 - total_penalty)
@@ -426,4 +430,3 @@ def apply_health_score_v2(model: Any, executive: Any, incidents: list[Any]) -> A
             pass
 
     return executive
-

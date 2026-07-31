@@ -1,0 +1,1 @@
+"""HUDD database migrations."""

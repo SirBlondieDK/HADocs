@@ -1,4 +1,4 @@
-from src.hadocs.analyzers.health import calculate_health_score
+from hadocs.analyzers.health import calculate_health_score
 
 
 def test_health_score_ignores_system_entities_note():

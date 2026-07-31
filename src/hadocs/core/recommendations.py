@@ -1,5 +1,5 @@
-from src.hadocs.core.health import find_duplicate_names_by_domain
-from src.hadocs.core.models import DeviceHealth, HADocsModel
+from hadocs.core.health import find_duplicate_names_by_domain
+from hadocs.core.models import DeviceHealth, HADocsModel
 
 
 def build_recommendations(model: HADocsModel, device_health: list[DeviceHealth]) -> list[dict]:

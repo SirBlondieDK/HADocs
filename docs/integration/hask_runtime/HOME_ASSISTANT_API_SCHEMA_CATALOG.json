@@ -1,0 +1,23 @@
+{
+  "atlas_reference": "HOME_ASSISTANT_API_ATLAS.json",
+  "schema_policy": "Only fields explicitly documented are authoritative; live-only fields are structural observations.",
+  "field_classification_rule": "Every field listed under an atlas capability inherits that capability's classification and privacy class unless an explicit stricter field type such as secret or secret_url is stated. Arbitrary object members remain integration-specific and STRUCTURED_CONTEXT_DEPENDENT.",
+  "documented_envelopes": {
+    "rest_state": {"entity_id":"string","state":"string","attributes":"object","last_changed":"timestamp","last_updated":"timestamp?"},
+    "websocket_result": {"id":"integer","type":"result","success":"boolean","result":"any?","error":"object?"},
+    "websocket_error": {"code":"string","message":"string","translation_key":"string?","translation_domain":"string?","translation_placeholders":"object?"},
+    "websocket_event": {"id":"integer","type":"event","event":"object"}
+  },
+  "live_structural_schemas": {
+    "rest_api_root": {"message":"string"},
+    "rest_config": {"allowlist_external_dirs":"array","allowlist_external_urls":"array","components":"array","config_dir":"string","config_source":"string","country":"string","currency":"string","debug":"boolean","elevation":"integer","external_url":"null","internal_url":"null","language":"string","latitude":"number","location_name":"string","longitude":"number","radius":"integer","recovery_mode":"boolean","safe_mode":"boolean","state":"string","time_zone":"string","unit_system":"object","version":"string","whitelist_external_dirs":"array"},
+    "state_item": {"attributes":"object","context":"object","entity_id":"string","last_changed":"string","last_reported":"string","last_updated":"string","state":"string"},
+    "rest_service_item": {"domain":"string","services":"object"},
+    "rest_event_item": {"event":"string","listener_count":"integer"},
+    "rest_calendar_item": {"entity_id":"string","name":"string"},
+    "entity_registry_item_observed_undocumented_schema": {"area_id":"string|null","categories":"object","config_entry_id":"string|null","config_subentry_id":"string|null","created_at":"number","device_id":"string|null","disabled_by":"string|null","entity_category":"string|null","entity_id":"string","has_entity_name":"boolean","hidden_by":"string|null","icon":"string|null","id":"string","labels":"array","modified_at":"number","name":"string|null","options":"object","original_name":"string|null","platform":"string","translation_key":"string|null","unique_id":"string"},
+    "device_registry_item_observed_undocumented_schema": {"area_id":"string|null","config_entries":"array","config_entries_subentries":"object","configuration_url":"string|null","connections":"array","created_at":"number","disabled_by":"string|null","entry_type":"string|null","hw_version":"string|null","id":"string","identifiers":"array","labels":"array","manufacturer":"string|null","model":"string|null","model_id":"string|null","modified_at":"number","name":"string","name_by_user":"string|null","primary_config_entry":"string|null","serial_number":"string|null","sw_version":"string|null","via_device_id":"string|null"},
+    "area_registry_item_observed_undocumented_schema": {"aliases":"array","area_id":"string","created_at":"number","floor_id":"string","humidity_entity_id":"string|null","icon":"string","labels":"array","modified_at":"number","name":"string","picture":"null","temperature_entity_id":"string|null"}
+  },
+  "stability": "Live structural schemas are version-tagged 2026.7.3 and are not field-level compatibility guarantees."
+}

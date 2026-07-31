@@ -1,5 +1,5 @@
-from src.hadocs.advisor.engine import health_status, estimate_repair_minutes
-from src.hadocs.advisor.models import ActionPlan
+from hadocs.advisor.engine import health_status, estimate_repair_minutes
+from hadocs.advisor.models import ActionPlan
 
 
 def test_health_status():

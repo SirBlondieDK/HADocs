@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from src.hadocs.core.incidents import hidden_incident_count, visible_incidents
-from src.hadocs.html.components import action_row, esc, health_ring, metric, root_cause_card
-from src.hadocs.html.css import dashboard_css
+from hadocs.core.incidents import hidden_incident_count, visible_incidents
+from hadocs.html.components import action_row, esc, health_ring, metric, root_cause_card
+from hadocs.html.css import dashboard_css
 
 
 def build_ai_summary(executive, incidents) -> str:

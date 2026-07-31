@@ -3,6 +3,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 
+# One product-version authority for source, wheel, CLI, GUI, frozen builds,
+# and HASK compatibility negotiation. The release number was already the
+# documented public desktop runtime baseline; the preview channel is kept
+# separately so SemVer minimum checks use the stable release triplet.
+RELEASE_VERSION = "0.17.0"
+RELEASE_CHANNEL = "rc1"
+
+
 @dataclass(frozen=True)
 class ProductVersion:
     name: str
@@ -23,26 +31,26 @@ class ProductVersion:
 
 CORE = ProductVersion(
     name="HADocs Core",
-    version="0.3.0",
-    channel="alpha",
+    version=RELEASE_VERSION,
+    channel=RELEASE_CHANNEL,
 )
 
 WINDOWS = ProductVersion(
     name="HADocs Windows",
-    version="0.15.0",
-    channel="rc1",
+    version=RELEASE_VERSION,
+    channel=RELEASE_CHANNEL,
 )
 
 DOCKER = ProductVersion(
     name="HADocs Docker",
-    version="0.3.0",
-    channel="alpha",
+    version=RELEASE_VERSION,
+    channel=RELEASE_CHANNEL,
 )
 
 HOME_ASSISTANT_ADDON = ProductVersion(
     name="HADocs Home Assistant Add-on",
-    version="0.3.0",
-    channel="alpha",
+    version=RELEASE_VERSION,
+    channel=RELEASE_CHANNEL,
 )
 
 # Backwards-compatible application metadata.

@@ -1,0 +1,2448 @@
+HOME ASSISTANT – PRODUCENTER, BRANDS, UNDERBRANDS OG FORBINDELSESTYPE
+Research-masterliste / seed inventory
+Version: 1.1
+Dato: 2026-07-21
+
+===============================================================================
+FORMÅL OG VIGTIG AFGRÆNSNING
+===============================================================================
+
+Denne tekstfil er en bred research-masterliste til HA-Stability-Knowledge.
+Den samler producenter, produktbrands, underbrands, platforme og white-label-
+økosystemer, som kan anvendes med Home Assistant via:
+
+- officiel Home Assistant Core-integration
+- Works with Home Assistant-certificerede produkter
+- Matter
+- HomeKit Device
+- Zigbee via ZHA eller Zigbee2MQTT
+- Z-Wave via Z-Wave JS
+- Bluetooth
+- MQTT
+- ESPHome
+- lokal HTTP/API, RTSP, ONVIF, Modbus eller andre åbne protokoller
+- autoritative tredjepartsintegrationer
+- cloud-integrationer
+- custom/HACS-integrationer
+
+Der findes ikke én stabil og komplet liste over “alle producenter, der virker med
+Home Assistant”. Home Assistant har over tusind integrationer, og standarder som
+Matter, Zigbee, Z-Wave, HomeKit, Bluetooth og MQTT gør, at produkter kan virke uden
+en producentspecifik integration.
+
+Kompatibilitet skal derfor altid verificeres for:
+
+- præcis model
+- hardware-revision
+- region
+- firmware
+- forbindelsessti
+- Home Assistant-version
+- integrationens aktuelle dokumentation
+
+===============================================================================
+FORBINDELSESTYPE
+===============================================================================
+
+LOKAL
+Styring og normal drift foregår lokalt mellem Home Assistant og produktet/hubben.
+Internet kan stadig være nødvendigt til førstegangsopsætning, konto, firmware eller
+fjernadgang.
+
+CLOUD
+Normal Home Assistant-styring afhænger af producentens internetbaserede tjeneste.
+
+BEGGE
+Der findes både lokal og cloud-baseret funktionalitet, eller forskellige
+forbindelsesstier afhænger af model, produktfamilie eller opsætning.
+
+STANDARD
+Produktet kan fungere lokalt gennem Matter, Zigbee, Z-Wave, HomeKit Device,
+Bluetooth, MQTT, Modbus, ONVIF, RTSP eller en anden standard. Den konkrete model
+skal verificeres.
+
+VARIERER
+Producenten har flere produktfamilier eller OEM-varianter med forskellig adfærd.
+
+UKENDT
+Kræver målrettet research af den konkrete model og integrationsvej.
+
+===============================================================================
+SUPPORTKODER
+===============================================================================
+
+[HA-CORE]   Officiel integration inkluderet i Home Assistant Core.
+[WWHA]      Works with Home Assistant-certificering; verificér præcis model.
+[STANDARD]  Understøttes gennem åben eller industristandardiseret protokol.
+[UPSTREAM]  Autoritativt eksternt projekt med Home Assistant-relevans.
+[CUSTOM]    Typisk HACS/custom integration; ikke officiel Core-support.
+[TUYA]      Tuya/Smart Life-baseret eller ofte solgt med Tuya-platform.
+[OEM]       White-label/OEM; samme brand kan bruge flere forskellige platforme.
+[GROUP]     Koncern eller moderbrand.
+[SUBBRAND]  Underbrand, produktbrand eller regionalt brand.
+[LEGACY]    Ældre, udfaset eller begrænset integrationsvej.
+[CHECK]     Skal verificeres på modelniveau.
+
+===============================================================================
+AUTORITATIVE STARTKILDER
+===============================================================================
+
+Home Assistant Integrations:
+https://www.home-assistant.io/integrations/
+
+Works with Home Assistant:
+https://works-with.home-assistant.io/certified-products/
+
+Home Assistant Brands:
+https://github.com/home-assistant/brands
+
+Home Assistant Core:
+https://github.com/home-assistant/core
+
+Zigbee2MQTT Supported Devices:
+https://www.zigbee2mqtt.io/supported-devices/
+
+Z-Wave JS Device Database:
+https://devices.zwave-js.io/
+
+Matter-certificering:
+Connectivity Standards Alliance Product Search
+
+===============================================================================
+1. BELYSNING, KONTAKTER, SENSORER OG GENERELT SMART HOME
+===============================================================================
+
+Philips Hue / Signify
+Support: [HA-CORE] [STANDARD] [WWHA-CHECK]
+Forbindelse: BEGGE
+Noter: Hue Bridge styres lokalt. Visse konto-, fjernadgangs- og cloudfunktioner
+bruger Signify/Hue Cloud. Direkte Zigbee-parring via ZHA eller Zigbee2MQTT er en
+separat lokal forbindelsessti.
+
+WiZ / Signify
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+Noter: Home Assistant-integrationen benytter lokal kommunikation på understøttede
+produkter; app, onboarding og eksterne funktioner kan bruge cloud.
+
+Shelly
+Support: [HA-CORE] [WWHA-CHECK]
+Forbindelse: LOKAL/BEGGE
+Noter: Officiel integration er primært lokal. Shelly Cloud er valgfri for mange
+produkter, men generations-, Bluetooth- og cloudfunktioner varierer.
+
+IKEA Home smart
+Support: [HA-CORE] [STANDARD] [WWHA-CHECK]
+Forbindelse: BEGGE
+Noter: DIRIGERA, Matter, ældre gateway og direkte Zigbee er forskellige stier.
+Direkte Zigbee er lokal.
+
+Aqara
+Support: [HA-CORE] [STANDARD] [WWHA-CHECK]
+Forbindelse: BEGGE
+Noter: Aqara Hub, HomeKit Device, Matter og direkte Zigbee har forskellig feature-
+dækning. Nogle vendor-app-funktioner er cloudbaserede.
+
+SONOFF / ITEAD
+Support: [STANDARD] [HA-CORE-modelafhængig] [CUSTOM]
+Forbindelse: BEGGE
+Noter: Zigbee er lokal via ZHA/Zigbee2MQTT. eWeLink-produkter kan være cloud.
+Tasmota/ESPHome på understøttet hardware kan give lokal drift.
+
+TP-Link Kasa Smart
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+Noter: Mange enheder styres lokalt; onboarding, konto og enkelte nyere modeller
+kan være cloudafhængige.
+
+TP-Link Tapo
+Support: [HA-CORE]
+Forbindelse: BEGGE
+Noter: Adfærd varierer mellem stik, lys, sensorer, kameraer og hubs. Konto kan være
+påkrævet selv ved lokal drift.
+
+Belkin WeMo
+Support: [HA-CORE]
+Forbindelse: LOKAL
+Noter: Lokal LAN-integration på understøttede modeller.
+
+LIFX
+Support: [HA-CORE]
+Forbindelse: BEGGE
+Noter: Lokal LAN-integration findes; LIFX Cloud er en separat cloudvej.
+
+Nanoleaf
+Support: [HA-CORE] [STANDARD]
+Forbindelse: LOKAL/BEGGE
+Noter: Lokal integration på understøttede paneler; Matter/Thread og cloud/app
+varierer efter produkt.
+
+Govee
+Support: [HA-CORE-modelafhængig] [CUSTOM]
+Forbindelse: BEGGE
+Noter: Bluetooth og enkelte lokale LAN-stier er lokale; mange produkter bruger
+Govee Cloud.
+
+Twinkly
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+Noter: Lokal kontrol kan være mulig; app og opsætning kan bruge cloud.
+
+Eve / Eve Systems
+Support: [STANDARD] [WWHA-CHECK]
+Forbindelse: LOKAL
+Noter: HomeKit Device, Thread og Matter er lokale stier.
+
+SwitchBot
+Support: [HA-CORE] [STANDARD] [WWHA-CHECK]
+Forbindelse: BEGGE
+Noter: Bluetooth kan være lokal. Hub/cloud og Matter-over-bridge varierer.
+
+Samsung SmartThings
+Support: [HA-CORE]
+Forbindelse: CLOUD/BEGGE
+Noter: SmartThings-integrationen er kontobaseret/cloud. Enkelte produkter kan
+alternativt bruges lokalt via Zigbee, Z-Wave eller Matter.
+
+Homey / Athom
+Support: [HA-CORE]
+Forbindelse: BEGGE
+Noter: Afhænger af Homey-model og API-sti; lokal platform med cloudtjenester.
+
+Hubitat
+Support: [HA-CORE/CUSTOM-afhængig]
+Forbindelse: LOKAL
+Noter: Typisk lokal Maker API/integration.
+
+HomeSeer
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Homee
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Fibaro
+Support: [HA-CORE] [STANDARD]
+Forbindelse: BEGGE
+Noter: Fibaro-controllerintegration kan være lokal. Fibaro Z-Wave-enheder kan
+bruges lokalt gennem Z-Wave JS.
+
+Aeotec
+Support: [STANDARD]
+Forbindelse: LOKAL
+Noter: Primært Zigbee, Z-Wave, Matter eller hubafhængig.
+
+Jasco / Enbrighten
+Support: [STANDARD]
+Forbindelse: LOKAL
+Noter: Primært Z-Wave eller Zigbee, modelafhængigt.
+
+Zooz
+Support: [STANDARD]
+Forbindelse: LOKAL
+Noter: Z-Wave JS.
+
+Inovelli
+Support: [STANDARD]
+Forbindelse: LOKAL
+Noter: Z-Wave eller Zigbee, produktlinjeafhængigt.
+
+Leviton
+Support: [HA-CORE] [STANDARD]
+Forbindelse: BEGGE
+Noter: Decora Wi-Fi kan have vendorintegration; Z-Wave/Matter er lokale stier.
+
+Lutron / Caséta / HomeWorks
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+Noter: Lokal hubintegration på understøttede systemer; vendor cloud kan bruges af
+andre funktioner.
+
+Legrand
+Support: [HA-CORE] [STANDARD]
+Forbindelse: BEGGE
+
+BTicino / Legrand
+Support: [HA-CORE] [SUBBRAND]
+Forbindelse: BEGGE
+
+Netatmo / Legrand
+Support: [HA-CORE] [SUBBRAND]
+Forbindelse: CLOUD/BEGGE
+Noter: Mange Netatmo-funktioner bruger cloud; visse lokale protokoller kan
+forekomme afhængigt af produkt.
+
+Schneider Electric
+Support: [STANDARD] [HA-CORE-produktlinjeafhængig]
+Forbindelse: BEGGE
+
+Wiser / Schneider Electric
+Support: [HA-CORE-produktlinjeafhængig]
+Forbindelse: LOKAL/BEGGE
+
+Clipsal / Schneider Electric
+Support: [SUBBRAND] [STANDARD/CHECK]
+Forbindelse: VARIERER
+
+Bosch Smart Home
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+Noter: Controllerbaseret lokal integration, mens konto og vendorservice kan
+forekomme.
+
+Homematic / eQ-3
+Support: [HA-CORE]
+Forbindelse: LOKAL
+Noter: Lokal CCU/Homegear-baseret integration.
+
+Homematic IP Cloud
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Develco Products
+Support: [STANDARD]
+Forbindelse: LOKAL
+Noter: Zigbee.
+
+Frient / Develco
+Support: [STANDARD]
+Forbindelse: LOKAL
+Noter: Zigbee; enkelte hubprodukter kan have andre stier.
+
+Ubisys
+Support: [HA-CORE] [STANDARD]
+Forbindelse: LOKAL
+Noter: Zigbee.
+
+Innr
+Support: [STANDARD]
+Forbindelse: LOKAL
+Noter: Zigbee.
+
+LEDVANCE
+Support: [STANDARD]
+Forbindelse: LOKAL/BEGGE
+Noter: Zigbee/Matter er lokale; Wi-Fi-produktfamilier kan være cloud/Tuya.
+
+OSRAM Smart+
+Support: [STANDARD] [LEGACY]
+Forbindelse: LOKAL/BEGGE
+
+Müller-Licht tint
+Support: [STANDARD]
+Forbindelse: LOKAL
+Noter: Zigbee.
+
+Paulmann
+Support: [STANDARD]
+Forbindelse: LOKAL
+Noter: Zigbee/Matter afhængigt af model.
+
+Sengled
+Support: [STANDARD]
+Forbindelse: LOKAL/BEGGE
+Noter: Zigbee er lokal; Wi-Fi/cloudprodukter varierer.
+
+Linkind
+Support: [STANDARD]
+Forbindelse: LOKAL/BEGGE
+
+Third Reality
+Support: [STANDARD]
+Forbindelse: LOKAL
+Noter: Zigbee/Matter.
+
+AduroSmart ERIA
+Support: [STANDARD]
+Forbindelse: LOKAL
+Noter: Zigbee.
+
+Namron
+Support: [STANDARD]
+Forbindelse: LOKAL/BEGGE
+Noter: Mange Zigbee/Z-Wave-enheder er lokale; Wi-Fi/Tuya-varianter findes.
+
+Sunricher
+Support: [STANDARD] [OEM]
+Forbindelse: LOKAL/VARIERER
+Noter: Zigbee, Z-Wave, DALI og OEM-varianter.
+
+EcoDim
+Support: [STANDARD]
+Forbindelse: LOKAL
+Noter: Zigbee/Z-Wave/Matter afhængigt af model.
+
+ROBB smarrt
+Support: [STANDARD]
+Forbindelse: LOKAL
+
+Niko
+Support: [HA-CORE/standardafhængig]
+Forbindelse: LOKAL/BEGGE
+
+Plejd
+Support: [HA-CORE]
+Forbindelse: LOKAL
+Noter: Bluetooth-baseret lokal integration.
+
+Casambi
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+BleBox
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+Broadlink
+Support: [HA-CORE]
+Forbindelse: LOKAL
+Noter: Enheder styres over lokalt netværk; opsætning kan kræve app.
+
+Bond
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Crownstone
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Flic
+Support: [HA-CORE]
+Forbindelse: LOKAL
+Noter: Flic Hub eller lokal Bluetooth/integrationsvej.
+
+Xiaomi
+Support: [HA-CORE-produktlinjeafhængig] [STANDARD]
+Forbindelse: BEGGE
+Noter: Xiaomi Miio, Bluetooth, Zigbee, Matter og cloud er forskellige stier.
+
+Yeelight / Xiaomi-økosystem
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+Noter: LAN control er lokal; konto/app kan anvendes til opsætning.
+
+Mi Home / Xiaomi
+Support: [HA-CORE-produktlinjeafhængig]
+Forbindelse: CLOUD/BEGGE
+
+Meross
+Support: [HA-CORE/CUSTOM] [STANDARD]
+Forbindelse: BEGGE
+Noter: Matter er lokal; traditionelle Meross-integrationer kan bruge cloud eller
+lokale custom-stier.
+
+Wyze
+Support: [CUSTOM]
+Forbindelse: CLOUD/BEGGE
+Noter: Ingen generel officiel Core-integration; RTSP/Matter/TUTK/custom varierer.
+
+Nedis SmartLife
+Support: [TUYA] [OEM]
+Forbindelse: CLOUD/BEGGE
+Noter: Mange SmartLife-produkter er Tuya Cloud. Zigbee-produkter kan bruges lokalt
+via ZHA/Zigbee2MQTT, hvis modellen understøttes.
+
+Denver Smart Home
+Support: [TUYA] [OEM]
+Forbindelse: CLOUD/BEGGE
+Noter: Mange Denver Smart Home-enheder er Tuya/Smart Life-baserede. Denver sælger
+også produkter på andre platforme. Verificér app, model-ID og radio.
+
+Moes / MOES
+Support: [TUYA] [STANDARD] [OEM]
+Forbindelse: CLOUD/BEGGE
+Noter: Wi-Fi er ofte Tuya Cloud; Zigbee kan bruges lokalt via ZHA/Zigbee2MQTT.
+
+Zemismart
+Support: [TUYA] [STANDARD] [OEM]
+Forbindelse: CLOUD/BEGGE
+
+Nous
+Support: [TUYA] [STANDARD] [OEM]
+Forbindelse: CLOUD/BEGGE
+Noter: Nogle modeller leveres med Tasmota og kan være fuldt lokale.
+
+BlitzWolf
+Support: [TUYA] [OEM]
+Forbindelse: CLOUD/BEGGE
+
+Avatto
+Support: [TUYA] [STANDARD] [OEM]
+Forbindelse: CLOUD/BEGGE
+
+LoraTap
+Support: [TUYA] [STANDARD] [OEM]
+Forbindelse: CLOUD/BEGGE
+
+Neo Coolcam / NEO
+Support: [TUYA] [STANDARD] [OEM]
+Forbindelse: CLOUD/BEGGE
+
+Saswell
+Support: [TUYA] [STANDARD] [OEM]
+Forbindelse: CLOUD/BEGGE
+
+Beca
+Support: [TUYA] [OEM]
+Forbindelse: CLOUD/BEGGE
+
+Hysen
+Support: [TUYA] [OEM]
+Forbindelse: CLOUD/BEGGE
+
+Calex Smart
+Support: [TUYA] [OEM]
+Forbindelse: CLOUD/BEGGE
+
+LSC Smart Connect
+Support: [TUYA] [OEM]
+Forbindelse: CLOUD/BEGGE
+
+Action Smart / LSC
+Support: [TUYA] [SUBBRAND]
+Forbindelse: CLOUD/BEGGE
+
+Lidl Smart Home / Silvercrest
+Support: [STANDARD] [TUYA-produktlinjeafhængig]
+Forbindelse: LOKAL/BEGGE
+Noter: Zigbee-enheder kan bruges lokalt. Gateway/app-platform har varieret.
+
+Silvercrest
+Support: [SUBBRAND] [STANDARD] [TUYA-CHECK]
+Forbindelse: VARIERER
+
+Hama Smart Home
+Support: [TUYA] [OEM]
+Forbindelse: CLOUD/BEGGE
+
+Woox
+Support: [TUYA] [OEM]
+Forbindelse: CLOUD/BEGGE
+
+Kogan SmarterHome
+Support: [TUYA] [OEM]
+Forbindelse: CLOUD/BEGGE
+
+Brilliant Smart
+Support: [TUYA] [OEM]
+Forbindelse: CLOUD/BEGGE
+
+Grid Connect / Arlec
+Support: [TUYA] [OEM]
+Forbindelse: CLOUD/BEGGE
+
+Mirabella Genio
+Support: [TUYA] [OEM]
+Forbindelse: CLOUD/BEGGE
+
+Mercator Ikuü
+Support: [TUYA] [STANDARD] [OEM]
+Forbindelse: CLOUD/BEGGE
+
+Deltaco Smart Home
+Support: [TUYA] [OEM]
+Forbindelse: CLOUD/BEGGE
+
+Proove
+Support: [TUYA/OEM-CHECK]
+Forbindelse: VARIERER
+
+Tellur Smart
+Support: [TUYA] [OEM]
+Forbindelse: CLOUD/BEGGE
+
+Aigostar
+Support: [TUYA] [OEM]
+Forbindelse: CLOUD/BEGGE
+
+Antela
+Support: [TUYA] [OEM]
+Forbindelse: CLOUD/BEGGE
+
+Gosund
+Support: [TUYA] [OEM]
+Forbindelse: CLOUD/BEGGE
+Noter: Nogle ældre modeller kan flashes med Tasmota/ESPHome; det er modelafhængigt.
+
+Teckin
+Support: [TUYA] [OEM]
+Forbindelse: CLOUD/BEGGE
+
+Maxcio
+Support: [TUYA] [OEM]
+Forbindelse: CLOUD/BEGGE
+
+Treatlife
+Support: [TUYA] [OEM]
+Forbindelse: CLOUD/BEGGE
+
+BN-LINK
+Support: [TUYA/OEM-CHECK]
+Forbindelse: VARIERER
+
+Smartwares
+Support: [TUYA/OEM-CHECK]
+Forbindelse: VARIERER
+
+KlikAanKlikUit / Trust Smart Home
+Support: [HA-CORE/standardafhængig]
+Forbindelse: LOKAL/BEGGE
+
+EcoWitt
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Ambient Weather
+Support: [HA-CORE]
+Forbindelse: CLOUD/BEGGE
+
+Airthings
+Support: [HA-CORE]
+Forbindelse: BEGGE
+Noter: BLE kan være lokal; cloudintegrationen er separat.
+
+AirGradient
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Apollo Automation
+Support: [HA-CORE] [ESPHome]
+Forbindelse: LOKAL
+
+Everything Presence / Lewis Barclay
+Support: [ESPHome]
+Forbindelse: LOKAL
+
+Athom Technology
+Support: [ESPHome/Tasmota]
+Forbindelse: LOKAL
+Noter: Må ikke forveksles med Athom Homey.
+
+Konnected
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+ESPHome-kompatible producenter og DIY-enheder
+Support: [HA-CORE] [UPSTREAM]
+Forbindelse: LOKAL
+Noter: Efter installation og API-konfiguration kan normal drift være lokal.
+
+Tasmota-kompatible producenter og DIY-enheder
+Support: [HA-CORE] [UPSTREAM]
+Forbindelse: LOKAL
+Noter: MQTT-broker kræves. Flashbarhed varierer med hardware og firmwarelås.
+
+===============================================================================
+2. LÅSE, ALARMER, DØRE OG SIKKERHED
+===============================================================================
+
+Nuki
+Support: [HA-CORE]
+Forbindelse: BEGGE
+Noter: Lokal bridge/API og cloudfunktioner varierer efter generation.
+
+Yale / ASSA ABLOY
+Support: [HA-CORE/standardafhængig]
+Forbindelse: BEGGE
+Noter: Yale Access/August kan være cloud; Zigbee, Z-Wave, Matter og HomeKit kan
+være lokale.
+
+August / ASSA ABLOY
+Support: [HA-CORE]
+Forbindelse: CLOUD/BEGGE
+
+Tedee
+Support: [HA-CORE]
+Forbindelse: CLOUD/BEGGE
+
+LOQED
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Danalock
+Support: [STANDARD]
+Forbindelse: LOKAL/BEGGE
+Noter: Bluetooth, Z-Wave eller Zigbee afhængigt af model.
+
+Schlage / Allegion
+Support: [STANDARD] [WWHA-CHECK]
+Forbindelse: LOKAL/BEGGE
+
+Kwikset / Spectrum Brands / ASSA ABLOY-linjeafhængig
+Support: [STANDARD]
+Forbindelse: LOKAL/BEGGE
+
+Ultraloq / U-tec
+Support: [HA-CORE]
+Forbindelse: CLOUD/BEGGE
+
+Level Lock
+Support: [STANDARD]
+Forbindelse: LOKAL/BEGGE
+Noter: HomeKit/Matter/Bluetooth afhængigt af model.
+
+SwitchBot Lock
+Support: [HA-CORE] [STANDARD]
+Forbindelse: BEGGE
+
+Abode
+Support: [HA-CORE]
+Forbindelse: CLOUD/BEGGE
+
+Ring / Amazon
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Blink / Amazon
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+SimpliSafe
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Verisure
+Support: [HA-CORE]
+Forbindelse: CLOUD
+Noter: Regions- og kontospecifik.
+
+DSC via Envisalink
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+Honeywell/Resideo alarmsystemer
+Support: [HA-CORE-produktlinjeafhængig]
+Forbindelse: CLOUD/BEGGE
+
+Bosch Alarm
+Support: [HA-CORE-produktlinjeafhængig]
+Forbindelse: LOKAL/BEGGE
+
+Elk M1
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+AlarmDecoder
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+Ajax Systems
+Support: [CUSTOM]
+Forbindelse: CLOUD/BEGGE
+Noter: Officiel Home Assistant Core-support skal verificeres.
+
+Risco
+Support: [CUSTOM]
+Forbindelse: CLOUD/BEGGE
+
+Sector Alarm
+Support: [CUSTOM]
+Forbindelse: CLOUD
+
+SikkertHjem
+Support: [CUSTOM/UNKNOWN]
+Forbindelse: CLOUD/VARIERER
+
+===============================================================================
+3. KAMERAER, DØRKLOKKER OG NVR
+===============================================================================
+
+Reolink
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+Noter: Lokal API, ONVIF/RTSP og NVR-stier; cloud/app kan bruges til eksterne
+funktioner. Modelstøtte varierer.
+
+Ubiquiti UniFi Protect
+Support: [HA-CORE]
+Forbindelse: LOKAL
+Noter: Lokal Protect-controller/console kræves.
+
+Frigate
+Support: [UPSTREAM] [HA integration]
+Forbindelse: LOKAL
+Noter: Lokal NVR/analyse. Kan bruge MQTT, RTSP/go2rtc og eksterne AI-tjenester,
+hvis brugeren vælger det.
+
+Axis Communications
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+Hikvision
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+Noter: Lokal API/ONVIF/RTSP; Hik-Connect er cloud.
+
+Dahua
+Support: [STANDARD] [CUSTOM]
+Forbindelse: LOKAL/BEGGE
+Noter: ONVIF/RTSP/lokal API; DMSS/P2P er cloud.
+
+Amcrest
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Foscam
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+EZVIZ / Hikvision-relateret
+Support: [HA-CORE]
+Forbindelse: CLOUD/BEGGE
+
+eufy Security / Anker
+Support: [HA-CORE/CUSTOM]
+Forbindelse: BEGGE
+Noter: Lokal streaming/funktioner varierer kraftigt; konto/cloud er ofte nødvendig.
+
+Arlo
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Google Nest cameras
+Support: [HA-CORE]
+Forbindelse: CLOUD/BEGGE
+Noter: Google cloud/API kræves til integrationen; lokal streaming kan forekomme i
+produktarkitekturen, men HA-stien er cloudbaseret.
+
+Ring cameras
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Blink cameras
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+DoorBird
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+ONVIF-producenter
+Support: [STANDARD]
+Forbindelse: LOKAL
+Noter: Funktionalitet varierer efter producentens ONVIF-profiler.
+
+RTSP-kompatible kameraer
+Support: [STANDARD]
+Forbindelse: LOKAL
+
+VIVOTEK
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+Synology Surveillance Station
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+Agent DVR
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Blue Iris
+Support: [CUSTOM]
+Forbindelse: LOKAL
+
+Scrypted
+Support: [UPSTREAM/CUSTOM]
+Forbindelse: LOKAL/BEGGE
+
+go2rtc
+Support: [UPSTREAM]
+Forbindelse: LOKAL
+
+MotionEye
+Support: [HA-CORE/UPSTREAM]
+Forbindelse: LOKAL
+
+ZoneMinder
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+Uniview / Uniarch
+Support: [STANDARD]
+Forbindelse: LOKAL/BEGGE
+
+TP-Link Tapo Camera
+Support: [HA-CORE-modelafhængig]
+Forbindelse: BEGGE
+
+Imou / Dahua
+Support: [STANDARD/CUSTOM]
+Forbindelse: BEGGE
+
+Lorex
+Support: [OEM] [STANDARD]
+Forbindelse: LOKAL/BEGGE
+Noter: Produktplatform varierer; mange modeller er Dahua-relaterede, men ikke alle.
+
+Annke
+Support: [STANDARD] [OEM]
+Forbindelse: LOKAL/BEGGE
+
+Swann
+Support: [STANDARD/CUSTOM]
+Forbindelse: BEGGE/VARIERER
+
+Netatmo Security
+Support: [HA-CORE]
+Forbindelse: CLOUD/BEGGE
+
+Somfy Protect
+Support: [HA-CORE/CUSTOM-afhængig]
+Forbindelse: CLOUD/BEGGE
+
+===============================================================================
+4. NETVÆRK, ROUTERE, FIREWALLS, DNS OG INFRASTRUKTUR
+===============================================================================
+
+Ubiquiti UniFi Network
+Support: [HA-CORE]
+Forbindelse: LOKAL
+Noter: Lokal UniFi-controller/console.
+
+UniFi Access
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+ASUS / ASUSWRT
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+AVM FRITZ!Box
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+FRITZ!SmartHome / AVM
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+TP-Link Omada
+Support: [HA-CORE/CUSTOM]
+Forbindelse: LOKAL
+
+TP-Link routers / Deco
+Support: [HA-CORE-modelafhængig]
+Forbindelse: LOKAL/BEGGE
+
+Netgear
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Synology DSM
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+QNAP
+Support: [HA-CORE/CUSTOM]
+Forbindelse: LOKAL
+
+OpenWrt
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+DD-WRT
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+OPNsense
+Support: [HA-CORE/CUSTOM]
+Forbindelse: LOKAL
+
+pfSense
+Support: [CUSTOM]
+Forbindelse: LOKAL
+
+MikroTik
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+Fortinet FortiOS
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+Cisco IOS
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+Aruba / HPE Aruba
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+Google Wifi
+Support: [HA-CORE]
+Forbindelse: CLOUD/BEGGE
+
+Amazon Eero
+Support: [CUSTOM]
+Forbindelse: CLOUD
+
+Plume
+Support: [CUSTOM]
+Forbindelse: CLOUD
+
+AdGuard Home
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+Pi-hole
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+NextDNS
+Support: [HA-CORE/CUSTOM]
+Forbindelse: CLOUD
+
+Cloudflare
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Duck DNS
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Uptime Kuma
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+UptimeRobot
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Nmap Tracker
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+Fing
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Tailscale
+Support: [UPSTREAM/platform]
+Forbindelse: BEGGE
+Noter: Peer-to-peer mesh med cloudkoordination/control plane.
+
+ZeroTier
+Support: [UPSTREAM/platform]
+Forbindelse: BEGGE
+
+WireGuard
+Support: [UPSTREAM/platform]
+Forbindelse: LOKAL/BEGGE
+
+Proxmox VE
+Support: [HA-CORE]
+Forbindelse: LOKAL
+Noter: HA-integrationen taler med lokal Proxmox API. Selve hostingplatformen er
+ikke en smart-home-producent.
+
+Docker
+Support: [UPSTREAM/platform]
+Forbindelse: LOKAL
+
+Portainer
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+VMware ESXi
+Support: [HA-CORE/CUSTOM]
+Forbindelse: LOKAL
+
+TrueNAS
+Support: [HA-CORE/CUSTOM]
+Forbindelse: LOKAL
+
+Unraid
+Support: [CUSTOM]
+Forbindelse: LOKAL
+
+APC UPS / apcupsd
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+Network UPS Tools (NUT)
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+===============================================================================
+5. VARME, KLIMA, VENTILATION OG LUFTKVALITET
+===============================================================================
+
+Tado
+Support: [HA-CORE]
+Forbindelse: CLOUD/BEGGE
+Noter: Den almindelige integration bruger cloud; enkelte nyere Matter-produkter
+kan have lokal alternativ sti.
+
+Netatmo Climate
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Ecobee
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Google Nest Thermostat
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Honeywell Home / Resideo
+Support: [HA-CORE]
+Forbindelse: CLOUD/BEGGE
+
+Bosch Smart Home Climate
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Danfoss
+Support: [STANDARD/HA-CORE-produktlinjeafhængig]
+Forbindelse: BEGGE
+
+Danfoss Ally
+Support: [STANDARD]
+Forbindelse: LOKAL/BEGGE
+Noter: Direkte Zigbee er lokal; vendor gateway/app kan være cloud.
+
+Heatit
+Support: [HA-CORE] [STANDARD]
+Forbindelse: LOKAL
+
+Heatmiser
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Mill
+Support: [HA-CORE]
+Forbindelse: CLOUD/BEGGE
+
+Adax
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Sensibo
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+AirPatrol
+Support: [HA-CORE]
+Forbindelse: CLOUD/BEGGE
+
+Airzone
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+Airzone Cloud
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Daikin
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+Noter: Integrationssti afhænger af controller/model.
+
+Mitsubishi Electric
+Support: [HA-CORE/CUSTOM]
+Forbindelse: CLOUD/BEGGE
+
+Mitsubishi Heavy Industries
+Support: [CUSTOM]
+Forbindelse: CLOUD/BEGGE
+
+Panasonic Comfort Cloud
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Panasonic Aquarea
+Support: [CUSTOM/standard]
+Forbindelse: LOKAL/BEGGE
+
+Fujitsu anywAIR
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+LG ThinQ HVAC
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Samsung SmartThings HVAC
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Gree
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+Midea
+Support: [HA-CORE/CUSTOM]
+Forbindelse: CLOUD/BEGGE
+
+Comfee / Midea
+Support: [SUBBRAND] [OEM]
+Forbindelse: CLOUD/BEGGE
+
+Inventor
+Support: [OEM/CHECK]
+Forbindelse: CLOUD/BEGGE
+
+Electra Smart
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Cielo Home
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Atlantic Cozytouch
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Vaillant
+Support: [HA-CORE/CUSTOM]
+Forbindelse: CLOUD/BEGGE
+
+Viessmann
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Nibe
+Support: [HA-CORE]
+Forbindelse: CLOUD/BEGGE
+Noter: Modbus/lokal og cloud afhænger af produkt/integration.
+
+Stiebel Eltron
+Support: [HA-CORE/CUSTOM]
+Forbindelse: LOKAL/BEGGE
+
+Zehnder
+Support: [CUSTOM/Modbus]
+Forbindelse: LOKAL
+
+Flexit
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Duco
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+Systemair
+Support: [CUSTOM/Modbus]
+Forbindelse: LOKAL
+
+Vallox
+Support: [HA-CORE/CUSTOM]
+Forbindelse: LOKAL
+
+Komfovent
+Support: [CUSTOM/Modbus]
+Forbindelse: LOKAL
+
+Genvex
+Support: [CUSTOM/Modbus]
+Forbindelse: LOKAL
+
+Dantherm
+Support: [CUSTOM/Modbus]
+Forbindelse: LOKAL
+
+Uponor
+Support: [CUSTOM/standard]
+Forbindelse: LOKAL/BEGGE
+
+Salus
+Support: [HA-CORE/CUSTOM]
+Forbindelse: BEGGE
+
+Drayton Wiser
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+Genius Hub
+Support: [HA-CORE]
+Forbindelse: CLOUD/BEGGE
+
+Hive
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Evohome / Honeywell
+Support: [HA-CORE]
+Forbindelse: CLOUD/BEGGE
+
+Sinope
+Support: [HA-CORE/standard]
+Forbindelse: LOKAL/BEGGE
+
+MClimate
+Support: [STANDARD]
+Forbindelse: LOKAL
+
+Eurotronic
+Support: [HA-CORE/standard]
+Forbindelse: LOKAL
+
+Moes thermostater
+Support: [TUYA] [STANDARD] [OEM]
+Forbindelse: CLOUD/BEGGE
+
+Beca thermostater
+Support: [TUYA] [OEM]
+Forbindelse: CLOUD/BEGGE
+
+Hysen thermostater
+Support: [TUYA] [OEM]
+Forbindelse: CLOUD/BEGGE
+
+Saswell thermostater
+Support: [TUYA] [STANDARD] [OEM]
+Forbindelse: CLOUD/BEGGE
+
+Airthings
+Support: [HA-CORE]
+Forbindelse: BEGGE
+
+AirVisual / IQAir
+Support: [HA-CORE]
+Forbindelse: CLOUD/BEGGE
+
+Dyson
+Support: [HA-CORE/CUSTOM]
+Forbindelse: CLOUD/BEGGE
+
+Philips Air
+Support: [HA-CORE/CUSTOM]
+Forbindelse: LOKAL/BEGGE
+
+Levoit / VeSync
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Winix
+Support: [CUSTOM]
+Forbindelse: CLOUD/BEGGE
+
+Xiaomi Air Purifier
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+===============================================================================
+6. ENERGI, SOLCELLER, BATTERIER, MÅLERE OG OPLADNING
+===============================================================================
+
+Tesla Powerwall
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Tesla vehicles and energy account
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Enphase Envoy
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+SolarEdge
+Support: [HA-CORE]
+Forbindelse: CLOUD/BEGGE
+Noter: Modbus/lokal og monitoring cloud er separate stier.
+
+Fronius
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+SMA
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Huawei Solar
+Support: [HA-CORE/CUSTOM]
+Forbindelse: LOKAL/BEGGE
+
+GoodWe
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+Growatt
+Support: [HA-CORE]
+Forbindelse: CLOUD/BEGGE
+
+Sungrow
+Support: [HA-CORE/CUSTOM]
+Forbindelse: LOKAL/BEGGE
+
+Solis
+Support: [HA-CORE/CUSTOM]
+Forbindelse: CLOUD/BEGGE
+
+Victron Energy
+Support: [MQTT/Modbus/CUSTOM]
+Forbindelse: LOKAL/BEGGE
+
+Deye
+Support: [Modbus/CUSTOM]
+Forbindelse: LOKAL/BEGGE
+
+Sofar Solar
+Support: [Modbus/CUSTOM]
+Forbindelse: LOKAL/BEGGE
+
+APsystems
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+EcoFlow
+Support: [CUSTOM]
+Forbindelse: CLOUD/BEGGE
+
+Bluetti
+Support: [CUSTOM/Bluetooth]
+Forbindelse: LOKAL/BEGGE
+
+Anker SOLIX
+Support: [CUSTOM]
+Forbindelse: CLOUD/BEGGE
+
+Zendure
+Support: [CUSTOM]
+Forbindelse: CLOUD/BEGGE
+
+Pylontech
+Support: [Modbus/CUSTOM]
+Forbindelse: LOKAL
+
+BYD Battery-Box
+Support: [Modbus/CUSTOM]
+Forbindelse: LOKAL/BEGGE
+
+HomeWizard Energy
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Tibber
+Support: [HA-CORE]
+Forbindelse: CLOUD/BEGGE
+Noter: Tibber API er cloud; Pulse kan have lokal netværkskommunikation via andre
+stier.
+
+Shelly Energy
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Emporia Vue
+Support: [HA-CORE/CUSTOM]
+Forbindelse: CLOUD/BEGGE
+
+Sense
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Efergy
+Support: [HA-CORE]
+Forbindelse: CLOUD/BEGGE
+
+GreenEye Monitor
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+IoTaWatt
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+Smappee
+Support: [HA-CORE]
+Forbindelse: CLOUD/BEGGE
+
+Eastron
+Support: [HA-CORE/Modbus]
+Forbindelse: LOKAL
+
+Carlo Gavazzi
+Support: [Modbus]
+Forbindelse: LOKAL
+
+Kamstrup
+Support: [standard/custom]
+Forbindelse: LOKAL
+Noter: HAN, M-Bus, pulse eller vendorplatform afhænger af måler.
+
+Aidon
+Support: [standard/custom]
+Forbindelse: LOKAL
+
+Landis+Gyr
+Support: [HA-CORE/standard]
+Forbindelse: LOKAL/BEGGE
+
+Zaptec
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Easee
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Wallbox
+Support: [HA-CORE]
+Forbindelse: CLOUD/BEGGE
+
+Tesla Wall Connector
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+ChargePoint
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+OpenEVSE
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+go-eCharger
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+V2C
+Support: [HA-CORE]
+Forbindelse: CLOUD/BEGGE
+
+Peblar
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Lektrico
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Ohme
+Support: [CUSTOM]
+Forbindelse: CLOUD
+
+Zappi / myenergi
+Support: [HA-CORE/CUSTOM]
+Forbindelse: CLOUD/BEGGE
+
+===============================================================================
+7. ROBOTSTØVSUGERE, HUSHOLDNING OG HAVE
+===============================================================================
+
+iRobot Roomba
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Roborock
+Support: [HA-CORE]
+Forbindelse: CLOUD/BEGGE
+
+Dreame
+Support: [HA-CORE/CUSTOM]
+Forbindelse: CLOUD/BEGGE
+
+Xiaomi Mi Robot Vacuum
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Ecovacs
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Neato
+Support: [HA-CORE/LEGACY]
+Forbindelse: CLOUD
+
+Miele
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Bosch/Siemens Home Connect
+Support: [HA-CORE]
+Forbindelse: CLOUD
+Underbrands: Bosch, Siemens, Neff, Gaggenau, Thermador, Balay, Constructa,
+Pitsos og Profilo, afhængigt af region og Home Connect-support.
+
+LG ThinQ
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Samsung SmartThings appliances
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Electrolux / AEG
+Support: [HA-CORE/CUSTOM]
+Forbindelse: CLOUD
+Underbrands kan omfatte Electrolux, AEG, Zanussi og Frigidaire; support varierer.
+
+Whirlpool
+Support: [CUSTOM]
+Forbindelse: CLOUD
+Underbrands kan omfatte KitchenAid, Maytag, Indesit, Hotpoint og Bauknecht;
+platform og regionssupport varierer.
+
+Haier
+Support: [HA-CORE/CUSTOM]
+Forbindelse: CLOUD
+Underbrands/platforme kan omfatte Candy, Hoover og hOn.
+
+Candy / Hoover / Haier hOn
+Support: [HA-CORE/CUSTOM]
+Forbindelse: CLOUD
+
+GE Appliances / SmartHQ
+Support: [CUSTOM]
+Forbindelse: CLOUD
+Underbrands: GE, Café, Monogram, Profile, Haier US-produktlinjer.
+
+Dyson
+Support: [HA-CORE/CUSTOM]
+Forbindelse: CLOUD/BEGGE
+
+Anova
+Support: [HA-CORE]
+Forbindelse: CLOUD/BEGGE
+
+Meater
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Traeger
+Support: [HA-CORE/CUSTOM]
+Forbindelse: CLOUD
+
+Weber
+Support: [HA-CORE/CUSTOM]
+Forbindelse: CLOUD/BEGGE
+
+Gardena Smart System / Husqvarna Group
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Husqvarna Automower
+Support: [HA-CORE]
+Forbindelse: CLOUD/BEGGE
+
+Worx Landroid
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Segway Navimow
+Support: [CUSTOM]
+Forbindelse: CLOUD
+
+Mammotion
+Support: [HA-CORE/CUSTOM]
+Forbindelse: CLOUD/BEGGE
+
+Dreame Robotic Mower
+Support: [CUSTOM]
+Forbindelse: CLOUD/BEGGE
+
+Robomow
+Support: [HA-CORE/CUSTOM]
+Forbindelse: CLOUD/BEGGE
+
+Rain Bird
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Rachio
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Hydrawise / Hunter
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+OpenSprinkler
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+Orbit B-hyve
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+===============================================================================
+8. MEDIER, TV, LYD OG UNDERHOLDNING
+===============================================================================
+
+Sonos
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Music Assistant
+Support: [UPSTREAM] [HA integration]
+Forbindelse: LOKAL/BEGGE
+Noter: Serveren er lokal; musiktjenester kan være cloud.
+
+Google Cast / Chromecast
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Apple TV
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+AirPlay-enheder
+Support: [STANDARD]
+Forbindelse: LOKAL/BEGGE
+
+Amazon Fire TV
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Android TV
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Roku
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Samsung TV
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+LG webOS TV
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Philips TV
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Sony Bravia
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Panasonic Viera
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+VIZIO SmartCast
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Plex
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Jellyfin
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+Emby
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Kodi
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+Denon AVR / Marantz
+Support: [HA-CORE]
+Forbindelse: LOKAL
+Koncern: Masimo Consumer / tidligere Sound United.
+
+Yamaha MusicCast
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Onkyo / Pioneer
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+HEOS / Denon
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+Bluesound / BluOS
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+Relaterede brands: NAD, Bluesound og flere BluOS-partnere.
+
+Bose
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Bang & Olufsen
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Logitech Harmony
+Support: [HA-CORE/LEGACY]
+Forbindelse: LOKAL/BEGGE
+
+Spotify
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+TIDAL
+Support: [Music Assistant/andre]
+Forbindelse: CLOUD
+
+YouTube Music
+Support: [Music Assistant/CUSTOM]
+Forbindelse: CLOUD
+
+Deezer
+Support: [Music Assistant/andre]
+Forbindelse: CLOUD
+
+===============================================================================
+9. BILER, TRANSPORT OG MOBILITET
+===============================================================================
+
+Tesla
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+BMW ConnectedDrive
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Mercedes-Benz
+Support: [HA-CORE/CUSTOM]
+Forbindelse: CLOUD
+
+Volvo
+Support: [HA-CORE/CUSTOM]
+Forbindelse: CLOUD
+
+Volkswagen We Connect / Volkswagen Connect
+Support: [HA-CORE/CUSTOM]
+Forbindelse: CLOUD
+
+Audi
+Support: [CUSTOM]
+Forbindelse: CLOUD
+
+Škoda
+Support: [HA-CORE/CUSTOM]
+Forbindelse: CLOUD
+
+SEAT/Cupra
+Support: [CUSTOM]
+Forbindelse: CLOUD
+
+FordPass
+Support: [CUSTOM]
+Forbindelse: CLOUD
+
+Hyundai Bluelink
+Support: [CUSTOM]
+Forbindelse: CLOUD
+
+Kia UVO/Connect
+Support: [CUSTOM]
+Forbindelse: CLOUD
+
+Renault
+Support: [HA-CORE/CUSTOM]
+Forbindelse: CLOUD
+
+Nissan Leaf
+Support: [HA-CORE/CUSTOM]
+Forbindelse: CLOUD
+
+Toyota
+Support: [CUSTOM]
+Forbindelse: CLOUD
+
+Polestar
+Support: [CUSTOM]
+Forbindelse: CLOUD
+
+Wallbox-, lade- og energi-brands: se afsnit 6.
+
+===============================================================================
+10. VEJR, POOL, VAND OG MILJØ
+===============================================================================
+
+Netatmo Weather
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Ecowitt
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Ambient Weather
+Support: [HA-CORE]
+Forbindelse: CLOUD/BEGGE
+
+Davis Instruments
+Support: [HA-CORE/CUSTOM]
+Forbindelse: LOKAL/BEGGE
+
+WeatherFlow / Tempest
+Support: [HA-CORE]
+Forbindelse: BEGGE
+
+La Crosse
+Support: [HA-CORE]
+Forbindelse: CLOUD/BEGGE
+
+Acurite
+Support: [standard/custom]
+Forbindelse: LOKAL/BEGGE
+
+Bresser
+Support: [standard/custom]
+Forbindelse: LOKAL/BEGGE
+
+Froggit
+Support: [Ecowitt-kompatibel/OEM]
+Forbindelse: LOKAL/BEGGE
+
+Fine Offset Electronics
+Support: [OEM]
+Forbindelse: LOKAL/BEGGE
+Noter: OEM bag mange Ecowitt/Froggit-lignende vejrstationer.
+
+Pentair
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Hayward
+Support: [HA-CORE]
+Forbindelse: CLOUD/BEGGE
+
+AquaLogic
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+Aseko Pool
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Ondilo ICO
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Moen Flo
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Phyn
+Support: [HA-CORE/CUSTOM]
+Forbindelse: CLOUD
+
+Flume
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+Grohe Sense
+Support: [HA-CORE/CUSTOM]
+Forbindelse: CLOUD
+
+Gardena irrigation
+Support: [HA-CORE]
+Forbindelse: CLOUD
+
+===============================================================================
+11. HOME ASSISTANT-RELEVANTE SOFTWAREPROJEKTER OG TJENESTER
+===============================================================================
+
+Home Assistant
+Support: [OFFICIAL]
+Forbindelse: LOKAL/BEGGE
+Noter: Selve Home Assistant kører lokalt. Home Assistant Cloud er valgfri.
+
+Nabu Casa / Home Assistant Cloud
+Support: [OFFICIAL]
+Forbindelse: CLOUD
+
+Zigbee2MQTT
+Support: [UPSTREAM]
+Forbindelse: LOKAL
+Noter: Kræver MQTT-broker.
+
+ZHA
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+Z-Wave JS
+Support: [HA-CORE/UPSTREAM]
+Forbindelse: LOKAL
+
+Matter Server
+Support: [HA-CORE/UPSTREAM]
+Forbindelse: LOKAL/BEGGE
+Noter: Matter-kontrol er lokal; commissioning og økosystemdeling kan involvere
+vendor-apps og cloud.
+
+OpenThread Border Router
+Support: [HA-CORE/UPSTREAM]
+Forbindelse: LOKAL
+
+ESPHome
+Support: [HA-CORE/UPSTREAM]
+Forbindelse: LOKAL
+
+Tasmota
+Support: [HA-CORE/UPSTREAM]
+Forbindelse: LOKAL
+
+Mosquitto
+Support: [UPSTREAM]
+Forbindelse: LOKAL
+
+EMQX
+Support: [UPSTREAM]
+Forbindelse: LOKAL/BEGGE
+
+HiveMQ
+Support: [UPSTREAM]
+Forbindelse: LOKAL/BEGGE
+
+RabbitMQ MQTT
+Support: [UPSTREAM]
+Forbindelse: LOKAL/BEGGE
+
+Node-RED
+Support: [UPSTREAM/add-on]
+Forbindelse: LOKAL/BEGGE
+
+HACS
+Support: [UPSTREAM]
+Forbindelse: BEGGE
+Noter: HACS bruger internet/GitHub til installation og opdatering; installerede
+integrationer kan være lokale eller cloudbaserede.
+
+Frigate
+Support: [UPSTREAM]
+Forbindelse: LOKAL
+
+Music Assistant
+Support: [UPSTREAM]
+Forbindelse: LOKAL/BEGGE
+
+AdGuard Home
+Support: [HA-CORE/UPSTREAM]
+Forbindelse: LOKAL
+
+Nextcloud
+Support: [HA-CORE/UPSTREAM]
+Forbindelse: LOKAL/BEGGE
+
+Jellyfin
+Support: [HA-CORE/UPSTREAM]
+Forbindelse: LOKAL
+
+Plex
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Paperless-ngx
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+Radarr
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+Sonarr
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+Lidarr
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+Transmission
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+qBittorrent
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+Grafana
+Support: [UPSTREAM]
+Forbindelse: LOKAL/BEGGE
+
+InfluxDB
+Support: [HA-CORE]
+Forbindelse: LOKAL/BEGGE
+
+Prometheus
+Support: [HA-CORE]
+Forbindelse: LOKAL
+
+MariaDB
+Support: [Recorder database]
+Forbindelse: LOKAL/BEGGE
+
+PostgreSQL
+Support: [Recorder database]
+Forbindelse: LOKAL/BEGGE
+
+SQLite
+Support: [Recorder default]
+Forbindelse: LOKAL
+
+===============================================================================
+12. TUYA / SMART LIFE – WHITE-LABEL OG UNDERBRANDS
+===============================================================================
+
+TUYA-ARKITEKTUR
+Den officielle Tuya-integration i Home Assistant bruger Tuya/Smart Life-kontoen og
+Tuya Cloud. Den klassificeres derfor som CLOUD.
+
+Et produkt med et Tuya-brandnavn kan dog have andre forbindelsesstier:
+
+1. Tuya Wi-Fi gennem Smart Life/Tuya:
+   CLOUD via den officielle Tuya-integration.
+
+2. Tuya Zigbee gennem en Tuya-gateway:
+   CLOUD/BEGGE afhængigt af gateway og integrationsvej.
+
+3. Samme Zigbee-enhed parret direkte med ZHA eller Zigbee2MQTT:
+   LOKAL, hvis den præcise model og datapunkter understøttes.
+
+4. Tuya Matter:
+   LOKAL/BEGGE afhængigt af commissioning, bridge og ekstra vendorfeatures.
+
+5. Tuya-enhed med Tasmota/OpenBeken/ESPHome:
+   Kan blive LOKAL, men kun på kompatibel hardware og med brugerinstalleret
+   firmware. Det må ikke antages for alle modeller.
+
+TUYA-MODERPLATFORME OG APPS
+- Tuya
+- Smart Life
+- Tuya Smart
+- Powered by Tuya
+- OEM-apps bygget på Tuya-platformen
+
+BRANDS SOM OFTE HAR TUYA/SMART LIFE-PRODUKTER
+Vigtigt: Ingen af disse brands må mærkes “Tuya” på tværs af hele kataloget uden
+modelkontrol.
+
+- Denver Smart Home – CLOUD/BEGGE [TUYA] [OEM]
+- Nedis SmartLife – CLOUD/BEGGE [TUYA] [OEM]
+- MOES – CLOUD/BEGGE [TUYA] [OEM]
+- Zemismart – CLOUD/BEGGE [TUYA] [OEM]
+- Nous – CLOUD/BEGGE [TUYA/OEM; nogle Tasmota-modeller er lokale]
+- BlitzWolf – CLOUD/BEGGE [TUYA] [OEM]
+- Avatto – CLOUD/BEGGE [TUYA] [OEM]
+- LoraTap – CLOUD/BEGGE [TUYA] [OEM]
+- NEO / Neo Coolcam – CLOUD/BEGGE [TUYA] [OEM]
+- Saswell – CLOUD/BEGGE [TUYA] [OEM]
+- Beca – CLOUD/BEGGE [TUYA] [OEM]
+- Hysen – CLOUD/BEGGE [TUYA] [OEM]
+- Calex Smart – CLOUD/BEGGE [TUYA] [OEM]
+- LSC Smart Connect – CLOUD/BEGGE [TUYA] [OEM]
+- Action Smart / LSC – CLOUD/BEGGE [TUYA] [OEM]
+- Silvercrest – VARIERER [TUYA/Zigbee/Matter] [OEM]
+- Lidl Smart Home – LOKAL/BEGGE [Zigbee/Tuya/Matter afhængigt af model]
+- Hama Smart Home – CLOUD/BEGGE [TUYA] [OEM]
+- Woox – CLOUD/BEGGE [TUYA] [OEM]
+- Kogan SmarterHome – CLOUD/BEGGE [TUYA] [OEM]
+- Brilliant Smart – CLOUD/BEGGE [TUYA] [OEM]
+- Arlec Grid Connect – CLOUD/BEGGE [TUYA] [OEM]
+- Mirabella Genio – CLOUD/BEGGE [TUYA] [OEM]
+- Mercator Ikuü – CLOUD/BEGGE [TUYA/Zigbee] [OEM]
+- Deltaco Smart Home – CLOUD/BEGGE [TUYA] [OEM]
+- Tellur Smart – CLOUD/BEGGE [TUYA] [OEM]
+- Aigostar – CLOUD/BEGGE [TUYA] [OEM]
+- Antela – CLOUD/BEGGE [TUYA] [OEM]
+- Gosund – CLOUD/BEGGE [TUYA] [OEM]
+- Teckin – CLOUD/BEGGE [TUYA] [OEM]
+- Maxcio – CLOUD/BEGGE [TUYA] [OEM]
+- Treatlife – CLOUD/BEGGE [TUYA] [OEM]
+- BN-LINK – VARIERER [TUYA/OEM]
+- Smartwares – VARIERER [TUYA/OEM/andre platforme]
+- Proove – VARIERER [TUYA/OEM/andre platforme]
+- MaxSmart – CLOUD/BEGGE [TUYA/OEM]
+- Aubess – CLOUD/BEGGE [TUYA/OEM]
+- Girier – CLOUD/BEGGE [TUYA/OEM]
+- Eardatek – CLOUD/BEGGE [TUYA/OEM]
+- _TZ3000_* – LOKAL/BEGGE [Tuya Zigbee manufacturer-ID-familie]
+- _TZ3210_* – LOKAL/BEGGE [Tuya Zigbee manufacturer-ID-familie]
+- _TZE200_* – LOKAL/BEGGE [Tuya Zigbee manufacturer-ID-familie]
+- _TZE204_* – LOKAL/BEGGE [Tuya Zigbee manufacturer-ID-familie]
+- _TZE284_* – LOKAL/BEGGE [Tuya Zigbee manufacturer-ID-familie]
+
+EKSEMPEL PÅ KORREKT REGISTRERING
+Brand: Denver
+Produkt: Denver SHL-xxxx
+App: Smart Life
+Platform: Tuya
+Model-ID: konkret ID
+Forbindelsessti A: Officiel Tuya-integration
+Drift: CLOUD
+Forbindelsessti B: Direkte Zigbee via Zigbee2MQTT, hvis understøttet
+Drift: LOKAL
+Konklusion: Brandet er ikke nok til at bestemme forbindelsestypen.
+
+===============================================================================
+13. KONCERNER, UNDERBRANDS OG RELATIONER SOM SKAL BEVARES
+===============================================================================
+
+Signify
+- Philips Hue
+- WiZ
+- Interact
+Forbindelse: Hue og WiZ har forskellige integrations- og netværksstier.
+
+Legrand
+- Legrand
+- BTicino
+- Netatmo
+- Eliot-produktplatforme
+Forbindelse: Varierer fra lokal bus/gateway til cloud.
+
+Schneider Electric
+- Schneider Electric
+- Wiser
+- Clipsal
+- Square D
+Forbindelse: Varierer efter region og platform.
+
+ASSA ABLOY
+- Yale
+- August
+- HID-relaterede produktlinjer
+Forbindelse: Cloud, Bluetooth, HomeKit, Matter, Zigbee eller Z-Wave afhængigt af
+produkt.
+
+Amazon
+- Ring
+- Blink
+- Echo/Alexa
+- Eero
+Forbindelse: Overvejende cloud, men lokale protokoller kan eksistere i enkelte
+produktstier.
+
+Google / Alphabet
+- Google Nest
+- Google Wifi
+- Chromecast
+Forbindelse: Cast er primært lokal discovery/control med cloudindhold; Nest og
+Google Wifi-integrationer er ofte cloudbaserede.
+
+Anker Innovations
+- eufy
+- Anker SOLIX
+- Soundcore
+- Nebula
+Forbindelse: Varierer; må ikke generaliseres koncernbredt.
+
+TP-Link
+- TP-Link
+- Kasa Smart
+- Tapo
+- Omada
+- Deco
+Forbindelse: Lokal, cloud eller begge afhængigt af produktfamilie.
+
+Xiaomi-økosystem
+- Xiaomi
+- Mi
+- Mijia
+- Yeelight
+- Aqara (selvstændigt brand/virksomhed med historiske økosystemrelationer)
+- Roborock
+- Dreame
+- Viomi
+Forbindelse: Varierer kraftigt mellem lokal LAN, Bluetooth, Zigbee, Matter og cloud.
+
+BSH Home Appliances
+- Bosch
+- Siemens
+- Neff
+- Gaggenau
+- Thermador
+- Balay
+- Constructa
+- Pitsos
+- Profilo
+Forbindelse: Home Connect er cloudbaseret.
+
+Electrolux Group
+- Electrolux
+- AEG
+- Zanussi
+- Frigidaire
+Forbindelse: Overvejende cloud for connected appliances.
+
+Haier Group
+- Haier
+- Candy
+- Hoover
+- GE Appliances
+Forbindelse: Connected-appliance-platforme er typisk cloudbaserede, men region og
+platform varierer.
+
+Whirlpool Corporation
+- Whirlpool
+- KitchenAid
+- Maytag
+- Indesit
+- Hotpoint (regionsforhold varierer)
+- Bauknecht
+Forbindelse: Connected-funktioner er typisk cloudbaserede.
+
+Ubiquiti
+- UniFi Network
+- UniFi Protect
+- UniFi Access
+- airOS
+Forbindelse: Home Assistant-stierne er normalt lokale controller/API-stier.
+
+Husqvarna Group
+- Husqvarna
+- Gardena
+- Flymo
+Forbindelse: Smart-systemer og robotplæneklippere er ofte cloudintegrerede.
+
+Masimo Consumer / tidligere Sound United
+- Denon
+- Marantz
+- HEOS
+- Polk Audio
+- Definitive Technology
+Forbindelse: AV-receiver- og HEOS-styring er typisk lokal.
+
+===============================================================================
+14. RESEARCHFELTER TIL HA-STABILITY-KNOWLEDGE
+===============================================================================
+
+For hver producent, integration, produktfamilie og model bør følgende registreres:
+
+IDENTITET
+- Vendor-ID
+- Brand
+- Moderkoncern
+- Underbrand
+- Produktfamilie
+- Model
+- Region
+- Hardware-revision
+- OEM-identitet
+- Aliasser
+- Manufacturer-ID
+- Integration domain
+
+SUPPORT
+- Officiel Home Assistant Core-integration
+- Works with Home Assistant-certificering
+- Vendor-understøttet integration
+- Autoritativ tredjepartsintegration
+- Custom/HACS-integration
+- Matter
+- HomeKit Device
+- ZHA
+- Zigbee2MQTT
+- Z-Wave JS
+- Bluetooth
+- MQTT
+- ESPHome
+- Tasmota
+- Modbus
+- ONVIF
+- RTSP
+
+FORBINDELSESTYPE
+- Lokal
+- Cloud
+- Begge
+- Lokal efter cloud-provisionering
+- Lokal med påkrævet konto
+- Lokal gennem påkrævet hub
+- Cloud kun til udvalgte funktioner
+- Cloud kun til onboarding
+- Cloud kun til firmware
+- Ukendt
+
+AFHÆNGIGHEDER
+- Internet
+- Vendor-konto
+- Vendor-cloud
+- Hub/bridge
+- MQTT-broker
+- Zigbee-koordinator
+- Z-Wave-controller
+- Thread Border Router
+- Matter-controller
+- Bluetooth-proxy
+- DNS
+- mDNS
+- SSDP
+- multicast
+- NTP
+- TLS
+- Webhook
+- Reverse proxy
+
+KOMPATIBILITET
+- Minimum firmware
+- Kendt fungerende firmware
+- Kendt problematisk firmware
+- Home Assistant-version
+- Integrationsversion
+- Region
+- Hardware-revision
+- Begrænsninger
+- Manglende entities
+- Manglende actions/events
+- Push eller polling
+- Rate limits
+
+DIAGNOSTIK
+- Discovery-resultat
+- Setup retry
+- Setup error
+- Reauthentication
+- API reachable
+- Cloud reachable
+- Local API reachable
+- Hub reachable
+- Device available
+- Entity available
+- Firmware version
+- Model-ID
+- Signalstyrke
+- Batteri
+- Sidste opdatering
+- Coordinator-fejl
+- Diagnostic payload
+- Repair issue
+- System Health
+
+===============================================================================
+15. KVALITETSREGLER
+===============================================================================
+
+1. Skriv aldrig blot “Tuya = cloud” uden at angive forbindelsesstien.
+2. Skriv aldrig “Zigbee = kompatibel” uden model-ID eller dokumenteret handler.
+3. Skriv aldrig “Matter = alle funktioner virker”.
+4. Skriv aldrig “Works with Home Assistant” på vendor-niveau.
+5. Skriv aldrig “lokal”, hvis cloud stadig kræves for normal drift.
+6. Skeln mellem onboarding, normal drift, firmware og fjernadgang.
+7. Skeln mellem vendor-hub og direkte radioforbindelse.
+8. Skeln mellem officiel Core-integration og HACS/custom integration.
+9. Skeln mellem officiel integration og produktcertificering.
+10. Bevar UKENDT, når dokumentationen ikke giver et sikkert svar.
+11. Angiv dato for tidsfølsomme certificerings- og firmwareclaims.
+12. Verificér produkter efter model, region, hardware og firmware.
+13. Et brand kan skifte OEM fra én produktgeneration til den næste.
+14. Samme modelnavn kan dække forskellige hardwareplatforme i forskellige regioner.
+15. Cloududfald, kontoændringer eller API-lukning kan ændre kompatibilitet uden at
+    produktets hardware ændres.
+
+===============================================================================
+SLUTNOTE
+===============================================================================
+
+Denne fil skal bruges som researchkø og identitetsregister – ikke som endelig
+kompatibilitetsgaranti.
+
+Den officielle Tuya Home Assistant-integration er cloudbaseret og kræver Tuya
+Smart eller Smart Life-konto. Direkte Zigbee, Matter, Tasmota, OpenBeken eller
+ESPHome kan give en lokal alternativ sti for udvalgte produkter, men det skal
+verificeres på præcis model og firmware.
+
+Næste forbedring bør være at konvertere masterlisten til strukturerede records med:
+vendor_id, brand_id, parent_group, integration_domain, support_class,
+connection_path, local_cloud_class, model_scope, evidence, verified_at og
+confidence.

@@ -1,9 +1,9 @@
 import tempfile
 import unittest
 from pathlib import Path
-from src.hadocs.domain.policies import Policy, PolicyAction, PolicyScope
-from src.hadocs.persistence.database import Database
-from src.hadocs.persistence.policy_repository import PolicyRepository
+from hadocs.domain.policies import Policy, PolicyAction, PolicyScope
+from hadocs.persistence.database import Database
+from hadocs.persistence.policy_repository import PolicyRepository
 
 class PolicyRepositoryTests(unittest.TestCase):
     def test_round_trip(self):

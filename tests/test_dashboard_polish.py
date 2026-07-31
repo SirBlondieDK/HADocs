@@ -1,5 +1,5 @@
 def test_dashboard_polish_imports():
-    from src.hadocs.gui.app import App, HealthGauge, app_path, load_logo_image, read_latest_summary, safe_read_json
+    from hadocs.gui.app import App, HealthGauge, app_path, load_logo_image, read_latest_summary, safe_read_json
 
     assert App is not None
     assert HealthGauge is not None
@@ -10,7 +10,7 @@ def test_dashboard_polish_imports():
 
 
 def test_safe_read_json_invalid(tmp_path):
-    from src.hadocs.gui.app import safe_read_json
+    from hadocs.gui.app import safe_read_json
 
     path = tmp_path / "broken.json"
     path.write_text("{broken", encoding="utf-8")

@@ -3,8 +3,8 @@ from __future__ import annotations
 from collections import defaultdict
 from typing import Callable
 
-from src.hadocs.collectors.installation import InstallationCollector
-from src.hadocs.providers import HomeAssistantProvider
+from hadocs.collectors.installation import InstallationCollector
+from hadocs.providers import HomeAssistantProvider
 
 
 LogFunction = Callable[[str], None]

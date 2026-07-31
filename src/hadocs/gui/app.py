@@ -2,39 +2,39 @@ import threading
 from datetime import datetime
 import tkinter as tk
 from tkinter import ttk, messagebox
-from src.hadocs.gui.assets import app_path, load_logo_image
-from src.hadocs.gui.data import read_latest_summary, safe_read_json
-from src.hadocs.gui.theme import Theme
-from src.hadocs.gui.dialogs.about_dialog import AboutDialog
-from src.hadocs.gui.dialogs.first_run import FirstRunWizard
-from src.hadocs.gui.dialogs.settings_dialog import SettingsDialog
-from src.hadocs.gui.widgets.health_gauge import HealthGauge
-from src.hadocs.collectors.homeassistant import build_indexes, collect_all
-from src.hadocs.gui.assets import LOGO_DEBUG, find_logo_file, load_logo_image
-from src.hadocs.gui.data import read_latest_summary
-from src.hadocs.gui.dialogs.about_dialog import AboutDialog
-from src.hadocs.gui.dialogs.device_override_manager import DeviceOverrideManager
-from src.hadocs.gui.dialogs.first_run import FirstRunWizard
-from src.hadocs.gui.dialogs.log_window import LogWindow
-from src.hadocs.gui.dialogs.settings_dialog import SettingsDialog
-from src.hadocs.gui.output_actions import (
+from hadocs.gui.assets import app_path, load_logo_image
+from hadocs.gui.data import read_latest_summary, safe_read_json
+from hadocs.gui.theme import Theme
+from hadocs.gui.dialogs.about_dialog import AboutDialog
+from hadocs.gui.dialogs.first_run import FirstRunWizard
+from hadocs.gui.dialogs.settings_dialog import SettingsDialog
+from hadocs.gui.widgets.health_gauge import HealthGauge
+from hadocs.collectors.homeassistant import build_indexes, collect_all
+from hadocs.gui.assets import LOGO_DEBUG, find_logo_file, load_logo_image
+from hadocs.gui.data import read_latest_summary
+from hadocs.gui.dialogs.about_dialog import AboutDialog
+from hadocs.gui.dialogs.device_override_manager import DeviceOverrideManager
+from hadocs.gui.dialogs.first_run import FirstRunWizard
+from hadocs.gui.dialogs.log_window import LogWindow
+from hadocs.gui.dialogs.settings_dialog import SettingsDialog
+from hadocs.gui.output_actions import (
     completion_message,
     open_dashboard,
     open_explorer,
     open_markdown,
     open_output_folder,
 )
-from src.hadocs.gui.theme import COLORS, Theme
-from src.hadocs.gui.widgets.health_gauge import HealthGauge
-from src.hadocs.reports.generator import generate_all
-from src.hadocs.utils.config import (
+from hadocs.gui.theme import COLORS, Theme
+from hadocs.gui.widgets.health_gauge import HealthGauge
+from hadocs.reports.generator import generate_all
+from hadocs.utils.config import (
     config_exists,
     load_config,
     save_config,
     validate_config,
     validate_config_warnings,
 )
-from src.hadocs.utils.security import (
+from hadocs.utils.security import (
     gitignore_contains_required_entries,
     tracked_generated_files,
     tracked_sensitive_files,
@@ -251,7 +251,7 @@ class App(tk.Tk):
         project = self.cfg.get("project_name", "My Smart Home")
 
         try:
-            from src.hadocs.security.credential_store import get_home_assistant_token
+            from hadocs.security.credential_store import get_home_assistant_token
             token = get_home_assistant_token()
         except Exception:
             token = None
@@ -392,7 +392,7 @@ class App(tk.Tk):
         cfg["open_dashboard_after_scan"] = bool(cfg.get("open_dashboard_after_scan", True))
 
         try:
-            from src.hadocs.security.credential_store import get_home_assistant_token
+            from hadocs.security.credential_store import get_home_assistant_token
             token = get_home_assistant_token()
         except Exception:
             token = None

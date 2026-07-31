@@ -1,0 +1,47 @@
+{
+  "program": "I-001A Generic Metadata Collector Infrastructure",
+  "completed_on": "2026-07-24",
+  "status": "completed",
+  "conclusion": "INFRASTRUCTURE_IMPLEMENTED_WITH_NOTES",
+  "governance_baseline": "DF-001",
+  "contract": {
+    "name": "hadocs-generic-metadata",
+    "version": "1.0.0"
+  },
+  "architecture_status": "FROZEN",
+  "implementation_scope": "infrastructure_only",
+  "source_package": "src/hadocs/metadata_collector",
+  "source_files": 10,
+  "built_in_capabilities": 0,
+  "home_assistant_api_clients": 0,
+  "metadata_collected": 0,
+  "observations_generated": 0,
+  "relationships_generated": 0,
+  "validation": {
+    "infrastructure_smoke": "PASS",
+    "python_compilation": "PASS",
+    "deterministic_serialization": "PASS",
+    "existing_tests_collected": 251,
+    "existing_tests_passed": 239,
+    "existing_tests_failed": 12,
+    "baseline_failure_reason": "requests dependency absent from available Python 3.14 validation environment",
+    "test_changes": 0,
+    "fixture_changes": 0,
+    "schema_changes": 0,
+    "hask_changes": 0,
+    "consumer_contract_changes": 0,
+    "pi2_changes": 0,
+    "architecture_changes": 0,
+    "json_validation": "PASS",
+    "determinism_passes": 2,
+    "deterministic_outputs": true,
+    "non_state_documentation_aggregate_sha256": "2ed2722388a4aeaf8c9be0ff9181cf1c475febba4b8c9b16515cc8ef29a28de4",
+    "source_aggregate_sha256": "ccb6af7d51fe049c0b7a707c7da3b60998234c42eb3dc3f47ac0a4f027f80744",
+    "frozen_baseline_aggregate_sha256": "fcbcde0c43e218a5566820c467d3f29e8df620655f094382c39ce609c78a9e12"
+  },
+  "notes": [
+    "Twelve baseline tests remain blocked by an unrelated missing requests dependency; no dependency update was authorized.",
+    "Release 1 capabilities and metadata collection remain not implemented."
+  ],
+  "exception_expired": true
+}

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from src.hadocs.api.client import HomeAssistantAPI
+from hadocs.api.client import HomeAssistantAPI
 
 
 class HomeAssistantProvider:
@@ -43,3 +43,8 @@ class HomeAssistantProvider:
 
     def get_labels(self) -> list[dict]:
         return self._api.ws_call("config/label_registry/list")
+
+    def get_config_entries(self) -> list[dict]:
+        """Return authenticated config-entry fragments from Home Assistant Core."""
+
+        return self._api.ws_call("config_entries/get")

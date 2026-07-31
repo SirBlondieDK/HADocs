@@ -1,4 +1,4 @@
-from src.hadocs.knowledge.exporter import build_health, build_inventory, build_manifest
+from hadocs.knowledge.exporter import build_health, build_inventory, build_manifest
 
 
 class Executive:

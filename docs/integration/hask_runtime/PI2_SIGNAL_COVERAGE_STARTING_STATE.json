@@ -1,0 +1,39 @@
+{
+  "program": "PI2 Native Signal Coverage Replanning - Evidence Pipeline Scope Recovery",
+  "captured_on": "2026-07-24",
+  "decision": "PASS",
+  "hadocs": {
+    "branch": "main",
+    "head": "590cc33a9762c4d22699f20c60d136ef2c4de00c",
+    "merge_conflicts": 0,
+    "tests_passed": 251,
+    "tests_failed": 0
+  },
+  "hask": {
+    "validator_gates": "PASS",
+    "tests_passed": 88,
+    "tests_failed": 0,
+    "consumer_contract_version": "1.1.0",
+    "knowledge_schema_version": "2.0.0",
+    "knowledge_content_version": "0.2.0",
+    "matcher_count": 25,
+    "legacy_matcher_count": 23,
+    "typed_matcher_count": 2,
+    "manifest_sha256": "0f1494f3a18453316c2056444b21555be85ac5bdc6bc2c6f33d82394c752228d"
+  },
+  "preservation": {
+    "baseline_mismatches": 0,
+    "pilot_unexpected_mismatches": 0,
+    "pi1_unexpected_mismatches": 0,
+    "compatibility_increment_mismatches": 0,
+    "pi2_blocker_boundary_mismatches": 0,
+    "production_code_changes": 0,
+    "test_changes": 0,
+    "fixture_changes": 0,
+    "hask_authoritative_changes": 0,
+    "consumer_contract_changes": 0,
+    "confirmed_candidates": 0,
+    "health_score_changes": 0
+  }
+}
+

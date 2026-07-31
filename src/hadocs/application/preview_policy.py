@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-from src.hadocs.intelligence.policy_engine import PolicyEngine
-from src.hadocs.intelligence.health_score_v2 import HealthScoreV2
+from hadocs.intelligence.policy_engine import PolicyEngine
+from hadocs.intelligence.health_score_v2 import HealthScoreV2
 
 @dataclass(slots=True, frozen=True)
 class PolicyPreview:

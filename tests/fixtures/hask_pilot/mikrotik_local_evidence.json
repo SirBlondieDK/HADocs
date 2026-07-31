@@ -1,0 +1,5 @@
+[
+  {"evidence_id": "mikrotik_api_unreachable", "state": "observed", "details": "Pilot fixture only"},
+  {"evidence_id": "reauthentication_required", "state": "unknown", "details": "Unknown is preserved"},
+  {"evidence_id": "entity_unavailable", "state": "observed", "details": "Does not prove cause"}
+]

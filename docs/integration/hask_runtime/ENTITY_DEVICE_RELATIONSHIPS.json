@@ -1,0 +1,19 @@
+{
+  "version_context": "Home Assistant Core 2026.7.3 observed; only documented relationships are authoritative",
+  "nodes": ["entity","device","area","label","target","service","config_entry","floor"],
+  "edges": [
+    {"from":"entity","to":"device","field":"device_id","status":"documented command schema not guaranteed; observed structurally"},
+    {"from":"entity","to":"area","field":"area_id","status":"documented display schema"},
+    {"from":"entity","to":"label","field":"labels/lb","status":"documented display schema"},
+    {"from":"device","to":"area","field":"area_id","status":"conceptually documented; wire schema not guaranteed"},
+    {"from":"device","to":"config_entry","field":"config_entries","status":"conceptually documented; wire schema not guaranteed"},
+    {"from":"device","to":"device","field":"via_device_id","status":"conceptually documented"},
+    {"from":"target","to":"entity","field":"referenced_entities","status":"documented authoritative resolution"},
+    {"from":"target","to":"device","field":"referenced_devices/missing_devices","status":"documented authoritative resolution"},
+    {"from":"target","to":"area","field":"referenced_areas/missing_areas","status":"documented authoritative resolution"},
+    {"from":"target","to":"floor","field":"missing_floors","status":"documented target-result field"},
+    {"from":"target","to":"label","field":"missing_labels","status":"documented target-result field"}
+  ],
+  "forbidden_inferences": ["missing relationship implies failure","unavailable entity implies device failure","config entry state implies connectivity result"]
+}
+

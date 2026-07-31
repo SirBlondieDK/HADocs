@@ -1,0 +1,44 @@
+{
+  "program": "DF-002 Updated Design Freeze Record",
+  "completed_on": "2026-07-24",
+  "status": "completed",
+  "conclusion": "UPDATED_DESIGN_FREEZE_RECORDED",
+  "collector_contract": {
+    "name": "hadocs-generic-metadata",
+    "version": "1.0.0"
+  },
+  "architecture_status": "FROZEN",
+  "implementation_status": "NOT STARTED",
+  "supersedes": "DF-001",
+  "reason": "A-001",
+  "approved_by": "R-002",
+  "release_1": {
+    "capabilities": 4,
+    "observation_categories": 4,
+    "relationship_predicates": 4,
+    "replacement_observations": 0,
+    "replacement_capabilities": 0
+  },
+  "governance": {
+    "active_implementation_baseline": "DF-002",
+    "df001_preserved_for_history": true,
+    "i001b_may_resume": true
+  },
+  "validation": {
+    "production_code_changes": 0,
+    "collector_implementation_changes": 0,
+    "runtime_changes": 0,
+    "test_changes": 0,
+    "fixture_changes": 0,
+    "dependency_changes": 0,
+    "hask_changes": 0,
+    "consumer_contract_changes": 0,
+    "pi2_changes": 0,
+    "governance_artifacts": 6,
+    "json_validation": "PASS",
+    "determinism_passes": 2,
+    "deterministic_outputs": true,
+    "non_state_artifact_aggregate_sha256": "e40fadb01d4481db854e27887cb386016e5c1935e4da659c09e2b4a4c6d5310e"
+  },
+  "exception_expired": true
+}

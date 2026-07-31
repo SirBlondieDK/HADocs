@@ -1,6 +1,10 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "hadocs"
-version = "0.11.1"
+dynamic = ["version"]
 description = "Home Assistant Documentation & Intelligence"
 requires-python = ">=3.11"
 dependencies = [
@@ -10,12 +14,41 @@ dependencies = [
 ]
 
 [project.scripts]
-hadocs = "src.hadocs.cli.main:main"
+hadocs = "hadocs.cli.main:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["hadocs*"]
+exclude = [
+    "hadocs.metadata_collector*",
+]
+
+[tool.setuptools.package-data]
+"hadocs.knowledge" = [
+    "hask_bundle/0.2.0/*.json",
+]
+"hadocs.web" = [
+    "static/*.html",
+    "static/*.css",
+    "static/*.js",
+]
+"hadocs.hudd" = [
+    "data/*.sqlite",
+    "data/*.txt",
+    "schema/*.sql",
+    "migrations/*.sql",
+]
+"hadocs.hask_database" = [
+    "sql/*.sql",
+]
+
+[tool.setuptools.dynamic]
+version = {attr = "hadocs.version.__version__"}
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["."]
-addopts = "--basetemp=.pytest_tmp"
+pythonpath = ["src"]
+addopts = "-p no:cacheprovider"
 
 [tool.black]
 line-length = 100

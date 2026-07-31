@@ -1,4 +1,4 @@
-from src.hadocs.explain.engine import explain_key
+from hadocs.explain.engine import explain_key
 
 
 def test_explain_mqtt():

@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from src.hadocs.platform.paths import AppPaths
+from hadocs.platform.paths import AppPaths
 
 
 def test_discover_with_explicit_root(tmp_path: Path) -> None:

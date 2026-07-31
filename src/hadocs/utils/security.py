@@ -1,7 +1,7 @@
 from pathlib import Path
 import subprocess
 
-from src.hadocs.utils.config import SENSITIVE_CONFIG_FILES
+from hadocs.utils.config import SENSITIVE_CONFIG_FILES
 
 
 REQUIRED_GITIGNORE_ENTRIES = [

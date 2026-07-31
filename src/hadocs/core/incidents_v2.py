@@ -3,29 +3,29 @@ from __future__ import annotations
 from collections import defaultdict
 from dataclasses import dataclass, field
 
-from src.hadocs.core.device_overrides import DeviceOverride, get_device_policy
-from src.hadocs.core.device_reachability import (
+from hadocs.core.device_overrides import DeviceOverride, get_device_policy
+from hadocs.core.device_reachability import (
     ReachabilityResult,
     ReachabilityStatus,
     determine_device_reachability,
 )
-from src.hadocs.core.models import (
+from hadocs.core.models import (
     DeviceModel,
     EntityModel,
     InstallationModel,
 )
-from src.hadocs.core.state_interpreter import (
+from hadocs.core.state_interpreter import (
     StateInterpretation,
     StateMeaning,
     interpret_entity_state,
 )
-from src.hadocs.intelligence.engine import profile_entity
-from src.hadocs.intelligence.freshness import (
+from hadocs.intelligence.engine import profile_entity
+from hadocs.intelligence.freshness import (
     FreshnessResult,
     FreshnessStatus,
     determine_entity_freshness,
 )
-from src.hadocs.intelligence.profiles import ProfileKind
+from hadocs.intelligence.profiles import ProfileKind
 
 
 @dataclass(frozen=True, slots=True)

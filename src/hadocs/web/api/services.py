@@ -1,8 +1,8 @@
 from dataclasses import dataclass
-from src.hadocs.application.manage_policies import ManagePoliciesApplication
-from src.hadocs.application.preview_policy import PreviewPolicyApplication
-from src.hadocs.persistence.database import Database
-from src.hadocs.persistence.policy_repository import PolicyRepository
+from hadocs.application.manage_policies import ManagePoliciesApplication
+from hadocs.application.preview_policy import PreviewPolicyApplication
+from hadocs.persistence.database import Database
+from hadocs.persistence.policy_repository import PolicyRepository
 
 @dataclass(slots=True)
 class ApiServices:

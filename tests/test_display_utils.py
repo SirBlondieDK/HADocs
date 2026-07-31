@@ -1,4 +1,4 @@
-from src.hadocs.utils.display import display_area, display_text, is_unassigned_area
+from hadocs.utils.display import display_area, display_text, is_unassigned_area
 
 
 def test_is_unassigned_area_detects_home_assistant_internal_values():

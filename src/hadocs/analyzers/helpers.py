@@ -1,4 +1,4 @@
-from src.hadocs.analyzers.rules import (
+from hadocs.analyzers.rules import (
     IGNORED_DOMAINS,
     IGNORED_ENTITY_PATTERNS,
     PHYSICAL_DOMAINS,

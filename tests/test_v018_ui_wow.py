@@ -1,5 +1,5 @@
 def test_v018_ui_imports():
-    from src.hadocs.gui.app import (
+    from hadocs.gui.app import (
         App,
         AboutDialog,
         FirstRunWizard,
@@ -25,7 +25,7 @@ def test_v018_ui_imports():
 
 
 def test_read_latest_summary_empty(tmp_path):
-    from src.hadocs.gui.app import read_latest_summary
+    from hadocs.gui.app import read_latest_summary
 
     data = read_latest_summary(tmp_path / "output")
     assert data["health"] == {}

@@ -24,4 +24,14 @@ The Home Assistant App currently uses `sirblondiedk/hadocs:dev`, the project's p
 
 Persistent data is stored in the mapped `/config`, `/cache`, and `/output` directories.
 
+## HASK Preview
+
+The App exposes `hask_preview_enabled` and `hask_enabled` as separate options;
+both default to `false`. When explicitly enabled, the configured
+`/config/hask-bundle` must contain a valid read-only consumer bundle. A missing
+or corrupt explicit bundle is reported and is not replaced silently. Candidate
+evaluation retains its independent database, candidate-evidence, and native
+status gates. Preview performs no controller login or network probe and has no
+effect on normal analysis or scores.
+
 For the shared product workflow, see the [project README](../../../README.md#web-interface), or return to the [documentation home](../../README.md).

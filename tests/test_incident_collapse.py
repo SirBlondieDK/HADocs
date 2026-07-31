@@ -1,4 +1,4 @@
-from src.hadocs.core.incidents import Incident, collapse_incidents, hidden_incident_count, visible_incidents
+from hadocs.core.incidents import Incident, collapse_incidents, hidden_incident_count, visible_incidents
 
 
 def test_mobile_app_collapses_children():

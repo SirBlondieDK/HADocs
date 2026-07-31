@@ -1,4 +1,4 @@
-from src.hadocs.utils.config import (
+from hadocs.utils.config import (
     INSECURE_HTTP_WARNING,
     validate_config_warnings,
 )

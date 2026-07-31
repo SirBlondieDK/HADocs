@@ -4,22 +4,22 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 
-from src.hadocs.core.device_overrides import DeviceOverride, get_device_policy
-from src.hadocs.core.device_reachability import (
+from hadocs.core.device_overrides import DeviceOverride, get_device_policy
+from hadocs.core.device_reachability import (
     ReachabilityStatus,
     determine_device_reachability,
 )
-from src.hadocs.core.models import (
+from hadocs.core.models import (
     DeviceModel,
     EntityModel,
     InstallationModel,
 )
-from src.hadocs.intelligence.engine import profile_entity
-from src.hadocs.intelligence.freshness import (
+from hadocs.intelligence.engine import profile_entity
+from hadocs.intelligence.freshness import (
     FreshnessStatus,
     determine_entity_freshness,
 )
-from src.hadocs.intelligence.profiles import ProfileKind
+from hadocs.intelligence.profiles import ProfileKind
 
 
 class IntegrationHealthStatus(str, Enum):
