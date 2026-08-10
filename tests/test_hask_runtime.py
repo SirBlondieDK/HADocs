@@ -12,7 +12,8 @@ from hadocs.knowledge.hask_runtime.cache import RuntimeCache
 from hadocs.knowledge.hask_runtime.discovery import BundleDiscovery
 from hadocs.knowledge.hask_runtime.provider import KnowledgeProvider
 
-BUNDLE = Path(r"D:\HA-Stability-Knowledge\dist\hadocs")
+REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
+BUNDLE = REPOSITORY_ROOT / "src" / "hadocs" / "knowledge" / "hask_bundle" / "0.2.0"
 REQUIRED = tuple(sorted(path.name for path in BUNDLE.glob("*.json") if path.name != "manifest.json"))
 
 
