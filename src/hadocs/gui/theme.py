@@ -43,6 +43,66 @@ class Theme:
         style.configure("TLabelframe", background=COLORS["bg"], foreground=COLORS["text"], bordercolor=COLORS["border"])
         style.configure("TLabelframe.Label", background=COLORS["bg"], foreground=COLORS["text"], font=("Segoe UI", 10, "bold"))
         style.configure("TEntry", fieldbackground="#020617", foreground=COLORS["text"], insertcolor=COLORS["text"], bordercolor=COLORS["border"])
+        style.configure(
+            "Treeview",
+            background="#020617",
+            fieldbackground="#020617",
+            foreground=COLORS["text"],
+            bordercolor=COLORS["border"],
+            lightcolor=COLORS["border"],
+            darkcolor=COLORS["border"],
+            rowheight=26,
+        )
+        style.map(
+            "Treeview",
+            background=[("selected", "#075985")],
+            foreground=[("selected", "#f8fafc")],
+        )
+        style.configure(
+            "Treeview.Heading",
+            background=COLORS["panel2"],
+            foreground=COLORS["text"],
+            bordercolor=COLORS["border"],
+            relief="flat",
+            font=("Segoe UI", 10, "bold"),
+        )
+        style.map(
+            "Treeview.Heading",
+            background=[("active", "#1f2a44")],
+            foreground=[("active", COLORS["text"])],
+        )
+        style.configure(
+            "TCombobox",
+            fieldbackground="#020617",
+            background=COLORS["panel2"],
+            foreground=COLORS["text"],
+            arrowcolor=COLORS["text"],
+            bordercolor=COLORS["border"],
+            selectbackground="#020617",
+            selectforeground=COLORS["text"],
+            padding=(8, 5),
+        )
+        style.map(
+            "TCombobox",
+            fieldbackground=[
+                ("readonly", "#020617"),
+                ("disabled", COLORS["panel2"]),
+            ],
+            foreground=[
+                ("readonly", COLORS["text"]),
+                ("disabled", COLORS["muted"]),
+            ],
+            selectbackground=[("readonly", "#020617")],
+            selectforeground=[("readonly", COLORS["text"])],
+            arrowcolor=[
+                ("disabled", COLORS["muted"]),
+                ("readonly", COLORS["text"]),
+            ],
+        )
+        root.option_add("*TCombobox*Listbox.background", "#020617")
+        root.option_add("*TCombobox*Listbox.foreground", COLORS["text"])
+        root.option_add("*TCombobox*Listbox.selectBackground", "#075985")
+        root.option_add("*TCombobox*Listbox.selectForeground", "#f8fafc")
         style.configure("TButton", background=COLORS["panel2"], foreground=COLORS["text"], bordercolor=COLORS["border"], focusthickness=0, padding=(12, 7))
         style.map("TButton", background=[("active", "#1f2a44")])
         style.configure("Accent.TButton", background=COLORS["blue"], foreground="#020617", bordercolor=COLORS["blue"], font=("Segoe UI", 10, "bold"), padding=(14, 8))
