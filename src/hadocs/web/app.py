@@ -367,9 +367,26 @@ class HadocsRequestHandler(BaseHTTPRequestHandler):
         }
 
     def _load_hask_preview(self) -> dict[str, Any]:
+        from hadocs.application.database_status import (
+            read_operational_database_status,
+        )
         from hadocs.application.hask_preview import HaskPreviewService
+        from hadocs.web.api.hask_preview import (
+            build_web_preview,
+            load_latest_preview,
+        )
 
-        return HaskPreviewService().snapshot(load_config()).as_dict()
+        config = load_config()
+        preview, source = load_latest_preview(
+            OUTPUT_DIRECTORY / "hask_preview.json",
+            lambda: HaskPreviewService().snapshot(config).as_dict(),
+        )
+        database_status = read_operational_database_status(config)
+        return build_web_preview(
+            preview,
+            source=source,
+            database_status=database_status,
+        )
 
     def _read_json_body(self) -> dict[str, Any]:
         content_length = self.headers.get("Content-Length", "0")

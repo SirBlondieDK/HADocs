@@ -3,39 +3,603 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>HASK Preview · HADocs</title>
+  <title>HASK Preview | HADocs</title>
   <link rel="stylesheet" href="./static/style.css">
   <style>
-    .preview-shell{max-width:1100px;margin:0 auto;padding:32px}.preview-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}.preview-list{padding-left:20px}.preview-notice{border-left:4px solid #8b5cf6;padding:16px;background:rgba(139,92,246,.1)}.candidate{border:1px solid var(--border-color,#334155);border-radius:12px;padding:16px;margin:12px 0}.neutral-badge{display:inline-block;padding:6px 10px;border-radius:999px;background:#334155;color:#f8fafc}.back-link{display:inline-block;margin-bottom:20px}
+    .preview-shell {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 32px;
+    }
+
+    .preview-header,
+    .preview-section {
+      margin-bottom: 18px;
+    }
+
+    .preview-header {
+      padding: 26px;
+    }
+
+    .preview-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .preview-heading h1 {
+      margin: 8px 0;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+
+    .preview-notice {
+      border-left: 4px solid #8b5cf6;
+      padding: 14px 16px;
+      margin-top: 18px;
+      background: rgba(139, 92, 246, 0.1);
+      border-radius: 0 8px 8px 0;
+    }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+    }
+
+    .preview-metric,
+    .knowledge-card,
+    .candidate-card,
+    .coverage-card {
+      border: 1px solid var(--border-color, #334155);
+      border-radius: 12px;
+      padding: 16px;
+      background: rgba(15, 23, 42, 0.25);
+    }
+
+    .preview-metric span,
+    .metric-label {
+      display: block;
+      color: var(--muted-color, #94a3b8);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 7px;
+    }
+
+    .preview-metric strong {
+      display: block;
+      overflow-wrap: anywhere;
+      font-size: 1.05rem;
+    }
+
+    .preview-section h2 {
+      margin-top: 0;
+    }
+
+    .preview-section-description {
+      color: var(--muted-color, #94a3b8);
+      margin-top: -6px;
+    }
+
+    .preview-badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: #334155;
+      color: #f8fafc;
+      font-size: 0.78rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .preview-badge.good {
+      background: rgba(16, 185, 129, 0.18);
+      color: #6ee7b7;
+    }
+
+    .preview-badge.warning {
+      background: rgba(245, 158, 11, 0.18);
+      color: #fcd34d;
+    }
+
+    .preview-badge.danger {
+      background: rgba(239, 68, 68, 0.18);
+      color: #fca5a5;
+    }
+
+    .preview-badge.neutral {
+      background: rgba(139, 92, 246, 0.18);
+      color: #c4b5fd;
+    }
+
+    .coverage-list,
+    .knowledge-list,
+    .candidate-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .coverage-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 9px;
+    }
+
+    .coverage-bar {
+      height: 7px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.18);
+    }
+
+    .coverage-bar span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #0ea5e9, #8b5cf6);
+    }
+
+    .knowledge-card h3,
+    .candidate-card h3 {
+      margin: 0 0 8px;
+    }
+
+    .knowledge-card p,
+    .candidate-card p {
+      margin: 7px 0;
+    }
+
+    .candidate-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .evidence-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .evidence-box {
+      padding: 12px;
+      border-radius: 9px;
+      background: rgba(15, 23, 42, 0.45);
+    }
+
+    .evidence-box ul,
+    .preview-list {
+      margin: 8px 0 0;
+      padding-left: 20px;
+    }
+
+    .empty-preview {
+      border: 1px dashed var(--border-color, #475569);
+      border-radius: 12px;
+      padding: 20px;
+      color: var(--muted-color, #94a3b8);
+    }
+
+    .empty-preview strong {
+      display: block;
+      color: inherit;
+      margin-bottom: 7px;
+    }
+
+    .loading-state {
+      padding: 28px;
+      text-align: center;
+      color: var(--muted-color, #94a3b8);
+    }
+
+    .error-state {
+      border-left-color: #ef4444;
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    @media (max-width: 640px) {
+      .preview-shell {
+        padding: 18px;
+      }
+    }
   </style>
 </head>
 <body>
   <main class="preview-shell">
-    <a class="back-link" href="./">← HADocs Overview</a>
-    <section class="card"><span class="neutral-badge">Experimental · default disabled</span><h1>HASK Preview</h1><p id="notice" class="preview-notice">Loading candidate-only status…</p></section>
-    <section class="card"><h2>HASK status</h2><div id="status" class="preview-grid"></div></section>
-    <section class="card"><h2>Bundle information</h2><div id="bundle" class="preview-grid"></div></section>
-    <section class="card"><h2>Knowledge coverage</h2><ul id="coverage" class="preview-list"></ul></section>
-    <section class="card"><h2>Relevant knowledge for this installation</h2><ul id="knowledge" class="preview-list"></ul></section>
-    <section class="card"><h2>Candidate insights</h2><div id="candidates"></div></section>
-    <section class="card"><h2>Supporting and missing evidence</h2><p>Only validated evidence categories are shown. Protected installation identifiers and database IDs are never exposed.</p></section>
-    <section class="card"><h2>Conflicts and limitations</h2><ul id="limitations" class="preview-list"></ul></section>
-    <section class="card"><h2>Analytical impact</h2><p id="impact"></p></section>
-    <section class="card"><h2>Enablement</h2><p>Enable HASK Preview and the HASK runtime explicitly in settings. Candidate evaluation retains the separate operational database, candidate-evidence, and native-status controls.</p></section>
+    <a class="back-link" href="./">Back to HADocs Overview</a>
+
+    <section class="card preview-header">
+      <div class="preview-heading">
+        <div>
+          <span class="preview-badge neutral">Experimental and read-only</span>
+          <h1>HASK Preview</h1>
+          <p>
+            Explore the validated knowledge bundle, operational readiness,
+            relevant platform knowledge, and candidate evidence from the latest scan.
+          </p>
+        </div>
+        <span id="data-source" class="preview-badge">Loading</span>
+      </div>
+      <p id="notice" class="preview-notice">
+        Loading candidate-only HASK status...
+      </p>
+    </section>
+
+    <div id="loading" class="card loading-state">
+      Loading HASK Preview data...
+    </div>
+
+    <div id="preview-content" hidden>
+      <section class="card preview-section">
+        <h2>Preview summary</h2>
+        <div id="summary" class="preview-grid"></div>
+      </section>
+
+      <section class="card preview-section">
+        <h2>Runtime and bundle status</h2>
+        <p class="preview-section-description">
+          Validation and compatibility gates protecting the experimental runtime.
+        </p>
+        <div id="status" class="preview-grid"></div>
+      </section>
+
+      <section class="card preview-section">
+        <h2>Operational database</h2>
+        <p class="preview-section-description">
+          Redacted readiness information only. Installation identifiers and database
+          record identifiers are never exposed.
+        </p>
+        <div id="database-status" class="preview-grid"></div>
+        <h3>Persisted record counts</h3>
+        <div id="database-counts" class="preview-grid"></div>
+      </section>
+
+      <section class="card preview-section">
+        <h2>Knowledge coverage</h2>
+        <p class="preview-section-description">
+          Validated records in each artifact. Record counts are not the same as
+          executable matcher counts.
+        </p>
+        <div id="coverage" class="coverage-list"></div>
+      </section>
+
+      <section class="card preview-section">
+        <h2>Relevant knowledge for this installation</h2>
+        <p class="preview-section-description">
+          Bundle platforms matched to integrations observed in the latest scan.
+        </p>
+        <div id="knowledge" class="knowledge-list"></div>
+      </section>
+
+      <section class="card preview-section">
+        <h2>Candidate insights</h2>
+        <p class="preview-section-description">
+          Experimental interpretations based only on validated local evidence.
+        </p>
+        <div id="candidates" class="candidate-list"></div>
+      </section>
+
+      <section class="card preview-section">
+        <h2>Conflicts and limitations</h2>
+        <ul id="limitations" class="preview-list"></ul>
+      </section>
+
+      <section class="card preview-section">
+        <h2>Analytical impact</h2>
+        <p id="impact"></p>
+      </section>
+    </div>
   </main>
+
   <script>
-    const esc=v=>String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
-    const metric=(label,value)=>`<article><span>${esc(label)}</span><strong>${esc(value)}</strong></article>`;
-    fetch(new URL("api/hask-preview", document.baseURI)).then(r=>r.json()).then(p=>{
-      document.getElementById("notice").textContent=p.notice;
-      document.getElementById("status").innerHTML=metric("Classification",p.classification)+metric("Preview enabled",p.feature_enabled)+metric("Runtime enabled",p.hask_runtime_enabled)+metric("Validation",p.validation_state);
-      document.getElementById("bundle").innerHTML=metric("Source",p.bundle_source)+metric("Contract",p.contract_version||"not loaded")+metric("Knowledge version",p.knowledge_content_version||"not loaded")+metric("Checksum",p.checksum_prefix||"not checked");
-      document.getElementById("coverage").innerHTML=p.coverage.length?p.coverage.map(x=>`<li><strong>${esc(x.artifact)}</strong>: ${esc(x.item_count)}</li>`).join(""):"<li>No validated coverage is available.</li>";
-      document.getElementById("knowledge").innerHTML=p.relevant_knowledge.length?p.relevant_knowledge.map(x=>`<li><strong>${esc(x.title)}</strong> — ${esc(x.summary)}</li>`).join(""):"<li>No relevant platform knowledge has been evaluated.</li>";
-      document.getElementById("candidates").innerHTML=p.candidates.length?p.candidates.map(x=>`<article class="candidate"><h3>${esc(x.classification)}</h3><p>${esc(x.explanation)}</p><p><strong>HASK record:</strong> ${esc(x.hask_record_ref)} · <strong>Matcher:</strong> ${esc(x.matcher_id)} ${esc(x.matcher_version)}</p><p><strong>Supporting:</strong> ${esc(x.supporting_evidence_categories.join(", ")||"none")}</p><p><strong>Missing:</strong> ${esc(x.missing_evidence_categories.join(", ")||"none")}</p></article>`).join(""):"<p>No candidate evidence has been evaluated.</p>";
-      document.getElementById("limitations").innerHTML=p.limitations.map(x=>`<li>${esc(x)}</li>`).join("");
-      document.getElementById("impact").textContent=p.analytical_impact_statement;
-    }).catch(()=>{document.getElementById("notice").textContent="HASK Preview status is unavailable. Normal HADocs analysis is unaffected.";});
+    const escapeHtml = value => String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+
+    const list = value => Array.isArray(value) ? value : [];
+    const number = value => Number.isFinite(value) ? value : 0;
+    const formatNumber = value => number(value).toLocaleString();
+
+    function toneForBoolean(value) {
+      return value === true ? "good" : "warning";
+    }
+
+    function toneForClassification(value) {
+      if (value === "SUPPORTED_CANDIDATE") return "good";
+      if (value === "REJECTED_CONFLICT" || value === "BUNDLE_INVALID") return "danger";
+      if (
+        value === "INSUFFICIENT_EVIDENCE" ||
+        value === "BUNDLE_UNAVAILABLE" ||
+        value === "BUNDLE_DISABLED"
+      ) return "warning";
+      return "neutral";
+    }
+
+    function label(value) {
+      return String(value ?? "unknown").replaceAll("_", " ");
+    }
+
+    function metric(title, value, tone = "") {
+      const badge = tone
+        ? `<span class="preview-badge ${escapeHtml(tone)}">${escapeHtml(value)}</span>`
+        : `<strong>${escapeHtml(value)}</strong>`;
+
+      return `
+        <article class="preview-metric">
+          <span>${escapeHtml(title)}</span>
+          ${badge}
+        </article>
+      `;
+    }
+
+    function booleanMetric(title, value) {
+      return metric(title, value === true ? "Enabled" : "Disabled", toneForBoolean(value));
+    }
+
+    function renderSummary(payload) {
+      const statistics = payload.statistics || {};
+      document.getElementById("summary").innerHTML = [
+        metric("Knowledge records", formatNumber(statistics.knowledge_record_count)),
+        metric("Bundle artifacts", formatNumber(statistics.artifact_count)),
+        metric("Relevant platforms", formatNumber(statistics.relevant_platform_count)),
+        metric("Candidates", formatNumber(statistics.candidate_count)),
+        metric(
+          "Current classification",
+          label(payload.classification),
+          toneForClassification(payload.classification)
+        ),
+      ].join("");
+    }
+
+    function renderStatus(payload) {
+      document.getElementById("status").innerHTML = [
+        booleanMetric("Preview", payload.feature_enabled),
+        booleanMetric("HASK runtime", payload.hask_runtime_enabled),
+        booleanMetric("Bundle available", payload.bundle_available),
+        booleanMetric("Bundle valid", payload.bundle_valid),
+        metric("Validation", label(payload.validation_state)),
+        metric("Compatibility", label(payload.compatibility_state)),
+        metric("Bundle source", label(payload.bundle_source)),
+        metric("Contract version", payload.contract_version || "Not loaded"),
+        metric("Knowledge version", payload.knowledge_content_version || "Not loaded"),
+        metric("Schema version", payload.knowledge_schema_version || "Not loaded"),
+        metric("Checksum prefix", payload.checksum_prefix || "Not checked"),
+      ].join("");
+    }
+
+    function renderDatabase(payload) {
+      const database = payload.operational_database || {};
+
+      document.getElementById("database-status").innerHTML = [
+        booleanMetric("Database", database.enabled),
+        booleanMetric("Identity initialized", database.identity_initialized),
+        booleanMetric("Protected material", database.protected_material_valid),
+        booleanMetric("Database file", database.database_file_present),
+        booleanMetric("Candidate bridge", database.candidate_bridge_enabled),
+        booleanMetric("Native status evidence", database.native_domain_status_enabled),
+        metric("Credential backend", database.protected_backend || "Not configured"),
+        metric("Database schema", database.schema_version ?? "Not available"),
+        metric("Integrity", label(database.integrity_status)),
+        metric("Foreign keys", label(database.foreign_key_status)),
+      ].join("");
+
+      const counts = database.counts || {};
+      const countEntries = Object.entries(counts);
+      document.getElementById("database-counts").innerHTML = countEntries.length
+        ? countEntries.map(([name, value]) => metric(label(name), formatNumber(value))).join("")
+        : metric("Records", "Not available");
+
+      if (database.limitation) {
+        const limitations = list(payload.limitations);
+        if (!limitations.includes(database.limitation)) {
+          payload.limitations = [...limitations, database.limitation];
+        }
+      }
+    }
+
+    function renderCoverage(payload) {
+      const coverage = list(payload.coverage);
+      const target = document.getElementById("coverage");
+
+      if (!coverage.length) {
+        target.innerHTML = `
+          <div class="empty-preview">
+            <strong>No validated coverage is available.</strong>
+            Enable and validate the HASK bundle to inspect its knowledge artifacts.
+          </div>
+        `;
+        return;
+      }
+
+      const maximum = Math.max(...coverage.map(item => number(item.item_count)), 1);
+      target.innerHTML = coverage.map(item => {
+        const width = Math.max(2, Math.round(number(item.item_count) / maximum * 100));
+        return `
+          <article class="coverage-card">
+            <div class="coverage-row">
+              <strong>${escapeHtml(label(item.artifact))}</strong>
+              <span>${escapeHtml(formatNumber(item.item_count))}</span>
+            </div>
+            <div class="coverage-bar" aria-hidden="true">
+              <span style="width:${width}%"></span>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function renderKnowledge(payload) {
+      const knowledge = list(payload.relevant_knowledge);
+      const target = document.getElementById("knowledge");
+
+      if (!knowledge.length) {
+        target.innerHTML = `
+          <div class="empty-preview">
+            <strong>No relevant platform knowledge was found.</strong>
+            Run a scan with HASK Preview enabled to match installed integrations
+            against the validated bundle.
+          </div>
+        `;
+        return;
+      }
+
+      target.innerHTML = knowledge.map(item => `
+        <article class="knowledge-card">
+          <div class="candidate-heading">
+            <h3>${escapeHtml(item.title || item.platform_id)}</h3>
+            <span class="preview-badge good">${escapeHtml(label(item.status))}</span>
+          </div>
+          <p>${escapeHtml(item.summary || "No public summary is available.")}</p>
+          <span class="metric-label">Platform</span>
+          <strong>${escapeHtml(item.platform_id)}</strong>
+        </article>
+      `).join("");
+    }
+
+    function evidenceList(values, emptyText) {
+      const items = list(values);
+      return items.length
+        ? `<ul>${items.map(item => `<li>${escapeHtml(label(item))}</li>`).join("")}</ul>`
+        : `<p>${escapeHtml(emptyText)}</p>`;
+    }
+
+    function renderCandidates(payload) {
+      const candidates = list(payload.candidates);
+      const target = document.getElementById("candidates");
+
+      if (!candidates.length) {
+        const database = payload.operational_database || {};
+        const missingGates = [];
+
+        if (!database.enabled) missingGates.push("operational database");
+        if (!database.candidate_bridge_enabled) missingGates.push("candidate evidence bridge");
+        if (!database.native_domain_status_enabled) missingGates.push("native status evidence");
+
+        const explanation = missingGates.length
+          ? `Candidate evaluation is waiting for: ${missingGates.join(", ")}.`
+          : "No bounded matcher currently has enough validated evidence to emit a candidate.";
+
+        target.innerHTML = `
+          <div class="empty-preview">
+            <strong>No candidate evidence has been emitted.</strong>
+            ${escapeHtml(explanation)}
+            This is a conservative result and does not mean that normal HADocs
+            analysis failed.
+          </div>
+        `;
+        return;
+      }
+
+      target.innerHTML = candidates.map(item => `
+        <article class="candidate-card">
+          <div class="candidate-heading">
+            <h3>${escapeHtml(label(item.classification))}</h3>
+            <span class="preview-badge ${toneForClassification(item.classification)}">
+              ${escapeHtml(item.applicability || "Not confirmed")}
+            </span>
+          </div>
+
+          <p>${escapeHtml(item.explanation || "No public explanation is available.")}</p>
+
+          <div class="preview-grid">
+            ${metric("HASK record", item.hask_record_ref || "Not available")}
+            ${metric(
+              "Matcher",
+              [item.matcher_id, item.matcher_version].filter(Boolean).join(" ") ||
+                "Not available"
+            )}
+            ${metric("Rejection code", item.rejection_code || "None")}
+          </div>
+
+          <div class="evidence-grid">
+            <div class="evidence-box">
+              <strong>Supporting evidence</strong>
+              ${evidenceList(
+                item.supporting_evidence_categories,
+                "No supporting evidence category was exposed."
+              )}
+            </div>
+            <div class="evidence-box">
+              <strong>Missing evidence</strong>
+              ${evidenceList(
+                item.missing_evidence_categories,
+                "No missing evidence category was reported."
+              )}
+            </div>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function renderLimitations(payload) {
+      const limitations = list(payload.limitations);
+      document.getElementById("limitations").innerHTML = limitations.length
+        ? limitations.map(item => `<li>${escapeHtml(item)}</li>`).join("")
+        : "<li>No additional limitations were reported.</li>";
+    }
+
+    async function loadPreview() {
+      const loading = document.getElementById("loading");
+      const content = document.getElementById("preview-content");
+
+      try {
+        const response = await fetch(
+          new URL("api/hask-preview", document.baseURI),
+          { cache: "no-store" }
+        );
+
+        if (!response.ok) {
+          throw new Error(`HASK Preview returned HTTP ${response.status}`);
+        }
+
+        const payload = await response.json();
+        const source = payload.preview_data_source === "latest_scan"
+          ? "Latest completed scan"
+          : "Live bundle status";
+
+        document.getElementById("data-source").textContent = source;
+        document.getElementById("data-source").className =
+          `preview-badge ${payload.preview_data_source === "latest_scan" ? "good" : "neutral"}`;
+        document.getElementById("notice").textContent =
+          payload.notice || "HASK Preview is experimental and read-only.";
+
+        renderSummary(payload);
+        renderStatus(payload);
+        renderDatabase(payload);
+        renderCoverage(payload);
+        renderKnowledge(payload);
+        renderCandidates(payload);
+        renderLimitations(payload);
+
+        document.getElementById("impact").textContent =
+          payload.analytical_impact_statement ||
+          "HASK Preview does not alter normal HADocs analysis.";
+
+        loading.hidden = true;
+        content.hidden = false;
+      } catch (error) {
+        loading.className = "card preview-notice error-state";
+        loading.textContent =
+          `HASK Preview status is unavailable. Normal HADocs analysis is unaffected. ${error}`;
+      }
+    }
+
+    loadPreview();
   </script>
 </body>
 </html>
