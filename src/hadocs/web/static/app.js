@@ -16,6 +16,7 @@ const state = {
 };
 
 const elements = {
+  appVersion: document.getElementById("app-version"),
   statusValue: document.getElementById("status-value"),
   statusDetail: document.getElementById("status-detail"),
   lastScanValue: document.getElementById("last-scan-value"),
@@ -925,6 +926,7 @@ async function loadOverrides() {
 function render() {
   const status = state.status;
   if (!status) return;
+  elements.appVersion.textContent = status.version ? `v${status.version}` : "version unavailable";
   elements.scanButton.disabled = status.running;
 
   if (status.running) {
