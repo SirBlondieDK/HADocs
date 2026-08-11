@@ -22,6 +22,7 @@ from hadocs.core.device_overrides import (
     upsert_device_override,
 )
 from hadocs.utils.config import load_config
+from hadocs.version import __version__
 from hadocs.web.api.devices import load_device_summaries
 
 HOST = "0.0.0.0"
@@ -70,6 +71,7 @@ class ScanManager:
             report_available = (OUTPUT_DIRECTORY / "index.html").is_file()
 
             return {
+                "version": __version__,
                 "running": self._running,
                 "started_at": self._started_at,
                 "finished_at": self._finished_at,
@@ -163,7 +165,7 @@ SCAN_MANAGER = ScanManager()
 
 
 class HadocsRequestHandler(BaseHTTPRequestHandler):
-    server_version = "HADocsWeb/0.4.0"
+    server_version = f"HADocsWeb/{__version__}"
 
     def do_GET(self) -> None:
         path = self._request_path()

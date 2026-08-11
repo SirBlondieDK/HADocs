@@ -1,7 +1,7 @@
 ; Inno Setup script for HADocs
 
 #define MyAppName "HADocs"
-#define MyAppVersion "0.17.0-rc1"
+#define MyAppVersion "0.17.0-rc2"
 #define MyAppPublisher "SirBlondieDK"
 #define MyAppURL "https://github.com/SirBlondieDK/HADocs"
 #define MyAppExeName "HADocs.exe"
