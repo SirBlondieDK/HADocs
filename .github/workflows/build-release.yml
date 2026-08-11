@@ -20,7 +20,7 @@ jobs:
           python -m pip install -e .
           python -m pip install pyinstaller pytest
       - name: Run tests
-        run: pytest
+        run: python -m pytest
       - name: Build Windows package
         shell: pwsh
         run: |
