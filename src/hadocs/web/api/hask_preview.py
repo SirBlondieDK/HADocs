@@ -89,6 +89,33 @@ def sanitize_preview_payload(value: object) -> dict[str, Any] | None:
                 }
             )
 
+    matcher_readiness = []
+    for item in _items(value.get("matcher_readiness")):
+        if not isinstance(item, Mapping):
+            continue
+        readiness_state = _text(item.get("state"))
+        if readiness_state not in {
+            "READY",
+            "BLOCKED",
+            "NOT_APPLICABLE",
+            "REJECTED_CONFLICT",
+        }:
+            continue
+        matcher_readiness.append(
+            {
+                "state": readiness_state,
+                "matcher_id": _text(item.get("matcher_id")),
+                "matcher_version": _text(item.get("matcher_version")),
+                "hask_record_ref": _text(item.get("hask_record_ref")),
+                "platform_scope": _string_list(item.get("platform_scope")),
+                "candidate_emitted": item.get("candidate_emitted") is True,
+                "missing_evidence_categories": _string_list(
+                    item.get("missing_evidence_categories")
+                ),
+                "rejection_codes": _string_list(item.get("rejection_codes")),
+            }
+        )
+
     candidates = []
     for item in _items(value.get("candidates")):
         if not isinstance(item, Mapping):
@@ -134,6 +161,13 @@ def sanitize_preview_payload(value: object) -> dict[str, Any] | None:
         "coverage": coverage,
         "relevant_knowledge": knowledge,
         "candidates": candidates,
+        "matcher_readiness": matcher_readiness,
+        "candidate_bridge_state": _text(
+            value.get("candidate_bridge_state"), "NOT_AVAILABLE"
+        ),
+        "candidate_bridge_rejection_code": _optional_text(
+            value.get("candidate_bridge_rejection_code")
+        ),
         "limitations": _string_list(value.get("limitations")),
         "notice": _text(value.get("notice")),
         "analytical_impact_statement": _text(
@@ -215,11 +249,23 @@ def build_web_preview(
     coverage = result.get("coverage", [])
     knowledge = result.get("relevant_knowledge", [])
     candidates = result.get("candidates", [])
+    matcher_readiness = result.get("matcher_readiness", [])
 
     classifications: dict[str, int] = {}
     for candidate in candidates:
         name = str(candidate.get("classification", "UNKNOWN"))
         classifications[name] = classifications.get(name, 0) + 1
+
+    readiness_states: dict[str, int] = {}
+    for matcher in matcher_readiness:
+        name = str(matcher.get("state", "UNKNOWN"))
+        readiness_states[name] = readiness_states.get(name, 0) + 1
+
+    matcher_record_count = sum(
+        _count(item.get("item_count"))
+        for item in coverage
+        if item.get("artifact") == "evidence_matchers"
+    )
 
     result["preview_data_source"] = source
     result["statistics"] = {
@@ -228,8 +274,12 @@ def build_web_preview(
             _count(item.get("item_count")) for item in coverage
         ),
         "relevant_platform_count": len(knowledge),
-        "candidate_count": len(candidates),
+        "candidate_count": classifications.get("SUPPORTED_CANDIDATE", 0),
+        "candidate_evaluation_count": len(matcher_readiness),
         "candidate_classifications": classifications,
+        "matcher_record_count": matcher_record_count,
+        "executable_matcher_count": len(matcher_readiness),
+        "matcher_readiness_states": readiness_states,
     }
     result["operational_database"] = database_status_payload(database_status)
     return result

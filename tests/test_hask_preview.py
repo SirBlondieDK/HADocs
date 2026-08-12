@@ -194,19 +194,36 @@ def test_validated_coverage_and_relevant_platform_knowledge() -> None:
         ("REJECTED_CONFLICT", (), "CONTRADICTORY_EVIDENCE"),
     ],
 )
-def test_all_candidate_classifications_are_safe_and_explained(
-    classification: str, missing: tuple[str, ...], rejection: str | None
+def test_only_supported_candidates_are_emitted_as_candidate_insights(
+    classification: str,
+    missing: tuple[str, ...],
+    rejection: str | None,
 ) -> None:
     result = SimpleNamespace(
-        candidates=(candidate(classification, missing=missing, rejection=rejection),)
+        candidates=(
+            candidate(
+                classification,
+                missing=missing,
+                rejection=rejection,
+            ),
+        )
     )
-    snapshot = HaskPreviewService().snapshot(config(), candidate_result=result)
-    item = snapshot.candidates[0]
-    assert item.classification.value == classification
-    assert item.explanation
-    if missing:
-        assert item.missing_evidence_categories == missing
 
+    snapshot = HaskPreviewService().snapshot(
+        config(),
+        candidate_result=result,
+    )
+
+    if classification == "SUPPORTED_CANDIDATE":
+        assert len(snapshot.candidates) == 1
+        item = snapshot.candidates[0]
+        assert (
+            item.classification
+            is PreviewClassification.SUPPORTED_CANDIDATE
+        )
+        assert item.explanation
+    else:
+        assert snapshot.candidates == ()
 
 def test_preview_serialization_is_redacted_and_has_no_analytical_fields() -> None:
     result = SimpleNamespace(candidates=(candidate("SUPPORTED_CANDIDATE"),))
@@ -392,3 +409,124 @@ def test_issue_29_shared_eligibility_remains_the_only_disabled_predicate() -> No
     )
     assert is_disabled_entity(entity) is True
     assert "is_disabled_entity" in inspect.getsource(is_disabled_entity)
+
+
+def test_candidate_bridge_rejection_is_public_but_protected_data_is_not():
+    result = SimpleNamespace(
+        state=SimpleNamespace(value="REJECTED"),
+        rejection_code="BUNDLE_VALIDATION_FAILED",
+        candidates=(),
+    )
+
+    snapshot = HaskPreviewService().snapshot(config(), candidate_result=result)
+
+    assert snapshot.candidate_bridge_state == "REJECTED"
+    assert (
+        snapshot.candidate_bridge_rejection_code
+        == "BUNDLE_VALIDATION_FAILED"
+    )
+    raw = snapshot.canonical_bytes()
+    assert b"BUNDLE_VALIDATION_FAILED" in raw
+    assert b"persisted_scan_ref" not in raw
+    assert b"refh1_entity_" not in raw
+
+
+def test_duplicate_entity_candidate_insights_are_collapsed():
+    duplicated = candidate("SUPPORTED_CANDIDATE")
+    result = SimpleNamespace(
+        state=SimpleNamespace(value="READY"),
+        rejection_code=None,
+        candidates=(duplicated, duplicated),
+    )
+
+    snapshot = HaskPreviewService().snapshot(config(), candidate_result=result)
+
+    assert snapshot.candidate_bridge_state == "READY"
+    assert len(snapshot.candidates) == 1
+
+
+def test_matcher_readiness_is_redacted_and_preserved():
+    readiness = SimpleNamespace(
+        state=SimpleNamespace(value="BLOCKED"),
+        matcher_id="unifi_controller_connectivity_failure",
+        matcher_version="1.0.0",
+        hask_record_ref="unifi_controller_connection_state",
+        platform_scope=("unifi",),
+        candidate_emitted=False,
+        missing_evidence_categories=(
+            "NATIVE_CONNECTION_RESULT",
+            "NATIVE_PROBLEM_SIGNAL",
+        ),
+        rejection_codes=(),
+        protected_subject_ref="refh1_entity_" + "b" * 64,
+        persisted_scan_ref=982,
+    )
+    result = SimpleNamespace(
+        state=SimpleNamespace(value="READY"),
+        rejection_code=None,
+        candidates=(),
+        matcher_readiness=(readiness,),
+    )
+
+    snapshot = HaskPreviewService().snapshot(
+        config(),
+        candidate_result=result,
+    )
+
+    assert len(snapshot.matcher_readiness) == 1
+    item = snapshot.matcher_readiness[0]
+    assert item.state == "BLOCKED"
+    assert item.platform_scope == ("unifi",)
+    assert item.candidate_emitted is False
+    assert item.missing_evidence_categories == (
+        "NATIVE_CONNECTION_RESULT",
+        "NATIVE_PROBLEM_SIGNAL",
+    )
+
+    raw = snapshot.canonical_bytes()
+    assert b"unifi_controller_connectivity_failure" in raw
+    assert b"refh1_entity_" not in raw
+    assert b"persisted_scan_ref" not in raw
+
+
+def test_preview_classification_comes_from_matcher_readiness():
+    def readiness(state: str):
+        return SimpleNamespace(
+            state=SimpleNamespace(value=state),
+            matcher_id=f"matcher_{state.casefold()}",
+            matcher_version="1.0.0",
+            hask_record_ref=f"record_{state.casefold()}",
+            platform_scope=("synthetic",),
+            candidate_emitted=False,
+            missing_evidence_categories=(),
+            rejection_codes=(),
+        )
+
+    not_applicable = SimpleNamespace(
+        state=SimpleNamespace(value="READY"),
+        rejection_code=None,
+        candidates=(),
+        matcher_readiness=(readiness("NOT_APPLICABLE"),),
+    )
+    blocked = SimpleNamespace(
+        state=SimpleNamespace(value="READY"),
+        rejection_code=None,
+        candidates=(),
+        matcher_readiness=(
+            readiness("NOT_APPLICABLE"),
+            readiness("BLOCKED"),
+        ),
+    )
+
+    assert (
+        HaskPreviewService()
+        .snapshot(config(), candidate_result=not_applicable)
+        .classification
+        is PreviewClassification.NOT_APPLICABLE
+    )
+    assert (
+        HaskPreviewService()
+        .snapshot(config(), candidate_result=blocked)
+        .classification
+        is PreviewClassification.INSUFFICIENT_EVIDENCE
+    )

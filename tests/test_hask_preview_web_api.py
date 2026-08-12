@@ -37,6 +37,23 @@ def preview_payload() -> dict[str, object]:
             }
         ],
         "candidates": [],
+        "matcher_readiness": [
+            {
+                "state": "BLOCKED",
+                "matcher_id": "unifi_controller_connectivity_failure",
+                "matcher_version": "1.0.0",
+                "hask_record_ref": "unifi_controller_connection_state",
+                "platform_scope": ["unifi"],
+                "candidate_emitted": False,
+                "missing_evidence_categories": [
+                    "NATIVE_CONNECTION_RESULT",
+                    "NATIVE_PROBLEM_SIGNAL",
+                ],
+                "rejection_codes": [],
+            }
+        ],
+        "candidate_bridge_state": "READY",
+        "candidate_bridge_rejection_code": None,
         "limitations": ["Authoritative API result deferred."],
         "notice": "Experimental preview.",
         "analytical_impact_statement": "No analytical impact.",
@@ -107,7 +124,11 @@ def test_web_preview_exposes_only_redacted_status_and_derived_counts():
         "knowledge_record_count": 836,
         "relevant_platform_count": 1,
         "candidate_count": 0,
+        "candidate_evaluation_count": 1,
         "candidate_classifications": {},
+        "matcher_record_count": 0,
+        "executable_matcher_count": 1,
+        "matcher_readiness_states": {"BLOCKED": 1},
     }
     assert payload["operational_database"]["schema_version"] == 8
     assert payload["operational_database"]["counts"]["entities"] == 1649
@@ -158,3 +179,34 @@ def test_web_handler_uses_latest_scan_without_revalidating_bundle(
     assert payload["preview_data_source"] == "latest_scan"
     assert payload["statistics"]["knowledge_record_count"] == 836
     assert payload["operational_database"]["integrity_status"] == "ok"
+
+
+def test_candidate_bridge_diagnostics_survive_public_sanitization():
+    source = preview_payload()
+    source["candidate_bridge_state"] = "REJECTED"
+    source["candidate_bridge_rejection_code"] = "BUNDLE_VALIDATION_FAILED"
+
+    safe = sanitize_preview_payload(source)
+
+    assert safe is not None
+    assert safe["candidate_bridge_state"] == "REJECTED"
+    assert (
+        safe["candidate_bridge_rejection_code"]
+        == "BUNDLE_VALIDATION_FAILED"
+    )
+
+
+def test_matcher_readiness_is_allowlisted_without_protected_identifiers():
+    source = preview_payload()
+    source["matcher_readiness"][0]["protected_subject_ref"] = (
+        "refh1_entity_" + "c" * 64
+    )
+    source["matcher_readiness"][0]["persisted_scan_ref"] = 983
+
+    assert sanitize_preview_payload(source) is None
+
+    source = preview_payload()
+    safe = sanitize_preview_payload(source)
+
+    assert safe is not None
+    assert safe["matcher_readiness"] == source["matcher_readiness"]

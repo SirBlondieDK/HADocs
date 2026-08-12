@@ -58,6 +58,18 @@ class PreviewCandidate:
 
 
 @dataclass(frozen=True, slots=True)
+class PreviewMatcherReadiness:
+    state: str
+    matcher_id: str
+    matcher_version: str
+    hask_record_ref: str
+    platform_scope: tuple[str, ...]
+    candidate_emitted: bool
+    missing_evidence_categories: tuple[str, ...]
+    rejection_codes: tuple[str, ...]
+
+
+@dataclass(frozen=True, slots=True)
 class HaskPreviewSnapshot:
     feature_enabled: bool
     hask_runtime_enabled: bool
@@ -74,6 +86,9 @@ class HaskPreviewSnapshot:
     coverage: tuple[PreviewCoverage, ...]
     relevant_knowledge: tuple[PreviewKnowledge, ...]
     candidates: tuple[PreviewCandidate, ...]
+    matcher_readiness: tuple[PreviewMatcherReadiness, ...]
+    candidate_bridge_state: str
+    candidate_bridge_rejection_code: str | None
     limitations: tuple[str, ...]
     notice: str = PREVIEW_NOTICE
     analytical_impact_statement: str = ANALYTICAL_IMPACT
@@ -124,6 +139,9 @@ def _empty_snapshot(
         coverage=(),
         relevant_knowledge=(),
         candidates=(),
+        matcher_readiness=(),
+        candidate_bridge_state="NOT_AVAILABLE",
+        candidate_bridge_rejection_code=None,
         limitations=(limitation,),
     )
 
@@ -156,12 +174,7 @@ def _safe_candidates(result: object | None) -> tuple[PreviewCandidate, ...]:
             classification = PreviewClassification(str(item.classification.value))
         except (AttributeError, ValueError):
             continue
-        if classification not in {
-            PreviewClassification.SUPPORTED_CANDIDATE,
-            PreviewClassification.INSUFFICIENT_EVIDENCE,
-            PreviewClassification.NOT_APPLICABLE,
-            PreviewClassification.REJECTED_CONFLICT,
-        }:
+        if classification is not PreviewClassification.SUPPORTED_CANDIDATE:
             continue
         categories: list[str] = []
         if getattr(item, "supporting_observation_ids", ()):
@@ -189,17 +202,109 @@ def _safe_candidates(result: object | None) -> tuple[PreviewCandidate, ...]:
                 explanation=_candidate_explanation(classification),
             )
         )
-    return tuple(
-        sorted(
-            safe,
-            key=lambda item: (
-                item.classification.value,
-                item.matcher_id,
-                item.matcher_version,
-                item.hask_record_ref,
-            ),
-        )
+    ordered = sorted(
+        safe,
+        key=lambda item: (
+            item.classification.value,
+            item.matcher_id,
+            item.matcher_version,
+            item.hask_record_ref,
+            item.missing_evidence_categories,
+            item.rejection_code or "",
+        ),
     )
+    return tuple(dict.fromkeys(ordered))
+
+
+def _safe_matcher_readiness(
+    result: object | None,
+) -> tuple[PreviewMatcherReadiness, ...]:
+    if result is None:
+        return ()
+
+    allowed_states = {
+        "READY",
+        "BLOCKED",
+        "NOT_APPLICABLE",
+        "REJECTED_CONFLICT",
+    }
+    safe: list[PreviewMatcherReadiness] = []
+    for item in getattr(result, "matcher_readiness", ()):
+        raw_state = getattr(item, "state", None)
+        state_value = getattr(raw_state, "value", raw_state)
+        state = str(state_value) if state_value is not None else ""
+        if state not in allowed_states:
+            continue
+
+        safe.append(
+            PreviewMatcherReadiness(
+                state=state,
+                matcher_id=str(getattr(item, "matcher_id", "")),
+                matcher_version=str(getattr(item, "matcher_version", "")),
+                hask_record_ref=str(getattr(item, "hask_record_ref", "")),
+                platform_scope=tuple(sorted(
+                    str(value)
+                    for value in getattr(item, "platform_scope", ())
+                    if str(value)
+                )),
+                candidate_emitted=(
+                    getattr(item, "candidate_emitted", False) is True
+                ),
+                missing_evidence_categories=tuple(sorted(
+                    str(value)
+                    for value in getattr(
+                        item, "missing_evidence_categories", ()
+                    )
+                    if str(value)
+                )),
+                rejection_codes=tuple(sorted(
+                    str(value)
+                    for value in getattr(item, "rejection_codes", ())
+                    if str(value)
+                )),
+            )
+        )
+
+    return tuple(sorted(
+        safe,
+        key=lambda item: (
+            item.matcher_id,
+            item.matcher_version,
+            item.hask_record_ref,
+        ),
+    ))
+
+
+def _bridge_status(result: object | None) -> tuple[str, str | None]:
+    if result is None:
+        return "NOT_AVAILABLE", None
+
+    raw_state = getattr(result, "state", None)
+    state_value = getattr(raw_state, "value", raw_state)
+    state = str(state_value) if state_value is not None else "UNKNOWN"
+    if state not in {"READY", "REJECTED"}:
+        state = "UNKNOWN"
+
+    raw_rejection = getattr(result, "rejection_code", None)
+    rejection = str(raw_rejection) if raw_rejection else None
+    return state, rejection
+
+
+def _preview_classification(
+    candidates: tuple[PreviewCandidate, ...],
+    readiness: tuple[PreviewMatcherReadiness, ...],
+) -> PreviewClassification:
+    if candidates:
+        return PreviewClassification.SUPPORTED_CANDIDATE
+
+    states = {item.state for item in readiness}
+    if "REJECTED_CONFLICT" in states:
+        return PreviewClassification.REJECTED_CONFLICT
+    if "BLOCKED" in states:
+        return PreviewClassification.INSUFFICIENT_EVIDENCE
+    if states and states == {"NOT_APPLICABLE"}:
+        return PreviewClassification.NOT_APPLICABLE
+    return PreviewClassification.INSUFFICIENT_EVIDENCE
 
 
 class HaskPreviewService:
@@ -298,11 +403,9 @@ class HaskPreviewService:
                 )
             )
         candidates = _safe_candidates(candidate_result)
-        state = (
-            candidates[0].classification
-            if candidates
-            else PreviewClassification.INSUFFICIENT_EVIDENCE
-        )
+        matcher_readiness = _safe_matcher_readiness(candidate_result)
+        bridge_state, bridge_rejection = _bridge_status(candidate_result)
+        state = _preview_classification(candidates, matcher_readiness)
         manifest = bundle.manifest
         checksum = str(manifest.get("artifact_sha256", ""))
         return HaskPreviewSnapshot(
@@ -321,9 +424,12 @@ class HaskPreviewService:
             coverage=coverage,
             relevant_knowledge=tuple(sorted(knowledge, key=lambda item: item.platform_id)),
             candidates=candidates,
+            matcher_readiness=matcher_readiness,
+            candidate_bridge_state=bridge_state,
+            candidate_bridge_rejection_code=bridge_rejection,
             limitations=(
                 "Only bounded typed matchers are executable; bundle record counts are not matcher counts.",
-                "UniFi and MikroTik remain insufficient-evidence candidates without authoritative controller/API results.",
+                "UniFi and MikroTik diagnoses require authoritative controller/API results when those platforms are applicable.",
                 "Authenticated probes and network logins are not performed.",
             ),
         )

@@ -46,6 +46,13 @@ class CandidateBridgeState(StrEnum):
     REJECTED = "REJECTED"
 
 
+class MatcherReadinessState(StrEnum):
+    READY = "READY"
+    BLOCKED = "BLOCKED"
+    NOT_APPLICABLE = "NOT_APPLICABLE"
+    REJECTED_CONFLICT = "REJECTED_CONFLICT"
+
+
 @dataclass(frozen=True, slots=True)
 class CandidateEvidence:
     classification: CandidateClassification
@@ -73,14 +80,35 @@ class CandidateEvidence:
 
 
 @dataclass(frozen=True, slots=True)
+class MatcherReadiness:
+    state: MatcherReadinessState
+    matcher_id: str
+    matcher_version: str
+    hask_record_ref: str
+    platform_scope: tuple[str, ...]
+    candidate_emitted: bool
+    missing_evidence_categories: tuple[str, ...]
+    rejection_codes: tuple[str, ...]
+
+    def as_dict(self) -> dict[str, object]:
+        value = asdict(self)
+        value["state"] = self.state.value
+        return value
+
+
+@dataclass(frozen=True, slots=True)
 class CandidateEvidenceBridgeResult:
     state: CandidateBridgeState
     candidates: tuple[CandidateEvidence, ...] = ()
+    matcher_readiness: tuple[MatcherReadiness, ...] = ()
     rejection_code: str | None = None
 
     def canonical_bytes(self) -> bytes:
         value = {
             "candidates": [item.as_dict() for item in self.candidates],
+            "matcher_readiness": [
+                item.as_dict() for item in self.matcher_readiness
+            ],
             "rejection_code": self.rejection_code,
             "state": self.state.value,
         }
@@ -241,7 +269,67 @@ def _candidate(
 
 
 def _rejected(code: str) -> CandidateEvidenceBridgeResult:
-    return CandidateEvidenceBridgeResult(CandidateBridgeState.REJECTED, (), code)
+    return CandidateEvidenceBridgeResult(
+        state=CandidateBridgeState.REJECTED,
+        rejection_code=code,
+    )
+
+
+def _matcher_readiness(
+    matchers: tuple[object, ...],
+    candidates: tuple[CandidateEvidence, ...],
+) -> tuple[MatcherReadiness, ...]:
+    readiness: list[MatcherReadiness] = []
+    for matcher in matchers:
+        matching = tuple(
+            item
+            for item in candidates
+            if item.matcher_id == matcher.matcher_id
+            and item.matcher_version == matcher.version
+            and item.hask_record_ref == matcher.evidence_target
+        )
+        classifications = {item.classification for item in matching}
+        if CandidateClassification.SUPPORTED_CANDIDATE in classifications:
+            state = MatcherReadinessState.READY
+        elif CandidateClassification.REJECTED_CONFLICT in classifications:
+            state = MatcherReadinessState.REJECTED_CONFLICT
+        elif CandidateClassification.INSUFFICIENT_EVIDENCE in classifications:
+            state = MatcherReadinessState.BLOCKED
+        else:
+            state = MatcherReadinessState.NOT_APPLICABLE
+
+        readiness.append(
+            MatcherReadiness(
+                state=state,
+                matcher_id=matcher.matcher_id,
+                matcher_version=matcher.version,
+                hask_record_ref=matcher.evidence_target,
+                platform_scope=tuple(sorted(matcher.platform_scope)),
+                candidate_emitted=(
+                    CandidateClassification.SUPPORTED_CANDIDATE
+                    in classifications
+                ),
+                missing_evidence_categories=tuple(sorted({
+                    category
+                    for item in matching
+                    for category in item.missing_evidence_categories
+                })),
+                rejection_codes=tuple(sorted({
+                    item.rejection_code
+                    for item in matching
+                    if item.rejection_code
+                })),
+            )
+        )
+
+    return tuple(sorted(
+        readiness,
+        key=lambda item: (
+            item.matcher_id,
+            item.matcher_version,
+            item.hask_record_ref,
+        ),
+    ))
 
 
 def build_candidate_evidence_bridge(
@@ -252,8 +340,13 @@ def build_candidate_evidence_bridge(
     config: Mapping[str, object],
 ) -> CandidateEvidenceBridgeResult:
     bundle_value = config.get("hask_bundle_path")
-    if not isinstance(bundle_value, (str, Path)) or not str(bundle_value).strip():
-        return _rejected("BUNDLE_PATH_REQUIRED")
+    if bundle_value is None:
+        bundle_path = None
+    elif isinstance(bundle_value, (str, Path)):
+        normalized_bundle_path = str(bundle_value).strip()
+        bundle_path = Path(normalized_bundle_path) if normalized_bundle_path else None
+    else:
+        return _rejected("HASK_CONFIGURATION_INVALID")
     strict = config.get("hask_strict_validation", True)
     cache_enabled = config.get("hask_cache_enabled", True)
     native_enabled = config.get("hask_native_integration_status_enabled", False)
@@ -266,7 +359,7 @@ def build_candidate_evidence_bridge(
 
     manager = BundleManager(RuntimeConfig(
         enabled=True,
-        bundle_path=Path(bundle_value),
+        bundle_path=bundle_path,
         strict_validation=strict,
         cache_enabled=cache_enabled,
     ))
@@ -414,6 +507,10 @@ def build_candidate_evidence_bridge(
                 item.candidate_digest,
             ),
         ))
-        return CandidateEvidenceBridgeResult(CandidateBridgeState.READY, ordered)
+        return CandidateEvidenceBridgeResult(
+            state=CandidateBridgeState.READY,
+            candidates=ordered,
+            matcher_readiness=_matcher_readiness(matchers, ordered),
+        )
     finally:
         manager.shutdown()
