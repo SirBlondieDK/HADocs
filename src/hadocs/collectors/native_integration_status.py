@@ -14,7 +14,7 @@ from hadocs.providers import HomeAssistantProvider
 CONTRACT_VERSION = "hadocs.integration-status-domain.v1"
 OBSERVATION_KEY_PREFIX = f"{CONTRACT_VERSION}:"
 SOURCE_COMMAND = "config_entries/get"
-RELEVANT_DOMAINS = frozenset({"mikrotik", "unifi"})
+RELEVANT_DOMAINS = frozenset({"mikrotik", "tuya", "unifi"})
 VERIFIED_STATES = frozenset(
     {
         "loaded",

@@ -60,6 +60,9 @@ def test_hask_preview_v2_does_not_request_protected_identifiers():
         "supporting_relationship_ids",
         "protected_subject_ref",
         "database_id",
+        "entity_id",
+        "device_id",
+        "config_entry_id",
     ):
         assert forbidden not in html
 
@@ -73,7 +76,10 @@ def test_hask_preview_renders_candidate_matcher_readiness():
         "Executable matchers",
         "Candidate evaluations",
         "Supported candidates",
-        "No executable matcher applies to the observed platform context.",
+        "No match",
+        "No executable matcher applies to the observed platform context; this does not establish that the integration is absent.",
+        "Matchers completed, but no supported problem candidate was found.",
+        "Matcher readiness is mixed; no supported candidate was emitted.",
         "Missing evidence",
         "Candidate emitted",
         "Bridge rejection",

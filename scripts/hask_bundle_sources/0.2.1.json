@@ -1,0 +1,501 @@
+{
+  "additions": {
+    "applicability.json": [
+      {
+        "claim_id": "config_entry_status_boundary",
+        "claims": [],
+        "id": "applicability__tuya_integration_config_entry_state__config_entry_status_boundary",
+        "record_id": "tuya_integration_config_entry_state",
+        "references": {},
+        "relationships": [],
+        "type": "applicability",
+        "verification_status": "verified",
+        "version_applicability": {
+          "addons": {
+            "applicable": false,
+            "constraint": null,
+            "notes": "Core config-entry lifecycle evidence."
+          },
+          "core": {
+            "applicable": true,
+            "constraint": null,
+            "notes": "Current documented config-entry state contract."
+          },
+          "integrations": {
+            "applicable": true,
+            "constraint": "official tuya domain",
+            "notes": "The aggregate is scoped only to Home Assistant config entries for tuya."
+          },
+          "operating_system": {
+            "applicable": false,
+            "constraint": null,
+            "notes": "Not an operating-system signal."
+          },
+          "supervisor": {
+            "applicable": false,
+            "constraint": null,
+            "notes": "Not a Supervisor signal."
+          }
+        }
+      },
+      {
+        "claim_id": "native_status_boundary",
+        "claims": [],
+        "id": "applicability__tuya_integration_status_problem__native_status_boundary",
+        "record_id": "tuya_integration_status_problem",
+        "references": {},
+        "relationships": [],
+        "type": "applicability",
+        "verification_status": "verified",
+        "version_applicability": {
+          "addons": {
+            "applicable": false,
+            "constraint": null,
+            "notes": "Core config-entry lifecycle evidence."
+          },
+          "core": {
+            "applicable": true,
+            "constraint": null,
+            "notes": "Current documented config-entry state contract."
+          },
+          "integrations": {
+            "applicable": true,
+            "constraint": "official tuya domain with complete native status",
+            "notes": "No Smart Life login, Tuya API call or network probe is used."
+          },
+          "operating_system": {
+            "applicable": false,
+            "constraint": null,
+            "notes": "Not an operating-system signal."
+          },
+          "supervisor": {
+            "applicable": false,
+            "constraint": null,
+            "notes": "Not a Supervisor signal."
+          }
+        }
+      }
+    ],
+    "evidence_catalog.json": [
+      {
+        "claims": [
+          {
+            "confidence": 0.99,
+            "evidence_level": "B",
+            "false_positive_notes": "A config-entry lifecycle problem identifies neither the underlying cause nor the state of a physical Tuya device, Tuya Cloud or the local network.",
+            "id": "config_entry_status_boundary",
+            "origin": "official_repository",
+            "reviewed_on": "2026-08-12",
+            "source_ids": [
+              "source_ha_core_config_entries",
+              "source_home_assistant_core_tuya"
+            ],
+            "statement": "Home Assistant exposes distinct config-entry lifecycle states, allowing a complete privacy-safe aggregate for the official tuya domain to distinguish reported problem, non-problem, unknown and conflicting status without identifying a root cause.",
+            "verification_status": "verified",
+            "version_applicability": {
+              "addons": {
+                "applicable": false,
+                "constraint": null,
+                "notes": "Core config-entry lifecycle evidence."
+              },
+              "core": {
+                "applicable": true,
+                "constraint": null,
+                "notes": "Current documented config-entry state contract."
+              },
+              "integrations": {
+                "applicable": true,
+                "constraint": "official tuya domain",
+                "notes": "Only domain-level aggregate status is retained."
+              },
+              "operating_system": {
+                "applicable": false,
+                "constraint": null,
+                "notes": "Not an operating-system signal."
+              },
+              "supervisor": {
+                "applicable": false,
+                "constraint": null,
+                "notes": "Not a Supervisor signal."
+              }
+            }
+          }
+        ],
+        "collection_method": "Aggregate allowlisted Home Assistant config-entry lifecycle states for the tuya domain and retain only state counts, problem count, unknown count, observation time, evidence quality and an immutable digest; config-entry identifiers never cross the collector boundary.",
+        "id": "tuya_integration_config_entry_state",
+        "interpretation_boundary": "The aggregate reports Home Assistant's current integration lifecycle status only. It does not identify a failed physical device, Tuya Cloud, account, credential, service, network path or root cause.",
+        "observation_kind": "status",
+        "official_status": "official",
+        "references": {
+          "components": [
+            "config_entry_system"
+          ],
+          "integrations": [
+            "tuya"
+          ],
+          "recommendations": [
+            "diagnose_tuya_connection_path_safely"
+          ],
+          "scenarios": [
+            "scenario_tuya_connection_path_or_exposure_mismatch"
+          ],
+          "sources": [
+            "source_ha_core_config_entries",
+            "source_home_assistant_core_tuya"
+          ]
+        },
+        "relationships": [
+          {
+            "claim_ids": [
+              "config_entry_status_boundary"
+            ],
+            "confidence": 0.99,
+            "predicate": "related_to",
+            "rationale": "The observation is a privacy-safe aggregate of config-entry lifecycle states.",
+            "target_id": "config_entry_system"
+          },
+          {
+            "claim_ids": [
+              "config_entry_status_boundary"
+            ],
+            "confidence": 0.99,
+            "predicate": "supports",
+            "rationale": "The scenario keeps integration lifecycle, account, path and device exposure separate.",
+            "target_id": "scenario_tuya_connection_path_or_exposure_mismatch"
+          },
+          {
+            "claim_ids": [
+              "config_entry_status_boundary"
+            ],
+            "confidence": 0.99,
+            "predicate": "supports",
+            "rationale": "The recommendation investigates the active path without attributing a cause from lifecycle state alone.",
+            "target_id": "diagnose_tuya_connection_path_safely"
+          }
+        ],
+        "review": {
+          "next_review_on": "2026-11-12",
+          "reviewed_on": "2026-08-12",
+          "reviewer": "codex_hask_tuya_matcher"
+        },
+        "status": "reviewed",
+        "summary": "Privacy-safe Home Assistant config-entry lifecycle aggregate for the official Tuya integration.",
+        "title": "Tuya integration config-entry state",
+        "type": "observation",
+        "unit": null,
+        "value_type": "string"
+      },
+      {
+        "claim_id": "config_entry_status_boundary",
+        "claims": [],
+        "confidence": 0.99,
+        "evidence_level": "B",
+        "id": "tuya_integration_config_entry_state__config_entry_status_boundary",
+        "record_id": "tuya_integration_config_entry_state",
+        "references": {
+          "sources": [
+            "source_ha_core_config_entries",
+            "source_home_assistant_core_tuya"
+          ]
+        },
+        "relationships": [],
+        "statement": "Home Assistant exposes distinct config-entry lifecycle states, allowing a complete privacy-safe aggregate for the official tuya domain to distinguish reported problem, non-problem, unknown and conflicting status without identifying a root cause.",
+        "type": "claim",
+        "verification_status": "verified",
+        "version_applicability": {
+          "addons": {
+            "applicable": false,
+            "constraint": null,
+            "notes": "Core config-entry lifecycle evidence."
+          },
+          "core": {
+            "applicable": true,
+            "constraint": null,
+            "notes": "Current documented config-entry state contract."
+          },
+          "integrations": {
+            "applicable": true,
+            "constraint": "official tuya domain",
+            "notes": "Only domain-level aggregate status is retained."
+          },
+          "operating_system": {
+            "applicable": false,
+            "constraint": null,
+            "notes": "Not an operating-system signal."
+          },
+          "supervisor": {
+            "applicable": false,
+            "constraint": null,
+            "notes": "Not a Supervisor signal."
+          }
+        }
+      },
+      {
+        "claim_id": "native_status_boundary",
+        "claims": [],
+        "confidence": 0.99,
+        "evidence_level": "B",
+        "id": "tuya_integration_status_problem__native_status_boundary",
+        "record_id": "tuya_integration_status_problem",
+        "references": {
+          "sources": [
+            "source_ha_core_config_entries",
+            "source_home_assistant_core_tuya"
+          ]
+        },
+        "relationships": [],
+        "statement": "An authoritative complete native status aggregate with one uniform Home Assistant problem state for the official tuya domain supports an integration-status problem candidate while leaving the underlying cause unresolved.",
+        "type": "claim",
+        "verification_status": "verified",
+        "version_applicability": {
+          "addons": {
+            "applicable": false,
+            "constraint": null,
+            "notes": "Core config-entry lifecycle evidence."
+          },
+          "core": {
+            "applicable": true,
+            "constraint": null,
+            "notes": "Current documented config-entry state contract."
+          },
+          "integrations": {
+            "applicable": true,
+            "constraint": "official tuya domain with complete native status",
+            "notes": "No external login, API call or network probe is used."
+          },
+          "operating_system": {
+            "applicable": false,
+            "constraint": null,
+            "notes": "Not an operating-system signal."
+          },
+          "supervisor": {
+            "applicable": false,
+            "constraint": null,
+            "notes": "Not a Supervisor signal."
+          }
+        }
+      }
+    ],
+    "evidence_matchers.json": [
+      {
+        "affected_domains": [
+          "current_health",
+          "recoverability",
+          "stability_risk"
+        ],
+        "claims": [
+          {
+            "confidence": 0.99,
+            "evidence_level": "B",
+            "false_positive_notes": "Exclude absent, incomplete, unknown, mixed-state and wrong-platform inputs. A match does not identify a physical-device, cloud, account, credential, network or integration-code root cause.",
+            "id": "native_status_boundary",
+            "origin": "official_repository",
+            "reviewed_on": "2026-08-12",
+            "source_ids": [
+              "source_ha_core_config_entries",
+              "source_home_assistant_core_tuya"
+            ],
+            "statement": "An authoritative complete native status aggregate with one uniform Home Assistant problem state for the official tuya domain supports an integration-status problem candidate while leaving the underlying cause unresolved.",
+            "verification_status": "verified",
+            "version_applicability": {
+              "addons": {
+                "applicable": false,
+                "constraint": null,
+                "notes": "Core config-entry lifecycle evidence."
+              },
+              "core": {
+                "applicable": true,
+                "constraint": null,
+                "notes": "Current documented config-entry state contract."
+              },
+              "integrations": {
+                "applicable": true,
+                "constraint": "official tuya domain with complete native status",
+                "notes": "No external login, API call or network probe is used."
+              },
+              "operating_system": {
+                "applicable": false,
+                "constraint": null,
+                "notes": "Not an operating-system signal."
+              },
+              "supervisor": {
+                "applicable": false,
+                "constraint": null,
+                "notes": "Not a Supervisor signal."
+              }
+            }
+          }
+        ],
+        "does_not_prove": "Home Assistant reporting a Tuya integration lifecycle problem does not prove that a physical Tuya device, Tuya Cloud, an account, credentials, the user's network or integration code is the underlying cause.",
+        "id": "tuya_integration_status_problem",
+        "inference_type": "direct_evidence",
+        "matcher_contract": {
+          "applicability": {
+            "claim_ids": [
+              "native_status_boundary"
+            ],
+            "unknown_behavior": "unknown_applicability"
+          },
+          "conditions": [
+            {
+              "field": "problem_signal",
+              "operator": "equals",
+              "value": true
+            }
+          ],
+          "evidence_target": "tuya_integration_config_entry_state",
+          "normalization": [
+            {
+              "field": "problem_signal",
+              "operations": [
+                "canonical_boolean"
+              ]
+            }
+          ],
+          "observation_types": [
+            "integration_status"
+          ],
+          "optional_fields": [],
+          "outcomes": {
+            "conflict": "preserve_conflict",
+            "match": "canonical_evidence",
+            "missing_evidence": "preserve_missing_evidence",
+            "no_match": "preserve_no_match",
+            "partial_match": "preserve_partial",
+            "unknown_applicability": "preserve_unknown_applicability"
+          },
+          "platform_scope": {
+            "include": [
+              "tuya"
+            ]
+          },
+          "provenance": {
+            "source_ids": [
+              "source_ha_core_config_entries",
+              "source_home_assistant_core_tuya"
+            ]
+          },
+          "required_fields": [
+            {
+              "path": "problem_signal",
+              "value_type": "boolean"
+            }
+          ],
+          "version": "1.0.0"
+        },
+        "official_status": "not_applicable",
+        "references": {
+          "components": [
+            "config_entry_system"
+          ],
+          "integrations": [
+            "tuya"
+          ],
+          "observations": [
+            "tuya_integration_config_entry_state"
+          ],
+          "recommendations": [
+            "diagnose_tuya_connection_path_safely"
+          ],
+          "scenarios": [
+            "scenario_tuya_connection_path_or_exposure_mismatch"
+          ],
+          "sources": [
+            "source_ha_core_config_entries",
+            "source_home_assistant_core_tuya"
+          ]
+        },
+        "relationships": [
+          {
+            "claim_ids": [
+              "native_status_boundary"
+            ],
+            "confidence": 0.99,
+            "predicate": "consumes",
+            "rationale": "The matcher consumes only the canonical privacy-safe Tuya integration status aggregate.",
+            "target_id": "tuya_integration_config_entry_state"
+          },
+          {
+            "claim_ids": [
+              "native_status_boundary"
+            ],
+            "confidence": 0.99,
+            "predicate": "supports",
+            "rationale": "The scenario preserves account, path, integration lifecycle and device exposure as separate layers.",
+            "target_id": "scenario_tuya_connection_path_or_exposure_mismatch"
+          },
+          {
+            "claim_ids": [
+              "native_status_boundary"
+            ],
+            "confidence": 0.99,
+            "predicate": "supports",
+            "rationale": "The recommendation investigates the active path without attributing a cause from native lifecycle status alone.",
+            "target_id": "diagnose_tuya_connection_path_safely"
+          }
+        ],
+        "review": {
+          "next_review_on": "2026-11-12",
+          "reviewed_on": "2026-08-12",
+          "reviewer": "codex_hask_tuya_matcher"
+        },
+        "status": "reviewed",
+        "summary": "A uniform authoritative Home Assistant problem state for the Tuya integration supports a bounded candidate without identifying the underlying cause.",
+        "title": "Tuya integration status problem",
+        "type": "rule"
+      }
+    ]
+  },
+  "base_version": "0.2.0",
+  "knowledge_content_version": "0.2.1",
+  "replacements": {
+    "readiness.json": [
+      {
+        "consumer_blockers": [],
+        "consumer_ready": true,
+        "coverage_percent": 100,
+        "linked_ids": {
+          "observations": [
+            "config_entry_loaded",
+            "config_entry_reauthentication_required",
+            "entity_unavailable_state",
+            "tuya_account_authorization_state",
+            "tuya_connection_path_identity",
+            "tuya_device_entity_exposure_state",
+            "tuya_integration_config_entry_state",
+            "tuya_oem_identity_boundary"
+          ],
+          "recommendations": [
+            "audit_custom_integration_compatibility",
+            "diagnose_matter_dependency_layers",
+            "diagnose_tuya_connection_path_safely",
+            "diagnose_zigbee_scope_before_repair",
+            "review_diagnostics_before_sharing"
+          ],
+          "root_causes": [],
+          "scenarios": [
+            "scenario_tuya_connection_path_or_exposure_mismatch"
+          ],
+          "verification": [
+            "diagnose_matter_dependency_layers",
+            "diagnose_tuya_connection_path_safely",
+            "diagnose_zigbee_scope_before_repair",
+            "review_diagnostics_before_sharing"
+          ]
+        },
+        "missing_evidence": [],
+        "missing_observations": [],
+        "missing_provenance": [],
+        "missing_recommendations": [],
+        "missing_root_causes": [],
+        "missing_scenarios": [],
+        "missing_verification": [],
+        "platform": "tuya",
+        "priority": "P1",
+        "readiness": "CONSUMER_READY",
+        "record_type": "integration",
+        "title": "Tuya"
+      }
+    ]
+  }
+}

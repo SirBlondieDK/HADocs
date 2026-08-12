@@ -8,7 +8,7 @@ from pathlib import Path
 def packaged_bundle_path() -> Path:
     """Return the immutable bundle installed with the HADocs package."""
 
-    return Path(__file__).resolve().parents[1] / "hask_bundle" / "0.2.0"
+    return Path(__file__).resolve().parents[1] / "hask_bundle" / "0.2.1"
 
 
 @dataclass(frozen=True, slots=True)

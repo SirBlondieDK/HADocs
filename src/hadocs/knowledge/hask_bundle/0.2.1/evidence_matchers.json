@@ -1,0 +1,2995 @@
+{
+  "_generated": "scripts/build_hadocs_contract.py; DO NOT EDIT",
+  "artifact_kind": "evidence_matchers",
+  "contract_version": "1.1.0",
+  "items": [
+    {
+      "affected_domains": [
+        "current_health",
+        "stability_risk",
+        "maintainability"
+      ],
+      "claims": [
+        {
+          "confidence": 0.5,
+          "evidence_level": "D",
+          "false_positive_notes": "Exclude startup transients, sleeping or intentionally offline devices, planned maintenance, disabled entities, and installation-specific expected behavior where relevant.",
+          "id": "detection_boundary",
+          "origin": "hypothesis",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_docs_automation_troubleshooting"
+          ],
+          "statement": "A rate anomaly warrants trace review but does not prove a feedback loop because high rates may be intentional.",
+          "verification_status": "needs_manual_verification",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app release boundary asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Rule is contextual and not bounded to an exact Core release."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration version must be captured during evaluation."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Installation context determines OS relevance."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor relevance depends on the affected component."
+            }
+          }
+        }
+      ],
+      "does_not_prove": "A rate anomaly warrants trace review but does not prove a feedback loop because high rates may be intentional.",
+      "id": "automation_trigger_rate_anomaly",
+      "inference_type": "proposed_heuristic",
+      "official_status": "not_applicable",
+      "references": {
+        "recommendations": [
+          "stop_and_trace_automation_feedback"
+        ],
+        "root_causes": [
+          "automation_feedback_loop",
+          "excessive_state_churn"
+        ],
+        "sources": [
+          "source_home_assistant_docs_automation_troubleshooting"
+        ],
+        "symptoms": [
+          "automation_execution_storm"
+        ]
+      },
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_core_pack_v1"
+      },
+      "status": "reviewed",
+      "summary": "A rate anomaly warrants trace review but does not prove a feedback loop because high rates may be intentional.",
+      "title": "Automation trigger-rate anomaly",
+      "type": "rule"
+    },
+    {
+      "affected_domains": [
+        "recoverability",
+        "maintainability"
+      ],
+      "claims": [
+        {
+          "confidence": 0.5,
+          "evidence_level": "D",
+          "false_positive_notes": "Exclude startup transients, sleeping or intentionally offline devices, planned maintenance, disabled entities, and installation-specific expected behavior where relevant.",
+          "id": "detection_boundary",
+          "origin": "hypothesis",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_docs_backup"
+          ],
+          "statement": "Failure to confirm a backup within the operator's recovery policy increases recoverability risk but does not prove that no external backup exists.",
+          "verification_status": "needs_manual_verification",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app release boundary asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Rule is contextual and not bounded to an exact Core release."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration version must be captured during evaluation."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Installation context determines OS relevance."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor relevance depends on the affected component."
+            }
+          }
+        }
+      ],
+      "does_not_prove": "Failure to confirm a backup within the operator's recovery policy increases recoverability risk but does not prove that no external backup exists.",
+      "id": "backup_absence_detected",
+      "inference_type": "proposed_heuristic",
+      "official_status": "not_applicable",
+      "references": {
+        "observations": [
+          "backup_artifact_availability",
+          "backup_creation_state"
+        ],
+        "recommendations": [
+          "create_or_verify_recent_backup"
+        ],
+        "root_causes": [
+          "backup_not_created"
+        ],
+        "sources": [
+          "source_home_assistant_docs_backup"
+        ],
+        "symptoms": [
+          "backup_missing"
+        ]
+      },
+      "relationships": [
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.9,
+          "predicate": "consumes",
+          "rationale": "The heuristic evaluates whether an artifact can be confirmed within local policy.",
+          "target_id": "backup_artifact_availability"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.65,
+          "predicate": "related_to",
+          "rationale": "Creation state is separate corroborating evidence and is not inferred from absence.",
+          "target_id": "backup_creation_state"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.9,
+          "predicate": "supports",
+          "rationale": "The recommendation verifies the artifact without asserting one cause.",
+          "target_id": "create_or_verify_recent_backup"
+        }
+      ],
+      "review": {
+        "next_review_on": "2026-10-28",
+        "reviewed_on": "2026-07-28",
+        "reviewer": "codex_kx004_pack4"
+      },
+      "status": "reviewed",
+      "summary": "Failure to confirm a backup within the operator's recovery policy increases recoverability risk but does not prove that no external backup exists.",
+      "title": "Backup absent for recovery policy",
+      "type": "rule"
+    },
+    {
+      "affected_domains": [
+        "recoverability",
+        "maintainability"
+      ],
+      "claims": [
+        {
+          "confidence": 0.5,
+          "evidence_level": "D",
+          "false_positive_notes": "Exclude startup transients, sleeping or intentionally offline devices, planned maintenance, disabled entities, and installation-specific expected behavior where relevant.",
+          "id": "detection_boundary",
+          "origin": "hypothesis",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_docs_backup_tasks"
+          ],
+          "statement": "An existing backup without restore evidence leaves recoverability uncertain but does not prove the archive is unusable.",
+          "verification_status": "needs_manual_verification",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app release boundary asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Rule is contextual and not bounded to an exact Core release."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration version must be captured during evaluation."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Installation context determines OS relevance."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor relevance depends on the affected component."
+            }
+          }
+        }
+      ],
+      "does_not_prove": "An existing backup without restore evidence leaves recoverability uncertain but does not prove the archive is unusable.",
+      "id": "backup_restore_not_verified",
+      "inference_type": "proposed_heuristic",
+      "official_status": "not_applicable",
+      "references": {
+        "observations": [
+          "backup_artifact_availability",
+          "backup_recovery_validation_state"
+        ],
+        "recommendations": [
+          "protect_and_test_backup_restore"
+        ],
+        "root_causes": [
+          "restore_path_not_verified"
+        ],
+        "sources": [
+          "source_home_assistant_docs_backup_tasks"
+        ],
+        "symptoms": [
+          "backup_restore_untested"
+        ]
+      },
+      "relationships": [
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.85,
+          "predicate": "consumes",
+          "rationale": "Artifact presence is the prerequisite but does not establish readiness.",
+          "target_id": "backup_artifact_availability"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.85,
+          "predicate": "related_to",
+          "rationale": "The heuristic remains open when explicit recovery validation is absent.",
+          "target_id": "backup_recovery_validation_state"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.9,
+          "predicate": "supports",
+          "rationale": "The recommendation verifies official prerequisites without treating the heuristic as failure proof.",
+          "target_id": "protect_and_test_backup_restore"
+        }
+      ],
+      "review": {
+        "next_review_on": "2026-10-28",
+        "reviewed_on": "2026-07-28",
+        "reviewer": "codex_kx004_pack4"
+      },
+      "status": "reviewed",
+      "summary": "An existing backup without restore evidence leaves recoverability uncertain but does not prove the archive is unusable.",
+      "title": "Backup restore not verified",
+      "type": "rule"
+    },
+    {
+      "affected_domains": [
+        "recoverability",
+        "maintainability",
+        "stability_risk"
+      ],
+      "claims": [
+        {
+          "confidence": 0.6,
+          "evidence_level": "D",
+          "false_positive_notes": "Exclude stateless services and data intentionally stored in external databases or object storage after verifying that dependency.",
+          "id": "detection_boundary",
+          "origin": "hypothesis",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_docker_docs_storage"
+          ],
+          "statement": "A stateful container whose required paths are not mapped to confirmed persistent storage warrants a recoverability finding, not a conclusion that data is already lost.",
+          "verification_status": "needs_manual_verification",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "App storage contracts require separate evidence."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant only for user-managed containerized deployments."
+            },
+            "external_components": [
+              {
+                "applicable": true,
+                "component_id": "docker_engine",
+                "constraint": null,
+                "notes": "Evaluate against Docker mount evidence."
+              }
+            ],
+            "integrations": {
+              "applicable": false,
+              "constraint": null,
+              "notes": "This is an infrastructure rule."
+            },
+            "operating_system": {
+              "applicable": false,
+              "constraint": null,
+              "notes": "Not a generic Home Assistant OS rule."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Packaging ownership must be known."
+            }
+          }
+        }
+      ],
+      "does_not_prove": "Missing verification does not prove current data loss or an incorrect mount.",
+      "id": "container_persistence_unverified",
+      "inference_type": "documented_behavior_inference",
+      "official_status": "not_applicable",
+      "references": {
+        "apps": [
+          "docker_engine"
+        ],
+        "recommendations": [
+          "audit_container_persistence"
+        ],
+        "root_causes": [
+          "container_persistence_misconfigured"
+        ],
+        "sources": [
+          "source_docker_docs_storage"
+        ],
+        "symptoms": [
+          "container_state_lost_after_recreate"
+        ]
+      },
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_rc2"
+      },
+      "status": "reviewed",
+      "summary": "A stateful container without confirmed persistent mounts and backup coverage creates recoverability risk.",
+      "title": "Required container persistence is unverified",
+      "type": "rule"
+    },
+    {
+      "affected_domains": [
+        "current_health",
+        "stability_risk",
+        "maintainability"
+      ],
+      "claims": [
+        {
+          "confidence": 0.5,
+          "evidence_level": "D",
+          "false_positive_notes": "Exclude startup transients, sleeping or intentionally offline devices, planned maintenance, disabled entities, and installation-specific expected behavior where relevant.",
+          "id": "detection_boundary",
+          "origin": "hypothesis",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_docs_dns_issue"
+          ],
+          "statement": "Correlated hostname failures with resolver evidence prioritize DNS diagnosis but do not exclude wider routing or endpoint failures.",
+          "verification_status": "needs_manual_verification",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app release boundary asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Rule is contextual and not bounded to an exact Core release."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration version must be captured during evaluation."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Installation context determines OS relevance."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor relevance depends on the affected component."
+            }
+          }
+        }
+      ],
+      "does_not_prove": "Correlated hostname failures with resolver evidence prioritize DNS diagnosis but do not exclude wider routing or endpoint failures.",
+      "id": "dns_failure_correlated",
+      "inference_type": "documented_behavior_inference",
+      "official_status": "not_applicable",
+      "references": {
+        "recommendations": [
+          "diagnose_dns_before_service_reset"
+        ],
+        "root_causes": [
+          "dns_service_failure",
+          "network_path_failure"
+        ],
+        "sources": [
+          "source_home_assistant_docs_dns_issue"
+        ],
+        "symptoms": [
+          "dns_resolution_failure"
+        ]
+      },
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_core_pack_v1"
+      },
+      "status": "reviewed",
+      "summary": "Correlated hostname failures with resolver evidence prioritize DNS diagnosis but do not exclude wider routing or endpoint failures.",
+      "title": "DNS failure correlated across dependencies",
+      "type": "rule"
+    },
+    {
+      "affected_domains": [
+        "current_health",
+        "stability_risk",
+        "maintainability"
+      ],
+      "claims": [
+        {
+          "confidence": 0.5,
+          "evidence_level": "D",
+          "false_positive_notes": "Exclude startup transients, sleeping or intentionally offline devices, planned maintenance, disabled entities, and installation-specific expected behavior where relevant.",
+          "id": "detection_boundary",
+          "origin": "hypothesis",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_docs_esphome"
+          ],
+          "statement": "Repeated reconnects outside expected sleep or maintenance suggest an unstable path but do not distinguish device power, Wi-Fi, DNS, API credentials, or firmware.",
+          "verification_status": "needs_manual_verification",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app release boundary asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Rule is contextual and not bounded to an exact Core release."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration version must be captured during evaluation."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Installation context determines OS relevance."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor relevance depends on the affected component."
+            }
+          }
+        }
+      ],
+      "does_not_prove": "Repeated reconnects outside expected sleep or maintenance suggest an unstable path but do not distinguish device power, Wi-Fi, DNS, API credentials, or firmware.",
+      "id": "esphome_reconnect_pattern",
+      "inference_type": "proposed_heuristic",
+      "official_status": "not_applicable",
+      "references": {
+        "recommendations": [
+          "diagnose_esphome_power_and_network"
+        ],
+        "root_causes": [
+          "network_path_failure"
+        ],
+        "sources": [
+          "source_home_assistant_docs_esphome"
+        ],
+        "symptoms": [
+          "esphome_device_unavailable"
+        ]
+      },
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_core_pack_v1"
+      },
+      "status": "reviewed",
+      "summary": "Repeated reconnects outside expected sleep or maintenance suggest an unstable path but do not distinguish device power, Wi-Fi, DNS, API credentials, or firmware.",
+      "title": "Persistent ESPHome reconnect pattern",
+      "type": "rule"
+    },
+    {
+      "affected_domains": [
+        "current_health",
+        "maintainability"
+      ],
+      "claims": [
+        {
+          "confidence": 0.5,
+          "evidence_level": "D",
+          "false_positive_notes": "Exclude startup transients, sleeping or intentionally offline devices, planned maintenance, disabled entities, and installation-specific expected behavior where relevant.",
+          "id": "detection_boundary",
+          "origin": "hypothesis",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_docs_matter"
+          ],
+          "statement": "Commissioning failure with stage context guides layered diagnosis but does not prove the device, Matter Server, fabric, phone, IP network, or Thread layer is at fault.",
+          "verification_status": "needs_manual_verification",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app release boundary asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Rule is contextual and not bounded to an exact Core release."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration version must be captured during evaluation."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Installation context determines OS relevance."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor relevance depends on the affected component."
+            }
+          }
+        }
+      ],
+      "does_not_prove": "Commissioning failure with stage context guides layered diagnosis but does not prove the device, Matter Server, fabric, phone, IP network, or Thread layer is at fault.",
+      "id": "matter_commissioning_layered_failure",
+      "inference_type": "documented_behavior_inference",
+      "official_status": "not_applicable",
+      "references": {
+        "recommendations": [
+          "diagnose_matter_dependency_layers"
+        ],
+        "root_causes": [
+          "thread_border_router_failure",
+          "matter_fabric_or_credential_mismatch",
+          "network_path_failure"
+        ],
+        "sources": [
+          "source_home_assistant_docs_matter"
+        ],
+        "symptoms": [
+          "matter_commissioning_failure"
+        ]
+      },
+      "relationships": [
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.8,
+          "predicate": "diagnoses",
+          "rationale": "Stage-aware commissioning failure supports the commissioning symptom.",
+          "target_id": "matter_commissioning_failure"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.55,
+          "predicate": "related_to",
+          "rationale": "A Thread border-router path is one transport-specific candidate.",
+          "target_id": "thread_border_router_failure"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.6,
+          "predicate": "related_to",
+          "rationale": "Fabric or credential state is a competing commissioning candidate.",
+          "target_id": "matter_fabric_or_credential_mismatch"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.55,
+          "predicate": "related_to",
+          "rationale": "IP path failure is a competing layer.",
+          "target_id": "network_path_failure"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.95,
+          "predicate": "supports",
+          "rationale": "The rule supports layer-by-layer diagnosis before recommissioning.",
+          "target_id": "diagnose_matter_dependency_layers"
+        }
+      ],
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_core_pack_v1"
+      },
+      "status": "reviewed",
+      "summary": "Commissioning failure with stage context guides layered diagnosis but does not prove the device, Matter Server, fabric, phone, IP network, or Thread layer is at fault.",
+      "title": "Layered Matter commissioning failure",
+      "type": "rule"
+    },
+    {
+      "affected_domains": [
+        "current_health",
+        "stability_risk",
+        "recoverability"
+      ],
+      "claims": [
+        {
+          "confidence": 0.99,
+          "evidence_level": "B",
+          "false_positive_notes": "Exclude wrong-platform, successful, absent, conflicting, transient-only, and unknown-applicability inputs; never infer a specific failed layer from this match.",
+          "id": "detection_boundary",
+          "origin": "official_repository",
+          "reviewed_on": "2026-07-24",
+          "source_ids": [
+            "source_ha_core_mikrotik_dev",
+            "source_ha_core_mikrotik_tests"
+          ],
+          "statement": "Current Core exposes distinct MikroTik connection, timeout, closure, credential-rejection, RouterOS reply and coordinator outcomes, so an explicitly failed structured API-connection result supports connection-state evidence while the failed layer remains unresolved.",
+          "verification_status": "verified",
+          "version_applicability": {
+            "addons": {
+              "applicable": false,
+              "constraint": null,
+              "notes": "No app lifecycle."
+            },
+            "core": {
+              "applicable": true,
+              "constraint": "dev reviewed 2026-07-21",
+              "notes": "Current polling and exception mapping."
+            },
+            "external_components": [
+              {
+                "applicable": true,
+                "component_id": "mikrotik_routeros_platform",
+                "constraint": "native API enabled",
+                "notes": "RouterOS version range unknown."
+              }
+            ],
+            "integrations": {
+              "applicable": true,
+              "constraint": "mikrotik with librouteros 4.1.1 in reviewed dev",
+              "notes": "Exact stable RouterOS boundary unknown."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Network path is installation-specific."
+            },
+            "supervisor": {
+              "applicable": false,
+              "constraint": null,
+              "notes": "Core integration state."
+            }
+          }
+        }
+      ],
+      "does_not_prove": "A failed API connection result does not prove a specific root cause; network-path and DNS failures remain conditional competing candidates requiring verification.",
+      "id": "mikrotik_api_connectivity_failure",
+      "inference_type": "direct_evidence",
+      "matcher_contract": {
+        "applicability": {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "unknown_behavior": "unknown_applicability"
+        },
+        "conditions": [
+          {
+            "field": "connection_result",
+            "operator": "equals",
+            "value": "failed"
+          },
+          {
+            "field": "problem_signal",
+            "operator": "equals",
+            "value": true
+          }
+        ],
+        "evidence_target": "mikrotik_api_connection_state",
+        "fixture_references": {
+          "negative": [
+            "tests/fixtures/matcher_contract/mikrotik_connectivity_same_platform_negative.json",
+            "tests/fixtures/matcher_contract/mikrotik_connectivity_wrong_platform.json",
+            "tests/fixtures/matcher_contract/mikrotik_connectivity_partial.json",
+            "tests/fixtures/matcher_contract/mikrotik_connectivity_missing.json",
+            "tests/fixtures/matcher_contract/mikrotik_connectivity_conflict.json",
+            "tests/fixtures/matcher_contract/mikrotik_connectivity_unknown.json"
+          ],
+          "positive": [
+            "tests/fixtures/matcher_contract/mikrotik_connectivity_positive.json",
+            "tests/fixtures/matcher_contract/mikrotik_connectivity_duplicate.json",
+            "tests/fixtures/matcher_contract/mikrotik_connectivity_ordering.json",
+            "tests/fixtures/matcher_contract/mikrotik_connectivity_secret_free.json"
+          ]
+        },
+        "normalization": [
+          {
+            "field": "connection_result",
+            "operations": [
+              "trim",
+              "lowercase",
+              "canonical_status"
+            ]
+          },
+          {
+            "field": "problem_signal",
+            "operations": [
+              "canonical_boolean"
+            ]
+          }
+        ],
+        "observation_types": [
+          "connectivity_result"
+        ],
+        "optional_fields": [
+          {
+            "path": "lifecycle_state",
+            "value_type": "string"
+          }
+        ],
+        "outcomes": {
+          "conflict": "preserve_conflict",
+          "match": "canonical_evidence",
+          "missing_evidence": "preserve_missing_evidence",
+          "no_match": "preserve_no_match",
+          "partial_match": "preserve_partial",
+          "unknown_applicability": "preserve_unknown_applicability"
+        },
+        "platform_scope": {
+          "include": [
+            "mikrotik"
+          ]
+        },
+        "provenance": {
+          "source_ids": [
+            "source_ha_core_mikrotik_dev",
+            "source_ha_core_mikrotik_tests"
+          ]
+        },
+        "required_fields": [
+          {
+            "path": "connection_result",
+            "value_type": "string"
+          },
+          {
+            "path": "problem_signal",
+            "value_type": "boolean"
+          }
+        ],
+        "version": "1.0.0"
+      },
+      "official_status": "not_applicable",
+      "references": {
+        "integrations": [
+          "mikrotik"
+        ],
+        "observations": [
+          "mikrotik_api_connection_state"
+        ],
+        "recommendations": [
+          "diagnose_mikrotik_api_path_safely"
+        ],
+        "root_causes": [
+          "network_path_failure",
+          "dns_service_failure"
+        ],
+        "scenarios": [
+          "scenario_mikrotik_api_auth_or_path_failure"
+        ],
+        "sources": [
+          "source_ha_core_mikrotik_dev",
+          "source_ha_core_mikrotik_tests"
+        ]
+      },
+      "relationships": [
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.99,
+          "predicate": "consumes",
+          "rationale": "The matcher consumes the canonical structured API-connection observation.",
+          "target_id": "mikrotik_api_connection_state"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.65,
+          "predicate": "related_to",
+          "rationale": "Network path failure remains one candidate branch, not a conclusion.",
+          "target_id": "network_path_failure"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.45,
+          "predicate": "related_to",
+          "rationale": "DNS remains conditional on hostname-based configuration.",
+          "target_id": "dns_service_failure"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.99,
+          "predicate": "supports",
+          "rationale": "The scenario separates transport, login, policy, command and lifecycle branches.",
+          "target_id": "scenario_mikrotik_api_auth_or_path_failure"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.99,
+          "predicate": "supports",
+          "rationale": "The recommendation verifies layers before change.",
+          "target_id": "diagnose_mikrotik_api_path_safely"
+        }
+      ],
+      "review": {
+        "next_review_on": "2026-09-21",
+        "reviewed_on": "2026-07-24",
+        "reviewer": "codex_matcher_foundation_v2"
+      },
+      "status": "reviewed",
+      "summary": "A structured failed MikroTik API connection is canonical connection-state evidence, but it does not identify DNS, routing, service, TLS, login, policy, command, or polling as the failed layer.",
+      "title": "MikroTik API connectivity failure",
+      "type": "rule"
+    },
+    {
+      "affected_domains": [
+        "current_health",
+        "stability_risk"
+      ],
+      "claims": [
+        {
+          "confidence": 0.9,
+          "evidence_level": "A",
+          "false_positive_notes": "Exclude startup transients, sleeping or intentionally offline devices, planned maintenance, disabled entities, and installation-specific expected behavior where relevant.",
+          "id": "detection_boundary",
+          "origin": "official_documentation",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_docs_mqtt"
+          ],
+          "statement": "A disconnected Home Assistant MQTT client proves loss of the client-broker session, not whether the broker, DNS, routing, credentials, or TLS caused it.",
+          "verification_status": "verified",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app release boundary asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Rule is contextual and not bounded to an exact Core release."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration version must be captured during evaluation."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Installation context determines OS relevance."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor relevance depends on the affected component."
+            }
+          }
+        }
+      ],
+      "does_not_prove": "A disconnected Home Assistant MQTT client proves loss of the client-broker session, not whether the broker, DNS, routing, credentials, or TLS caused it.",
+      "id": "mqtt_broker_connection_loss",
+      "inference_type": "direct_evidence",
+      "official_status": "not_applicable",
+      "references": {
+        "log_patterns": [
+          "mqtt_certificate_verify_failed"
+        ],
+        "recommendations": [
+          "diagnose_mqtt_broker_path"
+        ],
+        "root_causes": [
+          "mqtt_broker_unavailable",
+          "network_path_failure",
+          "dns_service_failure"
+        ],
+        "sources": [
+          "source_home_assistant_docs_mqtt"
+        ],
+        "symptoms": [
+          "mqtt_repeated_reconnects"
+        ]
+      },
+      "relationships": [
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.8,
+          "predicate": "consumes",
+          "rationale": "The certificate signature selects the TLS branch without covering all disconnects.",
+          "target_id": "mqtt_certificate_verify_failed"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.95,
+          "predicate": "diagnoses",
+          "rationale": "Disconnected client state directly supports reconnect symptoms.",
+          "target_id": "mqtt_repeated_reconnects"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.65,
+          "predicate": "related_to",
+          "rationale": "Broker availability is one competing cause.",
+          "target_id": "mqtt_broker_unavailable"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.65,
+          "predicate": "related_to",
+          "rationale": "Routing and transport failure are competing causes.",
+          "target_id": "network_path_failure"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.5,
+          "predicate": "related_to",
+          "rationale": "DNS is relevant when the configured endpoint requires resolution.",
+          "target_id": "dns_service_failure"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.95,
+          "predicate": "supports",
+          "rationale": "The rule supports layered broker-path diagnosis.",
+          "target_id": "diagnose_mqtt_broker_path"
+        }
+      ],
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_core_pack_v1"
+      },
+      "status": "reviewed",
+      "summary": "A disconnected Home Assistant MQTT client proves loss of the client-broker session, not whether the broker, DNS, routing, credentials, or TLS caused it.",
+      "title": "MQTT broker connection lost",
+      "type": "rule"
+    },
+    {
+      "claims": [
+        {
+          "confidence": 0.98,
+          "evidence_level": "A",
+          "false_positive_notes": "This identifies TLS validation failure, not whether the certificate, hostname, trust store, time, or configuration is the underlying cause.",
+          "id": "documented_signature",
+          "origin": "official_documentation",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_docs_mqtt"
+          ],
+          "statement": "Home Assistant MQTT documentation identifies CERTIFICATE_VERIFY_FAILED as a broker TLS certificate validation failure requiring certificate configuration review.",
+          "verification_status": "verified",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "The broker may or may not run as an app."
+            },
+            "core": {
+              "applicable": true,
+              "constraint": null,
+              "notes": "Current MQTT documentation reviewed without an exact Core boundary."
+            },
+            "integrations": {
+              "applicable": true,
+              "constraint": null,
+              "notes": "Current MQTT integration documentation reviewed without an exact version boundary."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Certificate trust context can vary by installation."
+            },
+            "supervisor": {
+              "applicable": false,
+              "constraint": null,
+              "notes": "The signature concerns the Core MQTT client."
+            }
+          }
+        }
+      ],
+      "id": "mqtt_certificate_verify_failed",
+      "match": {
+        "mode": "contains",
+        "scope": "mqtt_connection",
+        "value": "CERTIFICATE_VERIFY_FAILED"
+      },
+      "official_status": "not_applicable",
+      "references": {
+        "sources": [
+          "source_home_assistant_docs_mqtt"
+        ],
+        "symptoms": [
+          "mqtt_repeated_reconnects"
+        ]
+      },
+      "relationships": [
+        {
+          "claim_ids": [
+            "documented_signature"
+          ],
+          "confidence": 0.9,
+          "predicate": "diagnoses",
+          "rationale": "The exact TLS validation fragment supports the MQTT reconnect diagnostic path.",
+          "target_id": "mqtt_repeated_reconnects"
+        }
+      ],
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_core_pack_v1"
+      },
+      "status": "reviewed",
+      "summary": "Matches the documented TLS certificate verification failure fragment for MQTT connection setup.",
+      "title": "MQTT certificate verification failure signature",
+      "type": "log_pattern"
+    },
+    {
+      "affected_domains": [
+        "current_health",
+        "stability_risk",
+        "maintainability"
+      ],
+      "claims": [
+        {
+          "confidence": 0.5,
+          "evidence_level": "D",
+          "false_positive_notes": "Exclude startup transients, sleeping or intentionally offline devices, planned maintenance, disabled entities, and installation-specific expected behavior where relevant.",
+          "id": "detection_boundary",
+          "origin": "hypothesis",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_docs_mqtt"
+          ],
+          "statement": "Correlated unavailability may localize a shared broker, publisher, or discovery dependency but does not prove every entity or device is faulty.",
+          "verification_status": "needs_manual_verification",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app release boundary asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Rule is contextual and not bounded to an exact Core release."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration version must be captured during evaluation."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Installation context determines OS relevance."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor relevance depends on the affected component."
+            }
+          }
+        }
+      ],
+      "does_not_prove": "Correlated unavailability may localize a shared broker, publisher, or discovery dependency but does not prove every entity or device is faulty.",
+      "id": "mqtt_entity_unavailability_correlated",
+      "inference_type": "documented_behavior_inference",
+      "official_status": "not_applicable",
+      "references": {
+        "recommendations": [
+          "separate_broker_from_integration_diagnosis"
+        ],
+        "root_causes": [
+          "mqtt_broker_unavailable",
+          "network_path_failure"
+        ],
+        "sources": [
+          "source_home_assistant_docs_mqtt"
+        ],
+        "symptoms": [
+          "mqtt_entities_unavailable"
+        ]
+      },
+      "relationships": [
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.8,
+          "predicate": "diagnoses",
+          "rationale": "Correlated entity state supports the shared MQTT symptom while retaining false-positive boundaries.",
+          "target_id": "mqtt_entities_unavailable"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.6,
+          "predicate": "related_to",
+          "rationale": "A shared broker is one candidate dependency.",
+          "target_id": "mqtt_broker_unavailable"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.55,
+          "predicate": "related_to",
+          "rationale": "A shared network path is another candidate dependency.",
+          "target_id": "network_path_failure"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.9,
+          "predicate": "supports",
+          "rationale": "The recommendation preserves broker, integration, publisher, and entity boundaries.",
+          "target_id": "separate_broker_from_integration_diagnosis"
+        }
+      ],
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_core_pack_v1"
+      },
+      "status": "reviewed",
+      "summary": "Correlated unavailability may localize a shared broker, publisher, or discovery dependency but does not prove every entity or device is faulty.",
+      "title": "Correlated MQTT entity unavailability",
+      "type": "rule"
+    },
+    {
+      "affected_domains": [
+        "current_health",
+        "stability_risk",
+        "recoverability",
+        "maintainability"
+      ],
+      "claims": [
+        {
+          "confidence": 0.35,
+          "evidence_level": "D",
+          "false_positive_notes": "Small, intentionally full, read-only, temporary, or non-critical mount points may exceed the threshold without threatening Home Assistant.",
+          "id": "draft_threshold",
+          "origin": "hypothesis",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_docs_system_monitor"
+          ],
+          "statement": "The 90 percent for 30 minutes trigger is a draft detection heuristic, not a threshold established by Home Assistant documentation.",
+          "verification_status": "needs_manual_verification",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Add-on storage behavior may affect false positives."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "The heuristic is uncalibrated across Core releases."
+            },
+            "integrations": {
+              "applicable": true,
+              "constraint": null,
+              "notes": "Requires a suitable System Monitor disk usage entity."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "The heuristic is uncalibrated across host environments."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor applicability has not been evaluated."
+            }
+          }
+        }
+      ],
+      "does_not_prove": "High mount-point usage alone does not identify the responsible directory, workload, or imminent failure.",
+      "id": "persistent_high_disk_usage",
+      "inference_type": "proposed_heuristic",
+      "official_status": "not_applicable",
+      "references": {
+        "integrations": [
+          "system_monitor"
+        ],
+        "recommendations": [
+          "investigate_host_disk_usage"
+        ],
+        "root_causes": [
+          "host_storage_pressure"
+        ],
+        "sources": [
+          "source_home_assistant_docs_system_monitor"
+        ],
+        "symptoms": [
+          "high_disk_usage"
+        ]
+      },
+      "review": {
+        "next_review_on": "2026-08-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_workspace_v1"
+      },
+      "status": "draft",
+      "summary": "Flags a sustained high mount-point usage observation without declaring a root cause.",
+      "title": "Persistent high disk usage",
+      "type": "rule"
+    },
+    {
+      "affected_domains": [
+        "current_health",
+        "stability_risk",
+        "recoverability"
+      ],
+      "claims": [
+        {
+          "confidence": 0.55,
+          "evidence_level": "D",
+          "false_positive_notes": "Exclude startup transients, sleeping or intentionally offline devices, planned maintenance, disabled entities, and installation-specific expected behavior where relevant.",
+          "id": "detection_boundary",
+          "origin": "hypothesis",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_docs_recorder"
+          ],
+          "statement": "A confirmed recorder write failure warrants database-layer investigation but does not identify corruption, storage, permissions, locking, or backend reachability.",
+          "verification_status": "needs_manual_verification",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app release boundary asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Rule is contextual and not bounded to an exact Core release."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration version must be captured during evaluation."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Installation context determines OS relevance."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor relevance depends on the affected component."
+            }
+          }
+        }
+      ],
+      "does_not_prove": "A confirmed recorder write failure warrants database-layer investigation but does not identify corruption, storage, permissions, locking, or backend reachability.",
+      "id": "recorder_database_write_errors",
+      "inference_type": "documented_behavior_inference",
+      "official_status": "not_applicable",
+      "references": {
+        "log_patterns": [
+          "recorder_sqlite_corrupt_or_malformed"
+        ],
+        "recommendations": [
+          "investigate_recorder_write_failure"
+        ],
+        "root_causes": [
+          "recorder_database_corruption",
+          "database_backend_unavailable",
+          "host_storage_pressure"
+        ],
+        "sources": [
+          "source_home_assistant_docs_recorder"
+        ],
+        "symptoms": [
+          "database_write_failure"
+        ]
+      },
+      "relationships": [
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.75,
+          "predicate": "consumes",
+          "rationale": "The SQLite-specific signature is one strong input, while the rule remains broader than SQLite.",
+          "target_id": "recorder_sqlite_corrupt_or_malformed"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.9,
+          "predicate": "diagnoses",
+          "rationale": "A confirmed write failure supports the database-write symptom.",
+          "target_id": "database_write_failure"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.55,
+          "predicate": "related_to",
+          "rationale": "Corruption is one candidate branch and is not implied for every backend.",
+          "target_id": "recorder_database_corruption"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.55,
+          "predicate": "related_to",
+          "rationale": "External backend reachability is a competing candidate.",
+          "target_id": "database_backend_unavailable"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.5,
+          "predicate": "related_to",
+          "rationale": "Storage pressure is a competing write-failure candidate.",
+          "target_id": "host_storage_pressure"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.9,
+          "predicate": "supports",
+          "rationale": "The rule supports investigation before destructive recovery.",
+          "target_id": "investigate_recorder_write_failure"
+        }
+      ],
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_core_pack_v1"
+      },
+      "status": "reviewed",
+      "summary": "A confirmed recorder write failure warrants database-layer investigation but does not identify corruption, storage, permissions, locking, or backend reachability.",
+      "title": "Recorder write-failure evidence",
+      "type": "rule"
+    },
+    {
+      "affected_domains": [
+        "stability_risk",
+        "maintainability"
+      ],
+      "claims": [
+        {
+          "confidence": 0.5,
+          "evidence_level": "D",
+          "false_positive_notes": "Exclude startup transients, sleeping or intentionally offline devices, planned maintenance, disabled entities, and installation-specific expected behavior where relevant.",
+          "id": "detection_boundary",
+          "origin": "hypothesis",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_docs_recorder"
+          ],
+          "statement": "Sustained growth outside an installation baseline warrants retention and churn review but does not prove a leak or faulty recorder.",
+          "verification_status": "needs_manual_verification",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app release boundary asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Rule is contextual and not bounded to an exact Core release."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration version must be captured during evaluation."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Installation context determines OS relevance."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor relevance depends on the affected component."
+            }
+          }
+        }
+      ],
+      "does_not_prove": "Sustained growth outside an installation baseline warrants retention and churn review but does not prove a leak or faulty recorder.",
+      "id": "recorder_growth_without_retention_review",
+      "inference_type": "proposed_heuristic",
+      "official_status": "not_applicable",
+      "references": {
+        "recommendations": [
+          "review_recorder_retention_and_inclusions"
+        ],
+        "root_causes": [
+          "excessive_state_churn"
+        ],
+        "sources": [
+          "source_home_assistant_docs_recorder"
+        ],
+        "symptoms": [
+          "rapid_database_growth"
+        ]
+      },
+      "relationships": [
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.75,
+          "predicate": "diagnoses",
+          "rationale": "Sustained baseline-relative growth supports the growth symptom without proving a defect.",
+          "target_id": "rapid_database_growth"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.6,
+          "predicate": "related_to",
+          "rationale": "State churn is a candidate explanation requiring local baseline review.",
+          "target_id": "excessive_state_churn"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.9,
+          "predicate": "supports",
+          "rationale": "The bounded rule supports retention and inclusion review.",
+          "target_id": "review_recorder_retention_and_inclusions"
+        }
+      ],
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_core_pack_v1"
+      },
+      "status": "reviewed",
+      "summary": "Sustained growth outside an installation baseline warrants retention and churn review but does not prove a leak or faulty recorder.",
+      "title": "Recorder growth outside expected baseline",
+      "type": "rule"
+    },
+    {
+      "claims": [
+        {
+          "confidence": 0.97,
+          "evidence_level": "B",
+          "false_positive_notes": "This is SQLite-specific and does not classify corruption for MariaDB, MySQL, PostgreSQL, or other external backends; the path must remain part of captured evidence.",
+          "id": "source_defined_signature",
+          "origin": "official_repository",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_core_recorder_util"
+          ],
+          "statement": "The Recorder SQLite validator logs that the database is corrupt or malformed when its validation checks raise sqlite3.DatabaseError.",
+          "verification_status": "verified",
+          "version_applicability": {
+            "addons": {
+              "applicable": false,
+              "constraint": null,
+              "notes": "The signature does not identify an add-on."
+            },
+            "core": {
+              "applicable": true,
+              "constraint": null,
+              "notes": "Current dev-branch source reviewed; release boundary not established."
+            },
+            "integrations": {
+              "applicable": true,
+              "constraint": null,
+              "notes": "Applies specifically to current Recorder using SQLite; no exact integration release boundary asserted."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "SQLite Recorder use is not limited to Home Assistant OS."
+            },
+            "supervisor": {
+              "applicable": false,
+              "constraint": null,
+              "notes": "The signature is emitted by Core Recorder code."
+            }
+          }
+        }
+      ],
+      "id": "recorder_sqlite_corrupt_or_malformed",
+      "match": {
+        "mode": "regex",
+        "scope": "homeassistant.components.recorder.util",
+        "value": "The database at .+ is corrupt or malformed"
+      },
+      "official_status": "not_applicable",
+      "references": {
+        "recommendations": [
+          "investigate_recorder_write_failure"
+        ],
+        "root_causes": [
+          "recorder_database_corruption"
+        ],
+        "sources": [
+          "source_home_assistant_core_recorder_util"
+        ],
+        "symptoms": [
+          "database_write_failure"
+        ]
+      },
+      "relationships": [
+        {
+          "claim_ids": [
+            "source_defined_signature"
+          ],
+          "confidence": 0.9,
+          "predicate": "diagnoses",
+          "rationale": "The validated SQLite signature is direct evidence for database write/integrity investigation.",
+          "target_id": "database_write_failure"
+        }
+      ],
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_rc1"
+      },
+      "status": "reviewed",
+      "summary": "Matches Recorder's SQLite validation message after sqlite3 raises DatabaseError during its checks.",
+      "title": "Recorder SQLite corrupt-or-malformed signature",
+      "type": "log_pattern"
+    },
+    {
+      "claims": [
+        {
+          "confidence": 0.97,
+          "evidence_level": "B",
+          "false_positive_notes": "The signature proves a precondition blocked that job invocation; it does not prove the named condition's underlying cause or that repeated retries are appropriate.",
+          "id": "source_defined_signature",
+          "origin": "official_repository",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_supervisor_job_decorator"
+          ],
+          "statement": "Supervisor job precondition failures include the method name, the phrase blocked from execution, and a reason such as health, running state, free space, connectivity, or supported-version state.",
+          "verification_status": "verified",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "The blocked job may or may not operate on an app."
+            },
+            "core": {
+              "applicable": false,
+              "constraint": null,
+              "notes": "The message is emitted by Supervisor rather than Core."
+            },
+            "integrations": {
+              "applicable": false,
+              "constraint": null,
+              "notes": "The message is not a Core integration signature."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Some reasons concern OS or host state, but the signature alone does not establish installation type."
+            },
+            "supervisor": {
+              "applicable": true,
+              "constraint": null,
+              "notes": "Current main-branch source reviewed; release boundary not established."
+            }
+          }
+        }
+      ],
+      "id": "supervisor_job_blocked_from_execution",
+      "match": {
+        "mode": "regex",
+        "scope": "supervisor.jobs",
+        "value": "'.+' blocked from execution, .+"
+      },
+      "official_status": "not_applicable",
+      "references": {
+        "observations": [
+          "supervisor_job_state"
+        ],
+        "recommendations": [
+          "inspect_supervisor_job_context"
+        ],
+        "root_causes": [
+          "supervisor_dependency_failure"
+        ],
+        "scenarios": [
+          "scenario_supervisor_job_failure_context"
+        ],
+        "sources": [
+          "source_home_assistant_supervisor_job_decorator"
+        ],
+        "symptoms": [
+          "supervisor_job_failure"
+        ]
+      },
+      "relationships": [
+        {
+          "claim_ids": [
+            "source_defined_signature"
+          ],
+          "confidence": 0.95,
+          "predicate": "diagnoses",
+          "rationale": "The signature directly establishes that the named job invocation was blocked.",
+          "target_id": "supervisor_job_failure"
+        },
+        {
+          "claim_ids": [
+            "source_defined_signature"
+          ],
+          "confidence": 0.9,
+          "predicate": "related_to",
+          "rationale": "The blocked method and reason complement the structured job context.",
+          "target_id": "supervisor_job_state"
+        },
+        {
+          "claim_ids": [
+            "source_defined_signature"
+          ],
+          "confidence": 0.99,
+          "predicate": "related_to",
+          "rationale": "The scenario separates blocked preconditions from jobs that started and later errored.",
+          "target_id": "scenario_supervisor_job_failure_context"
+        }
+      ],
+      "review": {
+        "next_review_on": "2026-10-27",
+        "reviewed_on": "2026-07-27",
+        "reviewer": "codex_kx001_pack1"
+      },
+      "status": "reviewed",
+      "summary": "Matches a Supervisor job-condition rejection while preserving the method and stated precondition reason.",
+      "title": "Supervisor job blocked-from-execution signature",
+      "type": "log_pattern"
+    },
+    {
+      "affected_domains": [
+        "current_health",
+        "stability_risk",
+        "recoverability"
+      ],
+      "claims": [
+        {
+          "confidence": 0.5,
+          "evidence_level": "D",
+          "false_positive_notes": "Exclude startup transients, sleeping or intentionally offline devices, planned maintenance, disabled entities, and installation-specific expected behavior where relevant.",
+          "id": "detection_boundary",
+          "origin": "hypothesis",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_developer_supervisor"
+          ],
+          "statement": "Repeated failure of the same Supervisor-managed operation warrants inspection of that job and dependency but does not identify the failing component.",
+          "verification_status": "needs_manual_verification",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app release boundary asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Rule is contextual and not bounded to an exact Core release."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration version must be captured during evaluation."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Installation context determines OS relevance."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor relevance depends on the affected component."
+            }
+          }
+        }
+      ],
+      "does_not_prove": "Repeated failure of the same Supervisor-managed operation warrants inspection of that job and dependency but does not identify the failing component.",
+      "id": "supervisor_job_repeated_failure",
+      "inference_type": "documented_behavior_inference",
+      "official_status": "not_applicable",
+      "references": {
+        "log_patterns": [
+          "supervisor_job_blocked_from_execution"
+        ],
+        "observations": [
+          "supervisor_job_state"
+        ],
+        "recommendations": [
+          "inspect_supervisor_job_context"
+        ],
+        "root_causes": [
+          "supervisor_dependency_failure"
+        ],
+        "scenarios": [
+          "scenario_supervisor_job_failure_context"
+        ],
+        "sources": [
+          "source_home_assistant_developer_supervisor"
+        ],
+        "symptoms": [
+          "supervisor_job_failure"
+        ]
+      },
+      "relationships": [
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.9,
+          "predicate": "consumes",
+          "rationale": "Stable operation identity and structured outcome are needed before failures can be compared.",
+          "target_id": "supervisor_job_state"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.8,
+          "predicate": "consumes",
+          "rationale": "The blocked-job signature is one reason-bearing Supervisor failure input.",
+          "target_id": "supervisor_job_blocked_from_execution"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.8,
+          "predicate": "diagnoses",
+          "rationale": "Repeated failure supports the Supervisor job symptom after retry context is reviewed.",
+          "target_id": "supervisor_job_failure"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.6,
+          "predicate": "related_to",
+          "rationale": "A failed precondition or managed dependency is a candidate, not a universal cause.",
+          "target_id": "supervisor_dependency_failure"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.85,
+          "predicate": "related_to",
+          "rationale": "The scenario supplies the evidence boundary for comparing repeated outcomes.",
+          "target_id": "scenario_supervisor_job_failure_context"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.95,
+          "predicate": "supports",
+          "rationale": "The method and reason must be inspected before retry or repair.",
+          "target_id": "inspect_supervisor_job_context"
+        }
+      ],
+      "review": {
+        "next_review_on": "2026-10-27",
+        "reviewed_on": "2026-07-27",
+        "reviewer": "codex_kx001_pack1"
+      },
+      "status": "reviewed",
+      "summary": "Repeated failure of the same Supervisor-managed operation warrants inspection of that job and dependency but does not identify the failing component.",
+      "title": "Repeated Supervisor operation failure",
+      "type": "rule"
+    },
+    {
+      "affected_domains": [
+        "current_health",
+        "maintainability"
+      ],
+      "claims": [
+        {
+          "confidence": 0.9,
+          "evidence_level": "A",
+          "false_positive_notes": "Exclude startup transients, sleeping or intentionally offline devices, planned maintenance, disabled entities, and installation-specific expected behavior where relevant.",
+          "id": "detection_boundary",
+          "origin": "official_documentation",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_docs_template_errors"
+          ],
+          "statement": "A render error proves the evaluated template failed in that context but does not identify whether syntax, data, type, or missing variables caused it.",
+          "verification_status": "verified",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app release boundary asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Rule is contextual and not bounded to an exact Core release."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration version must be captured during evaluation."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Installation context determines OS relevance."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor relevance depends on the affected component."
+            }
+          }
+        }
+      ],
+      "does_not_prove": "A render error proves the evaluated template failed in that context but does not identify whether syntax, data, type, or missing variables caused it.",
+      "id": "template_render_error_detected",
+      "inference_type": "direct_evidence",
+      "official_status": "not_applicable",
+      "references": {
+        "log_patterns": [
+          "template_undefined_error"
+        ],
+        "recommendations": [
+          "debug_template_with_input_context"
+        ],
+        "root_causes": [
+          "template_input_or_syntax_error"
+        ],
+        "sources": [
+          "source_home_assistant_docs_template_errors"
+        ],
+        "symptoms": [
+          "template_render_error"
+        ]
+      },
+      "relationships": [
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.9,
+          "predicate": "consumes",
+          "rationale": "The documented error class is one direct render-error input.",
+          "target_id": "template_undefined_error"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.95,
+          "predicate": "diagnoses",
+          "rationale": "A confirmed render error directly supports the symptom.",
+          "target_id": "template_render_error"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.75,
+          "predicate": "related_to",
+          "rationale": "Input, undefined data, type, or syntax remains a candidate family rather than a proven cause.",
+          "target_id": "template_input_or_syntax_error"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.95,
+          "predicate": "supports",
+          "rationale": "The rule supports contextual evaluation before changing the template.",
+          "target_id": "debug_template_with_input_context"
+        }
+      ],
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_core_pack_v1"
+      },
+      "status": "reviewed",
+      "summary": "A render error proves the evaluated template failed in that context but does not identify whether syntax, data, type, or missing variables caused it.",
+      "title": "Template render error detected",
+      "type": "rule"
+    },
+    {
+      "claims": [
+        {
+          "confidence": 0.98,
+          "evidence_level": "A",
+          "false_positive_notes": "The signature identifies an error class, not the missing value or the correct remediation.",
+          "id": "documented_signature",
+          "origin": "official_documentation",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_docs_template_errors"
+          ],
+          "statement": "Home Assistant template guidance documents UndefinedError as indicating that a referenced variable or dictionary attribute is not defined in the evaluation context.",
+          "verification_status": "verified",
+          "version_applicability": {
+            "addons": {
+              "applicable": false,
+              "constraint": null,
+              "notes": "The signature is not app-specific."
+            },
+            "core": {
+              "applicable": true,
+              "constraint": null,
+              "notes": "Current template documentation reviewed without an exact Core boundary."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "The template may be used by many integrations."
+            },
+            "operating_system": {
+              "applicable": false,
+              "constraint": null,
+              "notes": "The signature is emitted by Core template evaluation."
+            },
+            "supervisor": {
+              "applicable": false,
+              "constraint": null,
+              "notes": "The signature is not Supervisor-specific."
+            }
+          }
+        }
+      ],
+      "id": "template_undefined_error",
+      "match": {
+        "mode": "contains",
+        "scope": "template_rendering",
+        "value": "UndefinedError:"
+      },
+      "official_status": "not_applicable",
+      "references": {
+        "sources": [
+          "source_home_assistant_docs_template_errors"
+        ],
+        "symptoms": [
+          "template_render_error"
+        ]
+      },
+      "relationships": [
+        {
+          "claim_ids": [
+            "documented_signature"
+          ],
+          "confidence": 0.95,
+          "predicate": "diagnoses",
+          "rationale": "The exact UndefinedError class directly supports a template-render diagnostic path.",
+          "target_id": "template_render_error"
+        }
+      ],
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_core_pack_v1"
+      },
+      "status": "reviewed",
+      "summary": "Matches the documented Jinja UndefinedError class without depending on a specific variable name.",
+      "title": "Template UndefinedError signature",
+      "type": "log_pattern"
+    },
+    {
+      "affected_domains": [
+        "current_health",
+        "recoverability",
+        "maintainability"
+      ],
+      "claims": [
+        {
+          "confidence": 0.9,
+          "evidence_level": "A",
+          "false_positive_notes": "Exclude startup transients, sleeping or intentionally offline devices, planned maintenance, disabled entities, and installation-specific expected behavior where relevant.",
+          "id": "detection_boundary",
+          "origin": "official_documentation",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_docs_matter"
+          ],
+          "statement": "A missing usable border router blocks Matter-over-Thread setup but does not apply to Matter devices using Wi-Fi or Ethernet.",
+          "verification_status": "verified",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app release boundary asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Rule is contextual and not bounded to an exact Core release."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration version must be captured during evaluation."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Installation context determines OS relevance."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor relevance depends on the affected component."
+            }
+          }
+        }
+      ],
+      "does_not_prove": "A missing usable border router blocks Matter-over-Thread setup but does not apply to Matter devices using Wi-Fi or Ethernet.",
+      "id": "thread_border_router_missing",
+      "inference_type": "direct_evidence",
+      "official_status": "not_applicable",
+      "references": {
+        "recommendations": [
+          "verify_thread_border_router_and_credentials"
+        ],
+        "root_causes": [
+          "thread_border_router_failure"
+        ],
+        "sources": [
+          "source_home_assistant_docs_matter"
+        ],
+        "symptoms": [
+          "thread_border_router_unavailable"
+        ]
+      },
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_core_pack_v1"
+      },
+      "status": "reviewed",
+      "summary": "A missing usable border router blocks Matter-over-Thread setup but does not apply to Matter devices using Wi-Fi or Ethernet.",
+      "title": "Required Thread border router missing",
+      "type": "rule"
+    },
+    {
+      "claims": [
+        {
+          "confidence": 0.98,
+          "evidence_level": "A",
+          "false_positive_notes": "Treating this cosmetic signature alone as border-router failure is itself a false positive; confirm actual interface advertisement and routing.",
+          "id": "documented_false_positive",
+          "origin": "official_documentation",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_docs_thread"
+          ],
+          "statement": "Home Assistant Thread documentation says this signature typically occurs on Docker virtual interfaces and does not affect border-router advertisement on the actual network.",
+          "verification_status": "verified",
+          "version_applicability": {
+            "addons": {
+              "applicable": true,
+              "constraint": null,
+              "notes": "Current Thread documentation reviewed for the OpenThread Border Router app without an exact app version."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "The message originates in the border-router environment rather than a bounded Core release."
+            },
+            "integrations": {
+              "applicable": true,
+              "constraint": null,
+              "notes": "Current Thread documentation reviewed without an exact integration version."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Container interface context is installation-specific."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "The OpenThread Border Router may be Supervisor-managed."
+            }
+          }
+        }
+      ],
+      "id": "thread_mdns_error_99",
+      "match": {
+        "mode": "contains",
+        "scope": "openthread_border_router",
+        "value": "mDNSPlatformSendUDP got error 99"
+      },
+      "official_status": "not_applicable",
+      "references": {
+        "sources": [
+          "source_home_assistant_docs_thread"
+        ],
+        "symptoms": [
+          "thread_border_router_unavailable"
+        ]
+      },
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_core_pack_v1"
+      },
+      "status": "reviewed",
+      "summary": "Identifies a documented OpenThread Border Router mDNS message that can be cosmetic on container interfaces.",
+      "title": "Thread mDNS error 99 cosmetic signature",
+      "type": "log_pattern"
+    },
+    {
+      "affected_domains": [
+        "current_health",
+        "recoverability",
+        "stability_risk"
+      ],
+      "claims": [
+        {
+          "confidence": 0.99,
+          "evidence_level": "B",
+          "false_positive_notes": "Exclude absent, incomplete, unknown, mixed-state and wrong-platform inputs. A match does not identify a physical-device, cloud, account, credential, network or integration-code root cause.",
+          "id": "native_status_boundary",
+          "origin": "official_repository",
+          "reviewed_on": "2026-08-12",
+          "source_ids": [
+            "source_ha_core_config_entries",
+            "source_home_assistant_core_tuya"
+          ],
+          "statement": "An authoritative complete native status aggregate with one uniform Home Assistant problem state for the official tuya domain supports an integration-status problem candidate while leaving the underlying cause unresolved.",
+          "verification_status": "verified",
+          "version_applicability": {
+            "addons": {
+              "applicable": false,
+              "constraint": null,
+              "notes": "Core config-entry lifecycle evidence."
+            },
+            "core": {
+              "applicable": true,
+              "constraint": null,
+              "notes": "Current documented config-entry state contract."
+            },
+            "integrations": {
+              "applicable": true,
+              "constraint": "official tuya domain with complete native status",
+              "notes": "No external login, API call or network probe is used."
+            },
+            "operating_system": {
+              "applicable": false,
+              "constraint": null,
+              "notes": "Not an operating-system signal."
+            },
+            "supervisor": {
+              "applicable": false,
+              "constraint": null,
+              "notes": "Not a Supervisor signal."
+            }
+          }
+        }
+      ],
+      "does_not_prove": "Home Assistant reporting a Tuya integration lifecycle problem does not prove that a physical Tuya device, Tuya Cloud, an account, credentials, the user's network or integration code is the underlying cause.",
+      "id": "tuya_integration_status_problem",
+      "inference_type": "direct_evidence",
+      "matcher_contract": {
+        "applicability": {
+          "claim_ids": [
+            "native_status_boundary"
+          ],
+          "unknown_behavior": "unknown_applicability"
+        },
+        "conditions": [
+          {
+            "field": "problem_signal",
+            "operator": "equals",
+            "value": true
+          }
+        ],
+        "evidence_target": "tuya_integration_config_entry_state",
+        "normalization": [
+          {
+            "field": "problem_signal",
+            "operations": [
+              "canonical_boolean"
+            ]
+          }
+        ],
+        "observation_types": [
+          "integration_status"
+        ],
+        "optional_fields": [],
+        "outcomes": {
+          "conflict": "preserve_conflict",
+          "match": "canonical_evidence",
+          "missing_evidence": "preserve_missing_evidence",
+          "no_match": "preserve_no_match",
+          "partial_match": "preserve_partial",
+          "unknown_applicability": "preserve_unknown_applicability"
+        },
+        "platform_scope": {
+          "include": [
+            "tuya"
+          ]
+        },
+        "provenance": {
+          "source_ids": [
+            "source_ha_core_config_entries",
+            "source_home_assistant_core_tuya"
+          ]
+        },
+        "required_fields": [
+          {
+            "path": "problem_signal",
+            "value_type": "boolean"
+          }
+        ],
+        "version": "1.0.0"
+      },
+      "official_status": "not_applicable",
+      "references": {
+        "components": [
+          "config_entry_system"
+        ],
+        "integrations": [
+          "tuya"
+        ],
+        "observations": [
+          "tuya_integration_config_entry_state"
+        ],
+        "recommendations": [
+          "diagnose_tuya_connection_path_safely"
+        ],
+        "scenarios": [
+          "scenario_tuya_connection_path_or_exposure_mismatch"
+        ],
+        "sources": [
+          "source_ha_core_config_entries",
+          "source_home_assistant_core_tuya"
+        ]
+      },
+      "relationships": [
+        {
+          "claim_ids": [
+            "native_status_boundary"
+          ],
+          "confidence": 0.99,
+          "predicate": "consumes",
+          "rationale": "The matcher consumes only the canonical privacy-safe Tuya integration status aggregate.",
+          "target_id": "tuya_integration_config_entry_state"
+        },
+        {
+          "claim_ids": [
+            "native_status_boundary"
+          ],
+          "confidence": 0.99,
+          "predicate": "supports",
+          "rationale": "The scenario preserves account, path, integration lifecycle and device exposure as separate layers.",
+          "target_id": "scenario_tuya_connection_path_or_exposure_mismatch"
+        },
+        {
+          "claim_ids": [
+            "native_status_boundary"
+          ],
+          "confidence": 0.99,
+          "predicate": "supports",
+          "rationale": "The recommendation investigates the active path without attributing a cause from native lifecycle status alone.",
+          "target_id": "diagnose_tuya_connection_path_safely"
+        }
+      ],
+      "review": {
+        "next_review_on": "2026-11-12",
+        "reviewed_on": "2026-08-12",
+        "reviewer": "codex_hask_tuya_matcher"
+      },
+      "status": "reviewed",
+      "summary": "A uniform authoritative Home Assistant problem state for the Tuya integration supports a bounded candidate without identifying the underlying cause.",
+      "title": "Tuya integration status problem",
+      "type": "rule"
+    },
+    {
+      "affected_domains": [
+        "current_health",
+        "stability_risk",
+        "recoverability"
+      ],
+      "claims": [
+        {
+          "confidence": 0.99,
+          "evidence_level": "B",
+          "false_positive_notes": "Exclude wrong-platform, successful, absent, conflicting, transient-only, and unknown-applicability inputs; never infer a specific failed layer from this match.",
+          "id": "detection_boundary",
+          "origin": "official_repository",
+          "reviewed_on": "2026-07-24",
+          "source_ids": [
+            "source_home_assistant_docs_unifi",
+            "source_ha_core_unifi_dev",
+            "source_ha_core_unifi_tests"
+          ],
+          "statement": "Current Core exposes separate UniFi connection, authentication-required, retry and WebSocket-loss outcomes, so an explicitly failed structured controller-connection result supports connection-state evidence while the failed layer remains unresolved.",
+          "verification_status": "verified",
+          "version_applicability": {
+            "addons": {
+              "applicable": false,
+              "constraint": null,
+              "notes": "No app lifecycle."
+            },
+            "core": {
+              "applicable": true,
+              "constraint": "dev branch reviewed 2026-07-21",
+              "notes": "Current exception and WebSocket lifecycle mapping."
+            },
+            "external_components": [
+              {
+                "applicable": true,
+                "component_id": "unifi_network_application",
+                "constraint": "stable release channel",
+                "notes": "No numeric minimum documented."
+              }
+            ],
+            "integrations": {
+              "applicable": true,
+              "constraint": "unifi with aiounifi 91 in reviewed dev",
+              "notes": "Exact stable controller boundary unknown."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Network path is installation-specific."
+            },
+            "supervisor": {
+              "applicable": false,
+              "constraint": null,
+              "notes": "Core integration state."
+            }
+          }
+        }
+      ],
+      "does_not_prove": "A failed connection result does not prove a specific root cause; network-path and DNS failures remain conditional competing candidates requiring verification.",
+      "id": "unifi_controller_connectivity_failure",
+      "inference_type": "direct_evidence",
+      "matcher_contract": {
+        "applicability": {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "unknown_behavior": "unknown_applicability"
+        },
+        "conditions": [
+          {
+            "field": "connection_result",
+            "operator": "equals",
+            "value": "failed"
+          },
+          {
+            "field": "problem_signal",
+            "operator": "equals",
+            "value": true
+          }
+        ],
+        "evidence_target": "unifi_controller_connection_state",
+        "fixture_references": {
+          "negative": [
+            "tests/fixtures/matcher_contract/unifi_connectivity_same_platform_negative.json",
+            "tests/fixtures/matcher_contract/unifi_connectivity_wrong_platform.json",
+            "tests/fixtures/matcher_contract/unifi_connectivity_partial.json",
+            "tests/fixtures/matcher_contract/unifi_connectivity_missing.json",
+            "tests/fixtures/matcher_contract/unifi_connectivity_conflict.json",
+            "tests/fixtures/matcher_contract/unifi_connectivity_unknown.json"
+          ],
+          "positive": [
+            "tests/fixtures/matcher_contract/unifi_connectivity_positive.json",
+            "tests/fixtures/matcher_contract/unifi_connectivity_duplicate.json",
+            "tests/fixtures/matcher_contract/unifi_connectivity_ordering.json",
+            "tests/fixtures/matcher_contract/unifi_connectivity_secret_free.json"
+          ]
+        },
+        "normalization": [
+          {
+            "field": "connection_result",
+            "operations": [
+              "trim",
+              "lowercase",
+              "canonical_status"
+            ]
+          },
+          {
+            "field": "problem_signal",
+            "operations": [
+              "canonical_boolean"
+            ]
+          }
+        ],
+        "observation_types": [
+          "connectivity_result"
+        ],
+        "optional_fields": [
+          {
+            "path": "lifecycle_state",
+            "value_type": "string"
+          }
+        ],
+        "outcomes": {
+          "conflict": "preserve_conflict",
+          "match": "canonical_evidence",
+          "missing_evidence": "preserve_missing_evidence",
+          "no_match": "preserve_no_match",
+          "partial_match": "preserve_partial",
+          "unknown_applicability": "preserve_unknown_applicability"
+        },
+        "platform_scope": {
+          "include": [
+            "unifi"
+          ]
+        },
+        "provenance": {
+          "source_ids": [
+            "source_home_assistant_docs_unifi",
+            "source_ha_core_unifi_dev",
+            "source_ha_core_unifi_tests"
+          ]
+        },
+        "required_fields": [
+          {
+            "path": "connection_result",
+            "value_type": "string"
+          },
+          {
+            "path": "problem_signal",
+            "value_type": "boolean"
+          }
+        ],
+        "version": "1.0.0"
+      },
+      "official_status": "not_applicable",
+      "references": {
+        "integrations": [
+          "unifi"
+        ],
+        "observations": [
+          "unifi_controller_connection_state"
+        ],
+        "recommendations": [
+          "diagnose_unifi_controller_path"
+        ],
+        "root_causes": [
+          "network_path_failure",
+          "dns_service_failure"
+        ],
+        "scenarios": [
+          "scenario_unifi_controller_or_lifecycle_failure"
+        ],
+        "sources": [
+          "source_home_assistant_docs_unifi",
+          "source_ha_core_unifi_dev",
+          "source_ha_core_unifi_tests"
+        ]
+      },
+      "relationships": [
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.99,
+          "predicate": "consumes",
+          "rationale": "The matcher consumes the canonical structured controller-connection observation.",
+          "target_id": "unifi_controller_connection_state"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.65,
+          "predicate": "related_to",
+          "rationale": "Network path failure remains one candidate branch, not a conclusion.",
+          "target_id": "network_path_failure"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.45,
+          "predicate": "related_to",
+          "rationale": "DNS remains conditional on hostname-based configuration.",
+          "target_id": "dns_service_failure"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.99,
+          "predicate": "supports",
+          "rationale": "The scenario separates endpoint, TLS, authentication, site and lifecycle branches.",
+          "target_id": "scenario_unifi_controller_or_lifecycle_failure"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.99,
+          "predicate": "supports",
+          "rationale": "The recommendation verifies layers before change.",
+          "target_id": "diagnose_unifi_controller_path"
+        }
+      ],
+      "review": {
+        "next_review_on": "2026-09-21",
+        "reviewed_on": "2026-07-24",
+        "reviewer": "codex_matcher_foundation_v2"
+      },
+      "status": "reviewed",
+      "summary": "A structured failed UniFi controller connection is canonical connection-state evidence, but it does not identify DNS, routing, TLS, controller, authentication, site, or permission as the failed layer.",
+      "title": "UniFi controller connectivity failure",
+      "type": "rule"
+    },
+    {
+      "affected_domains": [
+        "current_health",
+        "maintainability"
+      ],
+      "claims": [
+        {
+          "confidence": 0.5,
+          "evidence_level": "D",
+          "false_positive_notes": "Exclude startup transients, sleeping or intentionally offline devices, planned maintenance, disabled entities, and installation-specific expected behavior where relevant.",
+          "id": "detection_boundary",
+          "origin": "external_project_documentation",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_zigbee2mqtt_docs_faq"
+          ],
+          "statement": "Failure after awake close-range retries narrows but does not eliminate interference, device support, coordinator, battery, or application defects.",
+          "verification_status": "needs_manual_verification",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app release boundary asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Rule is contextual and not bounded to an exact Core release."
+            },
+            "external_components": [
+              {
+                "applicable": "unknown",
+                "component_id": "zigbee2mqtt",
+                "constraint": null,
+                "notes": "Current project documentation reviewed without an exact release boundary."
+              }
+            ],
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration version must be captured during evaluation."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Installation context determines OS relevance."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor relevance depends on the affected component."
+            }
+          }
+        }
+      ],
+      "does_not_prove": "Failure after awake close-range retries narrows but does not eliminate interference, device support, coordinator, battery, or application defects.",
+      "id": "zigbee_interview_repeated_failure",
+      "inference_type": "documented_behavior_inference",
+      "official_status": "not_applicable",
+      "references": {
+        "recommendations": [
+          "verify_zigbee_coordinator_path"
+        ],
+        "root_causes": [
+          "zigbee_radio_interference",
+          "zigbee_coordinator_unavailable",
+          "zigbee_mesh_insufficient"
+        ],
+        "sources": [
+          "source_zigbee2mqtt_docs_faq"
+        ],
+        "symptoms": [
+          "zigbee_interview_failure"
+        ]
+      },
+      "relationships": [
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.8,
+          "predicate": "diagnoses",
+          "rationale": "Repeated interview failure supports the interview symptom after expected retry context is excluded.",
+          "target_id": "zigbee_interview_failure"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.55,
+          "predicate": "related_to",
+          "rationale": "Radio interference is one competing interview-failure branch.",
+          "target_id": "zigbee_radio_interference"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.6,
+          "predicate": "related_to",
+          "rationale": "Coordinator availability is a competing shared dependency.",
+          "target_id": "zigbee_coordinator_unavailable"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.55,
+          "predicate": "related_to",
+          "rationale": "Mesh reachability is a competing device-path branch.",
+          "target_id": "zigbee_mesh_insufficient"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.9,
+          "predicate": "supports",
+          "rationale": "The rule supports verifying coordinator ownership and reachability before re-pairing.",
+          "target_id": "verify_zigbee_coordinator_path"
+        }
+      ],
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_core_pack_v1"
+      },
+      "status": "reviewed",
+      "summary": "Failure after awake close-range retries narrows but does not eliminate interference, device support, coordinator, battery, or application defects.",
+      "title": "Repeated Zigbee interview failure",
+      "type": "rule"
+    },
+    {
+      "affected_domains": [
+        "current_health",
+        "stability_risk",
+        "maintainability"
+      ],
+      "claims": [
+        {
+          "confidence": 0.5,
+          "evidence_level": "D",
+          "false_positive_notes": "Exclude startup transients, sleeping or intentionally offline devices, planned maintenance, disabled entities, and installation-specific expected behavior where relevant.",
+          "id": "detection_boundary",
+          "origin": "hypothesis",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_docs_zha"
+          ],
+          "statement": "A simultaneous multi-device outage prioritizes shared coordinator, interference, or mesh investigation but does not exclude power or planned maintenance.",
+          "verification_status": "needs_manual_verification",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app release boundary asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Rule is contextual and not bounded to an exact Core release."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration version must be captured during evaluation."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Installation context determines OS relevance."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor relevance depends on the affected component."
+            }
+          }
+        }
+      ],
+      "does_not_prove": "A simultaneous multi-device outage prioritizes shared coordinator, interference, or mesh investigation but does not exclude power or planned maintenance.",
+      "id": "zigbee_multi_device_outage",
+      "inference_type": "proposed_heuristic",
+      "official_status": "not_applicable",
+      "references": {
+        "recommendations": [
+          "diagnose_zigbee_scope_before_repair"
+        ],
+        "root_causes": [
+          "zigbee_radio_interference",
+          "zigbee_coordinator_unavailable",
+          "zigbee_mesh_insufficient"
+        ],
+        "sources": [
+          "source_home_assistant_docs_zha"
+        ],
+        "symptoms": [
+          "zigbee_devices_unavailable"
+        ]
+      },
+      "relationships": [
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.8,
+          "predicate": "diagnoses",
+          "rationale": "Correlated multi-device state supports a shared-scope Zigbee symptom.",
+          "target_id": "zigbee_devices_unavailable"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.6,
+          "predicate": "related_to",
+          "rationale": "Shared radio conditions are one candidate branch.",
+          "target_id": "zigbee_radio_interference"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.7,
+          "predicate": "related_to",
+          "rationale": "Coordinator failure is a strong shared-dependency candidate.",
+          "target_id": "zigbee_coordinator_unavailable"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.6,
+          "predicate": "related_to",
+          "rationale": "Mesh or area coverage is another shared-scope candidate.",
+          "target_id": "zigbee_mesh_insufficient"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.95,
+          "predicate": "supports",
+          "rationale": "The rule requires scope diagnosis before disruptive repair.",
+          "target_id": "diagnose_zigbee_scope_before_repair"
+        }
+      ],
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_core_pack_v1"
+      },
+      "status": "reviewed",
+      "summary": "A simultaneous multi-device outage prioritizes shared coordinator, interference, or mesh investigation but does not exclude power or planned maintenance.",
+      "title": "Multi-device Zigbee outage",
+      "type": "rule"
+    },
+    {
+      "affected_domains": [
+        "current_health",
+        "maintainability"
+      ],
+      "claims": [
+        {
+          "confidence": 0.5,
+          "evidence_level": "D",
+          "false_positive_notes": "Exclude startup transients, sleeping or intentionally offline devices, planned maintenance, disabled entities, and installation-specific expected behavior where relevant.",
+          "id": "detection_boundary",
+          "origin": "hypothesis",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_docs_zha"
+          ],
+          "statement": "Single-device unavailability after contextual checks warrants device-path investigation but does not justify coordinator reset or network rebuild.",
+          "verification_status": "needs_manual_verification",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app release boundary asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Rule is contextual and not bounded to an exact Core release."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration version must be captured during evaluation."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Installation context determines OS relevance."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor relevance depends on the affected component."
+            }
+          }
+        }
+      ],
+      "does_not_prove": "Single-device unavailability after contextual checks warrants device-path investigation but does not justify coordinator reset or network rebuild.",
+      "id": "zigbee_single_device_unavailability_contextual",
+      "inference_type": "proposed_heuristic",
+      "official_status": "not_applicable",
+      "references": {
+        "recommendations": [
+          "diagnose_zigbee_scope_before_repair"
+        ],
+        "root_causes": [
+          "zigbee_mesh_insufficient",
+          "zigbee_radio_interference"
+        ],
+        "sources": [
+          "source_home_assistant_docs_zha"
+        ],
+        "symptoms": [
+          "zigbee_devices_unavailable"
+        ]
+      },
+      "relationships": [
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.65,
+          "predicate": "diagnoses",
+          "rationale": "A single-device state supports only a localized symptom after sleep and power context are considered.",
+          "target_id": "zigbee_devices_unavailable"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.5,
+          "predicate": "related_to",
+          "rationale": "Localized mesh reachability is one candidate.",
+          "target_id": "zigbee_mesh_insufficient"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.4,
+          "predicate": "related_to",
+          "rationale": "Localized interference remains possible but is not implied.",
+          "target_id": "zigbee_radio_interference"
+        },
+        {
+          "claim_ids": [
+            "detection_boundary"
+          ],
+          "confidence": 0.9,
+          "predicate": "supports",
+          "rationale": "Scope and expected device behavior must be checked before repair.",
+          "target_id": "diagnose_zigbee_scope_before_repair"
+        }
+      ],
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_core_pack_v1"
+      },
+      "status": "reviewed",
+      "summary": "Single-device unavailability after contextual checks warrants device-path investigation but does not justify coordinator reset or network rebuild.",
+      "title": "Contextual single-device Zigbee unavailability",
+      "type": "rule"
+    }
+  ],
+  "metadata": {}
+}

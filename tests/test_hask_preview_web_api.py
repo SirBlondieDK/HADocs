@@ -21,12 +21,13 @@ def preview_payload() -> dict[str, object]:
         "validation_state": "valid",
         "compatibility_state": "compatible_with_unknown_fields",
         "contract_version": "1.1.0",
-        "knowledge_content_version": "0.2.0",
+        "knowledge_content_version": "0.2.1",
         "knowledge_schema_version": "2.0.0",
         "checksum_prefix": "123456789abc",
         "coverage": [
             {"artifact": "platform_index", "item_count": 105},
-            {"artifact": "evidence_catalog", "item_count": 731},
+            {"artifact": "evidence_catalog", "item_count": 734},
+            {"artifact": "evidence_matchers", "item_count": 26},
         ],
         "relevant_knowledge": [
             {
@@ -34,7 +35,7 @@ def preview_payload() -> dict[str, object]:
                 "title": "MQTT",
                 "summary": "Local broker knowledge.",
                 "status": "reviewed",
-            }
+            },
         ],
         "candidates": [],
         "matcher_readiness": [
@@ -50,7 +51,27 @@ def preview_payload() -> dict[str, object]:
                     "NATIVE_PROBLEM_SIGNAL",
                 ],
                 "rejection_codes": [],
-            }
+            },
+            {
+                "state": "NO_MATCH",
+                "matcher_id": "tuya_integration_status_problem",
+                "matcher_version": "1.0.0",
+                "hask_record_ref": "tuya_integration_config_entry_state",
+                "platform_scope": ["tuya"],
+                "candidate_emitted": False,
+                "missing_evidence_categories": [],
+                "rejection_codes": [],
+            },
+            {
+                "state": "NOT_APPLICABLE",
+                "matcher_id": "mikrotik_api_connectivity_failure",
+                "matcher_version": "1.0.0",
+                "hask_record_ref": "mikrotik_api_connection_state",
+                "platform_scope": ["mikrotik"],
+                "candidate_emitted": False,
+                "missing_evidence_categories": [],
+                "rejection_codes": [],
+            },
         ],
         "candidate_bridge_state": "READY",
         "candidate_bridge_rejection_code": None,
@@ -82,6 +103,22 @@ def database_status() -> SimpleNamespace:
         native_domain_status_enabled=True,
         limitation="controller/API connection result deferred",
     )
+
+
+def test_preview_payload_from_before_no_match_remains_compatible():
+    source = preview_payload()
+    source["matcher_readiness"] = [
+        item for item in source["matcher_readiness"] if item["state"] != "NO_MATCH"
+    ]
+
+    safe = sanitize_preview_payload(source)
+
+    assert safe is not None
+    assert safe["classification"] == "INSUFFICIENT_EVIDENCE"
+    assert {item["state"] for item in safe["matcher_readiness"]} == {
+        "BLOCKED",
+        "NOT_APPLICABLE",
+    }
 
 
 def test_latest_scan_payload_is_preferred_and_fallback_is_lazy(tmp_path):
@@ -120,15 +157,19 @@ def test_web_preview_exposes_only_redacted_status_and_derived_counts():
     )
 
     assert payload["statistics"] == {
-        "artifact_count": 2,
-        "knowledge_record_count": 836,
+        "artifact_count": 3,
+        "knowledge_record_count": 865,
         "relevant_platform_count": 1,
         "candidate_count": 0,
-        "candidate_evaluation_count": 1,
+        "candidate_evaluation_count": 3,
         "candidate_classifications": {},
-        "matcher_record_count": 0,
-        "executable_matcher_count": 1,
-        "matcher_readiness_states": {"BLOCKED": 1},
+        "matcher_record_count": 26,
+        "executable_matcher_count": 3,
+        "matcher_readiness_states": {
+            "BLOCKED": 1,
+            "NOT_APPLICABLE": 1,
+            "NO_MATCH": 1,
+        },
     }
     assert payload["operational_database"]["schema_version"] == 8
     assert payload["operational_database"]["counts"]["entities"] == 1649
@@ -141,6 +182,8 @@ def test_web_preview_exposes_only_redacted_status_and_derived_counts():
         "supporting_relationship_ids",
         "entity_id",
         "device_id",
+        "protected_subject_ref",
+        "config_entry_id",
     ):
         assert forbidden not in encoded
 
@@ -177,7 +220,7 @@ def test_web_handler_uses_latest_scan_without_revalidating_bundle(
     payload = handler._load_hask_preview()
 
     assert payload["preview_data_source"] == "latest_scan"
-    assert payload["statistics"]["knowledge_record_count"] == 836
+    assert payload["statistics"]["knowledge_record_count"] == 865
     assert payload["operational_database"]["integrity_status"] == "ok"
 
 
@@ -210,3 +253,50 @@ def test_matcher_readiness_is_allowlisted_without_protected_identifiers():
 
     assert safe is not None
     assert safe["matcher_readiness"] == source["matcher_readiness"]
+
+
+def test_no_match_survives_sanitization_but_never_becomes_candidate_insight():
+    source = preview_payload()
+    source["classification"] = "NO_MATCH"
+    source["candidates"] = [
+        {
+            "classification": "NO_MATCH",
+            "hask_record_ref": "tuya_integration_config_entry_state",
+            "matcher_id": "tuya_integration_status_problem",
+            "matcher_version": "1.0.0",
+        },
+        {
+            "classification": "SUPPORTED_CANDIDATE",
+            "hask_record_ref": "tuya_integration_config_entry_state",
+            "matcher_id": "tuya_integration_status_problem",
+            "matcher_version": "1.0.0",
+        },
+    ]
+    safe = sanitize_preview_payload(source)
+    assert safe is not None
+    assert safe["classification"] == "NO_MATCH"
+    assert {item["state"] for item in safe["matcher_readiness"]} >= {"NO_MATCH"}
+    assert [item["classification"] for item in safe["candidates"]] == [
+        "SUPPORTED_CANDIDATE"
+    ]
+
+
+def test_candidate_evaluations_and_supported_candidates_remain_distinct():
+    source = preview_payload()
+    source["candidates"] = [
+        {
+            "classification": "SUPPORTED_CANDIDATE",
+            "hask_record_ref": "tuya_integration_config_entry_state",
+            "matcher_id": "tuya_integration_status_problem",
+            "matcher_version": "1.0.0",
+        }
+    ]
+    safe = sanitize_preview_payload(source)
+    assert safe is not None
+    payload = build_web_preview(
+        safe,
+        source="latest_scan",
+        database_status=database_status(),
+    )
+    assert payload["statistics"]["candidate_evaluation_count"] == 3
+    assert payload["statistics"]["candidate_count"] == 1

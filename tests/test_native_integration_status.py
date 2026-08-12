@@ -10,6 +10,7 @@ import pytest
 
 from hadocs.application.hask_candidate_evidence import (
     CandidateClassification,
+    MatcherReadinessState,
 )
 from hadocs.application.operational_database import (
     OperationalDatabaseOperation,
@@ -99,15 +100,25 @@ def collect(entries: list[dict[str, object]]) -> list[dict[str, object]]:
     )
 
 
-def _typed_matcher(matcher_id: str, platform: str, target: str) -> dict[str, object]:
+def _typed_matcher(
+    matcher_id: str,
+    platform: str,
+    target: str,
+    *,
+    native_only: bool = False,
+) -> dict[str, object]:
     return {
         "id": matcher_id,
         "matcher_contract": {
             "version": "1.0.0",
             "platform_scope": {"include": [platform]},
-            "observation_types": ["connectivity_result"],
+            "observation_types": [
+                "integration_status" if native_only else "connectivity_result"
+            ],
             "required_fields": [
-                {"path": "connection_result", "value_type": "string"},
+                *([] if native_only else [
+                    {"path": "connection_result", "value_type": "string"}
+                ]),
                 {"path": "problem_signal", "value_type": "boolean"},
             ],
             "evidence_target": target,
@@ -145,10 +156,17 @@ def synthetic_bundle(tmp_path: Path) -> Path:
             "mikrotik",
             "mikrotik_api_connection_state",
         ),
+        _typed_matcher(
+            "tuya_integration_status_problem",
+            "tuya",
+            "tuya_integration_config_entry_state",
+            native_only=True,
+        ),
     ]
     artifacts["platform_index.json"]["items"] = [
         {"id": "unifi"},
         {"id": "mikrotik"},
+        {"id": "tuya"},
     ]
     hashes: dict[str, str] = {}
     aggregate = hashlib.sha256()
@@ -192,8 +210,12 @@ def bundle_hashes(bundle: Path) -> dict[str, str]:
     }
 
 
-def model(platform: str, observations: list[dict[str, object]] | None) -> InstallationModel:
-    raw_id = f"sensor.private_{platform}"
+def model(
+    platform: str,
+    observations: list[dict[str, object]] | None,
+    *,
+    entity_count: int = 1,
+) -> InstallationModel:
     raw: dict[str, object] = {
         "findings": ["PRIVATE FINDING"],
         "recommendations": ["PRIVATE RECOMMENDATION"],
@@ -201,23 +223,26 @@ def model(platform: str, observations: list[dict[str, object]] | None) -> Instal
     }
     if observations is not None:
         raw["native_integration_status"] = deepcopy(observations)
-    entity = EntityModel(
-        entity_id=raw_id,
-        name="PRIVATE ENTITY NAME",
-        domain="sensor",
-        platform=platform,
-        state="PRIVATE ENTITY STATE",
-        area_id=None,
-        device_id=None,
-        is_ignored=False,
-        is_physical=True,
-        attributes={"token": "PRIVATE TOKEN"},
-        registry={"entity_id": raw_id, "platform": platform, "labels": []},
-    )
+    entities: dict[str, EntityModel] = {}
+    for ordinal in range(entity_count):
+        raw_id = f"sensor.private_{platform}_{ordinal}"
+        entities[raw_id] = EntityModel(
+            entity_id=raw_id,
+            name="PRIVATE ENTITY NAME",
+            domain="sensor",
+            platform=platform,
+            state="PRIVATE ENTITY STATE",
+            area_id=None,
+            device_id=None,
+            is_ignored=False,
+            is_physical=True,
+            attributes={"token": "PRIVATE TOKEN"},
+            registry={"entity_id": raw_id, "platform": platform, "labels": []},
+        )
     return InstallationModel(
         areas={},
         devices={},
-        entities={raw_id: entity},
+        entities=entities,
         integrations={},
         config={},
         states=[],
@@ -259,11 +284,12 @@ def persist(
     path: Path | None = None,
     bundle: Path | None = None,
     backend: MemoryBackend | None = None,
+    entity_count: int = 1,
 ):
     selected_bundle = bundle or synthetic_bundle(tmp_path)
     selected_path = path or tmp_path / "native-status.sqlite"
     selected_backend = backend or MemoryBackend()
-    installation = model(platform, observations)
+    installation = model(platform, observations, entity_count=entity_count)
     result = persist_operational_database(
         installation,
         app_config(selected_path, selected_bundle),
@@ -277,6 +303,14 @@ def candidate(result, matcher: str):
     assert result.hask_candidate_evidence is not None
     return next(
         item for item in result.hask_candidate_evidence.candidates
+        if item.matcher_id == matcher
+    )
+
+
+def readiness(result, matcher: str):
+    assert result.hask_candidate_evidence is not None
+    return next(
+        item for item in result.hask_candidate_evidence.matcher_readiness
         if item.matcher_id == matcher
     )
 
@@ -399,6 +433,14 @@ def test_unrelated_domains_are_not_emitted_or_used_as_display_names():
         collect([entry("A", "UniFi Network", "setup_retry")])
 
 
+def test_tuya_domain_uses_the_same_redacted_native_status_contract():
+    observations = collect([entry("PRIVATE-TUYA-ID", "tuya", "loaded")])
+    assert len(observations) == 1
+    assert observations[0]["domain"] == "tuya"
+    assert observations[0]["state_counts"] == {"loaded": 1}
+    assert "PRIVATE-TUYA-ID" not in repr(observations)
+
+
 def test_persistence_replay_is_restart_safe_and_creates_no_duplicate(tmp_path):
     observations = collect([entry("PRIVATE-ID", "unifi", "setup_retry")])
     bundle = synthetic_bundle(tmp_path)
@@ -485,9 +527,7 @@ def test_multiple_problem_entries_remain_ambiguous(tmp_path):
     result, _, _, _, _ = persist(tmp_path, "unifi", observations)
     item = candidate(result, "unifi_controller_connectivity_failure")
     assert item.classification is CandidateClassification.INSUFFICIENT_EVIDENCE
-    assert item.missing_evidence_categories == (
-        "NATIVE_CONNECTION_RESULT", "NATIVE_PROBLEM_SIGNAL"
-    )
+    assert item.missing_evidence_categories == ("NATIVE_CONNECTION_RESULT",)
 
 
 def test_unknown_state_remains_insufficient(tmp_path):
@@ -497,6 +537,120 @@ def test_unknown_state_remains_insufficient(tmp_path):
     item = candidate(result, "unifi_controller_connectivity_failure")
     assert item.missing_evidence_categories == (
         "NATIVE_CONNECTION_RESULT", "NATIVE_PROBLEM_SIGNAL"
+    )
+
+
+def test_tuya_not_observed_is_not_applicable(tmp_path):
+    result, _, _, _, _ = persist(tmp_path, "mqtt", None)
+    item = readiness(result, "tuya_integration_status_problem")
+    assert item.state is MatcherReadinessState.NOT_APPLICABLE
+    assert item.candidate_emitted is False
+    assert item.missing_evidence_categories == ()
+
+
+def test_tuya_missing_native_status_is_blocked(tmp_path):
+    result, _, _, _, _ = persist(tmp_path, "tuya", None)
+    item = candidate(result, "tuya_integration_status_problem")
+    state = readiness(result, "tuya_integration_status_problem")
+    assert item.classification is CandidateClassification.INSUFFICIENT_EVIDENCE
+    assert item.missing_evidence_categories == ("NATIVE_PROBLEM_SIGNAL",)
+    assert state.state is MatcherReadinessState.BLOCKED
+    assert state.candidate_emitted is False
+
+
+def test_tuya_unknown_native_status_is_blocked(tmp_path):
+    result, _, _, _, _ = persist(
+        tmp_path,
+        "tuya",
+        collect([entry("PRIVATE-TUYA-ID", "tuya", "future_state")]),
+    )
+    item = candidate(result, "tuya_integration_status_problem")
+    state = readiness(result, "tuya_integration_status_problem")
+    assert item.classification is CandidateClassification.INSUFFICIENT_EVIDENCE
+    assert item.missing_evidence_categories == ("NATIVE_PROBLEM_SIGNAL",)
+    assert state.state is MatcherReadinessState.BLOCKED
+
+
+@pytest.mark.parametrize("entry_count", [1, 2])
+def test_uniform_healthy_tuya_status_is_no_match(tmp_path, entry_count):
+    observations = collect([
+        entry(f"PRIVATE-TUYA-{ordinal}", "tuya", "loaded")
+        for ordinal in range(entry_count)
+    ])
+    result, _, _, _, _ = persist(tmp_path, "tuya", observations)
+    item = candidate(result, "tuya_integration_status_problem")
+    state = readiness(result, "tuya_integration_status_problem")
+    assert item.classification is CandidateClassification.NO_MATCH
+    assert item.missing_evidence_categories == ()
+    assert state.state is MatcherReadinessState.NO_MATCH
+    assert state.candidate_emitted is False
+
+
+@pytest.mark.parametrize("entry_count", [1, 2])
+def test_uniform_problem_tuya_status_supports_one_candidate(
+    tmp_path, entry_count
+):
+    observations = collect([
+        entry(f"PRIVATE-TUYA-{ordinal}", "tuya", "setup_retry")
+        for ordinal in range(entry_count)
+    ])
+    result, _, _, _, _ = persist(
+        tmp_path,
+        "tuya",
+        observations,
+        entity_count=2,
+    )
+    bridge = result.hask_candidate_evidence
+    assert bridge is not None
+    supported = tuple(
+        item for item in bridge.candidates
+        if item.matcher_id == "tuya_integration_status_problem"
+        and item.classification is CandidateClassification.SUPPORTED_CANDIDATE
+    )
+    assert len(supported) == 1
+    state = readiness(result, "tuya_integration_status_problem")
+    assert state.state is MatcherReadinessState.READY
+    assert state.candidate_emitted is True
+
+
+def test_mixed_tuya_states_are_rejected_as_conflict(tmp_path):
+    observations = collect([
+        entry("PRIVATE-TUYA-A", "tuya", "setup_retry"),
+        entry("PRIVATE-TUYA-B", "tuya", "loaded"),
+    ])
+    result, _, _, _, _ = persist(tmp_path, "tuya", observations)
+    item = candidate(result, "tuya_integration_status_problem")
+    state = readiness(result, "tuya_integration_status_problem")
+    assert item.classification is CandidateClassification.REJECTED_CONFLICT
+    assert item.rejection_code == "CONTRADICTORY_DOMAIN_STATUS_EVIDENCE"
+    assert state.state is MatcherReadinessState.REJECTED_CONFLICT
+    assert state.candidate_emitted is False
+
+
+def test_tuya_input_order_does_not_change_candidate_replay(tmp_path):
+    entries = [
+        entry("PRIVATE-TUYA-B", "tuya", "setup_retry"),
+        entry("PRIVATE-TUYA-A", "tuya", "setup_retry"),
+    ]
+    bundle = synthetic_bundle(tmp_path)
+    first, _, _, _, _ = persist(
+        tmp_path,
+        "tuya",
+        collect(entries),
+        path=tmp_path / "first.sqlite",
+        bundle=bundle,
+    )
+    second, _, _, _, _ = persist(
+        tmp_path,
+        "tuya",
+        collect(list(reversed(entries))),
+        path=tmp_path / "second.sqlite",
+        bundle=bundle,
+    )
+    assert first.hask_candidate_evidence is not None
+    assert second.hask_candidate_evidence is not None
+    assert first.hask_candidate_evidence.canonical_bytes() == (
+        second.hask_candidate_evidence.canonical_bytes()
     )
 
 

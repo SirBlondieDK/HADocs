@@ -287,7 +287,8 @@
         <h2>Matcher readiness</h2>
         <p class="preview-section-description">
           Shows which validated matcher contracts were evaluated, which are
-          blocked by missing evidence, and which do not apply to this installation.
+          blocked by missing evidence, completed with no match, and which do not
+          apply to this installation.
           Bundle matcher-record counts are shown separately from executable matchers.
         </p>
         <div id="readiness-summary" class="preview-grid"></div>
@@ -342,6 +343,7 @@
     }
 
     function label(value) {
+      if (value === "NO_MATCH") return "No match";
       return String(value ?? "unknown").replaceAll("_", " ");
     }
 
@@ -518,6 +520,7 @@
         ),
         metric("Ready", formatNumber(states.READY), "good"),
         metric("Blocked", formatNumber(states.BLOCKED), "warning"),
+        metric("No match", formatNumber(states.NO_MATCH)),
         metric("Not applicable", formatNumber(states.NOT_APPLICABLE)),
         metric(
           "Rejected conflict",
@@ -611,15 +614,20 @@
 
         const readiness = list(payload.matcher_readiness);
         const readinessStates = new Set(readiness.map(item => item.state));
+        const substantiveStates = [...readinessStates].filter(
+          state => state !== "NOT_APPLICABLE"
+        );
         const explanation = missingGates.length
           ? `Candidate evaluation is waiting for: ${missingGates.join(", ")}.`
           : readiness.length && readiness.every(item => item.state === "NOT_APPLICABLE")
-            ? "No executable matcher applies to the observed platform context."
-            : readinessStates.has("BLOCKED")
+            ? "No executable matcher applies to the observed platform context; this does not establish that the integration is absent."
+            : substantiveStates.length === 1 && readinessStates.has("BLOCKED")
               ? "Applicable matchers are blocked by missing validated evidence."
-              : readinessStates.has("REJECTED_CONFLICT")
+              : substantiveStates.length === 1 && readinessStates.has("NO_MATCH")
+                ? "Matchers completed, but no supported problem candidate was found."
+              : substantiveStates.length === 1 && readinessStates.has("REJECTED_CONFLICT")
                 ? "Conflicting evidence rejected candidate emission."
-                : "No executable matcher emitted a supported candidate.";
+                : "Matcher readiness is mixed; no supported candidate was emitted.";
 
         target.innerHTML = `
           <div class="empty-preview">

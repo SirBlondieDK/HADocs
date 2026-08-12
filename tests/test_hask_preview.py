@@ -29,7 +29,7 @@ from hadocs.version import RELEASE_VERSION, __version__
 
 
 ROOT = Path(__file__).resolve().parents[1]
-PACKAGED = ROOT / "src" / "hadocs" / "knowledge" / "hask_bundle" / "0.2.0"
+PACKAGED = ROOT / "src" / "hadocs" / "knowledge" / "hask_bundle" / "0.2.1"
 
 
 def config(**changes):
@@ -66,11 +66,17 @@ def tree_hash(path: Path) -> str:
     return digest.hexdigest()
 
 
-def candidate(classification: str, *, missing=(), rejection=None):
+def candidate(
+    classification: str,
+    *,
+    missing=(),
+    rejection=None,
+    matcher_id="matcher:public",
+):
     return SimpleNamespace(
         classification=SimpleNamespace(value=classification),
         hask_record_ref="rca:public-record",
-        matcher_id="matcher:public",
+        matcher_id=matcher_id,
         matcher_version="1.0.0",
         persisted_scan_ref=981,
         protected_subject_ref="refh1_entity_" + "a" * 64,
@@ -178,7 +184,7 @@ def test_validated_coverage_and_relevant_platform_knowledge() -> None:
     )
     counts = {item.artifact: item.item_count for item in snapshot.coverage}
     assert counts["platform_index"] == 105
-    assert counts["evidence_matchers"] == 25
+    assert counts["evidence_matchers"] == 26
     assert {item.platform_id for item in snapshot.relevant_knowledge} == {
         "unifi",
         "mikrotik",
@@ -190,6 +196,7 @@ def test_validated_coverage_and_relevant_platform_knowledge() -> None:
     [
         ("SUPPORTED_CANDIDATE", (), None),
         ("INSUFFICIENT_EVIDENCE", ("CONTROLLER_API_RESULT",), None),
+        ("NO_MATCH", (), None),
         ("NOT_APPLICABLE", (), None),
         ("REJECTED_CONFLICT", (), "CONTRADICTORY_EVIDENCE"),
     ],
@@ -236,6 +243,7 @@ def test_preview_serialization_is_redacted_and_has_no_analytical_fields() -> Non
         b"database_id",
         b"entity_id",
         b"device_id",
+        b"config_entry_id",
         b"health_score",
         b"estimated_score_gain",
         b"http://",
@@ -243,6 +251,21 @@ def test_preview_serialization_is_redacted_and_has_no_analytical_fields() -> Non
     )
     assert all(value not in raw for value in forbidden)
     assert b"validated observation" in raw
+
+
+def test_tuya_candidate_explanation_preserves_cause_boundary() -> None:
+    result = SimpleNamespace(candidates=(candidate(
+        "SUPPORTED_CANDIDATE",
+        matcher_id="tuya_integration_status_problem",
+    ),))
+    snapshot = HaskPreviewService().snapshot(config(), candidate_result=result)
+    assert len(snapshot.candidates) == 1
+    explanation = snapshot.candidates[0].explanation
+    assert "Home Assistant reports a problem with the Tuya integration" in explanation
+    assert "does not identify the underlying cause" in explanation
+    assert "physical device" in explanation
+    assert "Tuya Cloud" in explanation
+    assert "user's network" in explanation
 
 
 def test_html_preview_contains_notice_sections_and_no_protected_ids() -> None:
@@ -517,6 +540,15 @@ def test_preview_classification_comes_from_matcher_readiness():
             readiness("BLOCKED"),
         ),
     )
+    no_match = SimpleNamespace(
+        state=SimpleNamespace(value="READY"),
+        rejection_code=None,
+        candidates=(),
+        matcher_readiness=(
+            readiness("NOT_APPLICABLE"),
+            readiness("NO_MATCH"),
+        ),
+    )
 
     assert (
         HaskPreviewService()
@@ -529,4 +561,10 @@ def test_preview_classification_comes_from_matcher_readiness():
         .snapshot(config(), candidate_result=blocked)
         .classification
         is PreviewClassification.INSUFFICIENT_EVIDENCE
+    )
+    assert (
+        HaskPreviewService()
+        .snapshot(config(), candidate_result=no_match)
+        .classification
+        is PreviewClassification.NO_MATCH
     )

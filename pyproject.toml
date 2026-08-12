@@ -25,7 +25,7 @@ exclude = [
 
 [tool.setuptools.package-data]
 "hadocs.knowledge" = [
-    "hask_bundle/0.2.0/*.json",
+    "hask_bundle/0.2.1/*.json",
 ]
 "hadocs.web" = [
     "static/*.html",

@@ -11,14 +11,17 @@ _FORBIDDEN_MARKERS = (
     "persisted_scan_ref",
     "supporting_observation_ids",
     "supporting_relationship_ids",
+    "protected_subject_ref",
     "database_id",
     "entity_id",
     "device_id",
+    "config_entry_id",
 )
 
 _CLASSIFICATIONS = {
     "SUPPORTED_CANDIDATE",
     "INSUFFICIENT_EVIDENCE",
+    "NO_MATCH",
     "NOT_APPLICABLE",
     "REJECTED_CONFLICT",
     "BUNDLE_DISABLED",
@@ -97,6 +100,7 @@ def sanitize_preview_payload(value: object) -> dict[str, Any] | None:
         if readiness_state not in {
             "READY",
             "BLOCKED",
+            "NO_MATCH",
             "NOT_APPLICABLE",
             "REJECTED_CONFLICT",
         }:
@@ -121,7 +125,7 @@ def sanitize_preview_payload(value: object) -> dict[str, Any] | None:
         if not isinstance(item, Mapping):
             continue
         candidate_classification = _text(item.get("classification"))
-        if candidate_classification not in _CLASSIFICATIONS:
+        if candidate_classification != "SUPPORTED_CANDIDATE":
             continue
         candidates.append(
             {

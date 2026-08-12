@@ -25,8 +25,8 @@ for source, destination in (
 for migration in sorted((SRC / "hadocs" / "hudd" / "migrations").glob("*.sql")):
     datas.append((str(migration), "hadocs/hudd/migrations"))
 
-for artifact in sorted((SRC / "hadocs" / "knowledge" / "hask_bundle" / "0.2.0").glob("*.json")):
-    datas.append((str(artifact), "hadocs/knowledge/hask_bundle/0.2.0"))
+for artifact in sorted((SRC / "hadocs" / "knowledge" / "hask_bundle" / "0.2.1").glob("*.json")):
+    datas.append((str(artifact), "hadocs/knowledge/hask_bundle/0.2.1"))
 
 for asset in sorted((SRC / "hadocs" / "web" / "static").glob("*")):
     if asset.is_file():
