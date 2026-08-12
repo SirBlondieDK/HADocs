@@ -11,6 +11,7 @@ import pytest
 from hadocs.application.hask_candidate_evidence import (
     CandidateBridgeState,
     CandidateClassification,
+    MatcherReadinessState,
     build_candidate_evidence_bridge,
 )
 from hadocs.application.operational_database import (
@@ -522,3 +523,42 @@ def test_schema_is_unchanged_after_bridge_execution(tmp_path):
         assert connection.execute("PRAGMA integrity_check").fetchall() == [("ok",)]
     finally:
         connection.close()
+
+
+def test_packaged_bundle_is_used_when_explicit_path_is_absent(tmp_path):
+    configured = app_config(
+        tmp_path / "packaged-bundle.sqlite",
+        synthetic_bundle(tmp_path),
+    )
+    configured.pop("hask_bundle_path")
+
+    result = persist_operational_database(
+        model("unifi"),
+        configured,
+        operation=operation(),
+        secret_provider=provider(MemoryBackend()),
+    )
+
+    bridge = result.hask_candidate_evidence
+    assert bridge is not None
+    assert bridge.state is CandidateBridgeState.READY
+    assert bridge.rejection_code is None
+    assert bridge.candidates
+    assert {item.matcher_id for item in bridge.candidates}
+
+    assert len(bridge.matcher_readiness) == 2
+    readiness = {
+        item.matcher_id: item for item in bridge.matcher_readiness
+    }
+    assert set(readiness) == {
+        "unifi_controller_connectivity_failure",
+        "mikrotik_api_connectivity_failure",
+    }
+    assert (
+        readiness["unifi_controller_connectivity_failure"].state
+        is MatcherReadinessState.BLOCKED
+    )
+    assert (
+        readiness["mikrotik_api_connectivity_failure"].state
+        is MatcherReadinessState.NOT_APPLICABLE
+    )

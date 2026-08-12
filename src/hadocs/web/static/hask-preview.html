@@ -284,6 +284,17 @@
       </section>
 
       <section class="card preview-section">
+        <h2>Matcher readiness</h2>
+        <p class="preview-section-description">
+          Shows which validated matcher contracts were evaluated, which are
+          blocked by missing evidence, and which do not apply to this installation.
+          Bundle matcher-record counts are shown separately from executable matchers.
+        </p>
+        <div id="readiness-summary" class="preview-grid"></div>
+        <div id="matcher-readiness" class="candidate-list"></div>
+      </section>
+
+      <section class="card preview-section">
         <h2>Candidate insights</h2>
         <p class="preview-section-description">
           Experimental interpretations based only on validated local evidence.
@@ -357,7 +368,17 @@
         metric("Knowledge records", formatNumber(statistics.knowledge_record_count)),
         metric("Bundle artifacts", formatNumber(statistics.artifact_count)),
         metric("Relevant platforms", formatNumber(statistics.relevant_platform_count)),
-        metric("Candidates", formatNumber(statistics.candidate_count)),
+        metric("Matcher records", formatNumber(statistics.matcher_record_count)),
+        metric("Executable matchers", formatNumber(statistics.executable_matcher_count)),
+        metric(
+          "Candidate evaluations",
+          formatNumber(statistics.candidate_evaluation_count)
+        ),
+        metric(
+          "Supported candidates",
+          formatNumber(statistics.candidate_count),
+          number(statistics.candidate_count) ? "good" : ""
+        ),
         metric(
           "Current classification",
           label(payload.classification),
@@ -379,6 +400,11 @@
         metric("Knowledge version", payload.knowledge_content_version || "Not loaded"),
         metric("Schema version", payload.knowledge_schema_version || "Not loaded"),
         metric("Checksum prefix", payload.checksum_prefix || "Not checked"),
+        metric("Candidate bridge", label(payload.candidate_bridge_state)),
+        metric(
+          "Bridge rejection",
+          label(payload.candidate_bridge_rejection_code || "None")
+        ),
       ].join("");
     }
 
@@ -478,6 +504,99 @@
         : `<p>${escapeHtml(emptyText)}</p>`;
     }
 
+    function renderMatcherReadiness(payload) {
+      const readiness = list(payload.matcher_readiness);
+      const statistics = payload.statistics || {};
+      const states = statistics.matcher_readiness_states || {};
+      const summary = document.getElementById("readiness-summary");
+      const target = document.getElementById("matcher-readiness");
+
+      summary.innerHTML = [
+        metric(
+          "Evaluated",
+          formatNumber(statistics.executable_matcher_count)
+        ),
+        metric("Ready", formatNumber(states.READY), "good"),
+        metric("Blocked", formatNumber(states.BLOCKED), "warning"),
+        metric("Not applicable", formatNumber(states.NOT_APPLICABLE)),
+        metric(
+          "Rejected conflict",
+          formatNumber(states.REJECTED_CONFLICT),
+          number(states.REJECTED_CONFLICT) ? "danger" : ""
+        ),
+      ].join("");
+
+      if (!readiness.length) {
+        const bridgeState = payload.candidate_bridge_state || "NOT_AVAILABLE";
+        const rejection = payload.candidate_bridge_rejection_code;
+        const explanation = rejection
+          ? `Candidate bridge rejected evaluation: ${label(rejection)}.`
+          : bridgeState === "READY"
+            ? "No executable matcher readiness was emitted by the latest scan."
+            : "Run a new scan with the HASK runtime, operational database, and candidate bridge enabled.";
+
+        target.innerHTML = `
+          <div class="empty-preview">
+            <strong>No matcher readiness is available.</strong>
+            ${escapeHtml(explanation)}
+          </div>
+        `;
+        return;
+      }
+
+      target.innerHTML = readiness.map(item => {
+        const stateTone = item.state === "READY"
+          ? "good"
+          : item.state === "BLOCKED"
+            ? "warning"
+            : item.state === "REJECTED_CONFLICT"
+              ? "danger"
+              : "";
+
+        return `
+          <article class="candidate-card">
+            <div class="candidate-heading">
+              <h3>${escapeHtml(label(item.matcher_id))}</h3>
+              <span class="preview-badge ${stateTone}">
+                ${escapeHtml(label(item.state))}
+              </span>
+            </div>
+
+            <div class="preview-grid">
+              ${metric("Version", item.matcher_version || "Not available")}
+              ${metric("HASK record", item.hask_record_ref || "Not available")}
+              ${metric(
+                "Platforms",
+                list(item.platform_scope).map(label).join(", ") || "None"
+              )}
+              ${metric(
+                "Candidate emitted",
+                item.candidate_emitted === true ? "Yes" : "No",
+                item.candidate_emitted === true ? "good" : ""
+              )}
+            </div>
+
+            <div class="evidence-grid">
+              <div class="evidence-box">
+                <strong>Missing evidence</strong>
+                ${evidenceList(
+                  item.missing_evidence_categories,
+                  "No missing evidence category was reported."
+                )}
+              </div>
+              <div class="evidence-box">
+                <strong>Rejection codes</strong>
+                ${evidenceList(
+                  item.rejection_codes,
+                  "No conflict rejection was reported."
+                )}
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
     function renderCandidates(payload) {
       const candidates = list(payload.candidates);
       const target = document.getElementById("candidates");
@@ -490,9 +609,17 @@
         if (!database.candidate_bridge_enabled) missingGates.push("candidate evidence bridge");
         if (!database.native_domain_status_enabled) missingGates.push("native status evidence");
 
+        const readiness = list(payload.matcher_readiness);
+        const readinessStates = new Set(readiness.map(item => item.state));
         const explanation = missingGates.length
           ? `Candidate evaluation is waiting for: ${missingGates.join(", ")}.`
-          : "No bounded matcher currently has enough validated evidence to emit a candidate.";
+          : readiness.length && readiness.every(item => item.state === "NOT_APPLICABLE")
+            ? "No executable matcher applies to the observed platform context."
+            : readinessStates.has("BLOCKED")
+              ? "Applicable matchers are blocked by missing validated evidence."
+              : readinessStates.has("REJECTED_CONFLICT")
+                ? "Conflicting evidence rejected candidate emission."
+                : "No executable matcher emitted a supported candidate.";
 
         target.innerHTML = `
           <div class="empty-preview">
@@ -583,6 +710,7 @@
         renderDatabase(payload);
         renderCoverage(payload);
         renderKnowledge(payload);
+        renderMatcherReadiness(payload);
         renderCandidates(payload);
         renderLimitations(payload);
 
