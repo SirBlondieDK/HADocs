@@ -1,0 +1,1963 @@
+{
+  "_generated": "scripts/build_hadocs_contract.py; DO NOT EDIT",
+  "artifact_kind": "root_cause_candidates",
+  "contract_version": "1.1.0",
+  "items": [
+    {
+      "candidate_status": "candidate",
+      "claims": [
+        {
+          "confidence": 0.99,
+          "evidence_level": "A",
+          "false_positive_notes": "The sequence error describes the immediate execution stop, not the underlying target, template, permission, network, or integration cause.",
+          "id": "action_error_halts",
+          "origin": "official_documentation",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_ha_docs_script_syntax"
+          ],
+          "statement": "By default, an action error halts the sequence, logs an error, and marks the run errored; continue_on_error does not cover misconfiguration or errors Home Assistant does not handle.",
+          "verification_status": "verified",
+          "version_applicability": {
+            "addons": {
+              "applicable": false,
+              "constraint": null,
+              "notes": "Not app behavior."
+            },
+            "core": {
+              "applicable": true,
+              "constraint": null,
+              "notes": "Current official script behavior."
+            },
+            "integrations": {
+              "applicable": true,
+              "constraint": null,
+              "notes": "Current script and automation action behavior."
+            },
+            "operating_system": {
+              "applicable": false,
+              "constraint": null,
+              "notes": "Core behavior."
+            },
+            "supervisor": {
+              "applicable": false,
+              "constraint": null,
+              "notes": "Core behavior."
+            }
+          }
+        }
+      ],
+      "confirmed": false,
+      "id": "automation_action_sequence_error",
+      "official_status": "not_applicable",
+      "references": {
+        "components": [
+          "script_sequence_engine",
+          "automation_trace_store"
+        ],
+        "recommendations": [
+          "inspect_automation_trace_path"
+        ],
+        "sources": [
+          "source_ha_docs_script_syntax"
+        ],
+        "symptoms": [
+          "automation_not_triggering"
+        ]
+      },
+      "relationships": [
+        {
+          "claim_ids": [
+            "action_error_halts"
+          ],
+          "confidence": 0.6,
+          "predicate": "causes",
+          "rationale": "Later expected effects may be absent despite trigger and earlier steps completing.",
+          "target_id": "automation_not_triggering"
+        },
+        {
+          "claim_ids": [
+            "action_error_halts"
+          ],
+          "confidence": 0.99,
+          "predicate": "requires",
+          "rationale": "The error boundary is defined by script sequence semantics.",
+          "target_id": "script_sequence_engine"
+        },
+        {
+          "claim_ids": [
+            "action_error_halts"
+          ],
+          "confidence": 0.9,
+          "predicate": "diagnoses",
+          "rationale": "Trace step details identify the failing action and preceding path.",
+          "target_id": "automation_trace_store"
+        },
+        {
+          "claim_ids": [
+            "action_error_halts"
+          ],
+          "confidence": 0.9,
+          "predicate": "diagnoses",
+          "rationale": "Trace-first inspection separates sequence failure from trigger failure.",
+          "target_id": "inspect_automation_trace_path"
+        }
+      ],
+      "review": {
+        "next_review_on": "2027-01-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_kp3"
+      },
+      "status": "reviewed",
+      "summary": "An action encountered a handled or unhandled error and the sequence stopped before later actions completed.",
+      "title": "Automation action sequence error",
+      "type": "root_cause"
+    },
+    {
+      "candidate_status": "candidate",
+      "claims": [
+        {
+          "confidence": 0.99,
+          "evidence_level": "A",
+          "false_positive_notes": "A false condition may be intended behavior; it is a root cause only when actions were expected under the evaluated state.",
+          "id": "false_condition_stops_start",
+          "origin": "official_documentation",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_ha_docs_automation_conditions"
+          ],
+          "statement": "After a trigger occurs, all automation conditions are checked against current state, and any false condition prevents the actions from starting.",
+          "verification_status": "verified",
+          "version_applicability": {
+            "addons": {
+              "applicable": false,
+              "constraint": null,
+              "notes": "Not app behavior."
+            },
+            "core": {
+              "applicable": true,
+              "constraint": null,
+              "notes": "Current official automation behavior."
+            },
+            "integrations": {
+              "applicable": true,
+              "constraint": null,
+              "notes": "Current Automation integration behavior."
+            },
+            "operating_system": {
+              "applicable": false,
+              "constraint": null,
+              "notes": "Core behavior."
+            },
+            "supervisor": {
+              "applicable": false,
+              "constraint": null,
+              "notes": "Core behavior."
+            }
+          }
+        }
+      ],
+      "confirmed": false,
+      "id": "automation_condition_blocked_run",
+      "official_status": "not_applicable",
+      "references": {
+        "components": [
+          "automation_execution_pipeline"
+        ],
+        "recommendations": [
+          "inspect_automation_trace_path"
+        ],
+        "sources": [
+          "source_ha_docs_automation_conditions"
+        ],
+        "symptoms": [
+          "automation_not_triggering"
+        ]
+      },
+      "relationships": [
+        {
+          "claim_ids": [
+            "false_condition_stops_start"
+          ],
+          "confidence": 0.7,
+          "predicate": "causes",
+          "rationale": "To an observer the automation may appear inactive even though its trigger fired.",
+          "target_id": "automation_not_triggering"
+        },
+        {
+          "claim_ids": [
+            "false_condition_stops_start"
+          ],
+          "confidence": 0.9,
+          "predicate": "diagnoses",
+          "rationale": "Trace condition steps reveal the evaluated result and path.",
+          "target_id": "inspect_automation_trace_path"
+        },
+        {
+          "claim_ids": [
+            "false_condition_stops_start"
+          ],
+          "confidence": 0.99,
+          "predicate": "requires",
+          "rationale": "Condition evaluation is a stage in the automation pipeline.",
+          "target_id": "automation_execution_pipeline"
+        }
+      ],
+      "review": {
+        "next_review_on": "2027-01-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_kp3"
+      },
+      "status": "reviewed",
+      "summary": "A trigger occurred, but at least one current-state condition evaluated false and prevented actions from starting.",
+      "title": "Automation condition blocked the run",
+      "type": "root_cause"
+    },
+    {
+      "candidate_status": "candidate",
+      "claims": [
+        {
+          "confidence": 0.4,
+          "evidence_level": "D",
+          "false_positive_notes": "This candidate cause requires corroborating context and must not be inferred from one generic symptom.",
+          "id": "causal_boundary",
+          "origin": "hypothesis",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_docs_automation_troubleshooting"
+          ],
+          "statement": "A feedback loop must be established from traces and state transitions; repeated execution alone can be intentional.",
+          "verification_status": "needs_manual_verification",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app version boundary is asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Current documentation reviewed; symptom or cause is not bounded to an exact Core release."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration versions are not exactly bounded."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Host and installation applicability must be established from context."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor applicability depends on installation type and observed component."
+            }
+          }
+        }
+      ],
+      "confirmed": false,
+      "id": "automation_feedback_loop",
+      "official_status": "not_applicable",
+      "references": {
+        "sources": [
+          "source_home_assistant_docs_automation_troubleshooting"
+        ],
+        "symptoms": [
+          "automation_execution_storm"
+        ]
+      },
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_core_pack_v1"
+      },
+      "status": "reviewed",
+      "summary": "Automation actions change inputs that retrigger the same or connected automations repeatedly.",
+      "title": "Automation feedback loop",
+      "type": "root_cause"
+    },
+    {
+      "candidate_status": "candidate",
+      "claims": [
+        {
+          "confidence": 0.99,
+          "evidence_level": "A",
+          "false_positive_notes": "Rejection, restart, queuing, or parallel execution can be intentional and should be judged against the automation design.",
+          "id": "mode_controls_overlap",
+          "origin": "official_documentation",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_ha_docs_automation_modes"
+          ],
+          "statement": "Automation mode determines whether an overlapping trigger is rejected, restarts the previous run, is queued, or runs independently, and exceeding the applicable maximum emits a configurable log message.",
+          "verification_status": "verified",
+          "version_applicability": {
+            "addons": {
+              "applicable": false,
+              "constraint": null,
+              "notes": "Not app behavior."
+            },
+            "core": {
+              "applicable": true,
+              "constraint": null,
+              "notes": "Current official automation mode behavior."
+            },
+            "integrations": {
+              "applicable": true,
+              "constraint": null,
+              "notes": "Current Automation integration behavior."
+            },
+            "operating_system": {
+              "applicable": false,
+              "constraint": null,
+              "notes": "Core behavior."
+            },
+            "supervisor": {
+              "applicable": false,
+              "constraint": null,
+              "notes": "Core behavior."
+            }
+          }
+        }
+      ],
+      "confirmed": false,
+      "id": "automation_mode_rejected_run",
+      "official_status": "not_applicable",
+      "references": {
+        "components": [
+          "automation_execution_pipeline"
+        ],
+        "recommendations": [
+          "inspect_automation_trace_path"
+        ],
+        "sources": [
+          "source_ha_docs_automation_modes"
+        ],
+        "symptoms": [
+          "automation_not_triggering",
+          "automation_execution_storm"
+        ]
+      },
+      "relationships": [
+        {
+          "claim_ids": [
+            "mode_controls_overlap"
+          ],
+          "confidence": 0.65,
+          "predicate": "causes",
+          "rationale": "A rejected overlapping run can appear as a missed automation.",
+          "target_id": "automation_not_triggering"
+        },
+        {
+          "claim_ids": [
+            "mode_controls_overlap"
+          ],
+          "confidence": 0.55,
+          "predicate": "related_to",
+          "rationale": "Parallel or queued capacity changes overlap behavior but does not itself prove a storm.",
+          "target_id": "automation_execution_storm"
+        },
+        {
+          "claim_ids": [
+            "mode_controls_overlap"
+          ],
+          "confidence": 0.85,
+          "predicate": "diagnoses",
+          "rationale": "Mode, trace, and max-exceeded evidence distinguish overlap handling.",
+          "target_id": "inspect_automation_trace_path"
+        }
+      ],
+      "review": {
+        "next_review_on": "2027-01-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_kp3"
+      },
+      "status": "reviewed",
+      "summary": "A new trigger arrived while another run was active and mode or run-limit behavior prevented normal concurrent execution.",
+      "title": "Automation execution mode rejected or displaced a run",
+      "type": "root_cause"
+    },
+    {
+      "candidate_status": "candidate",
+      "claims": [
+        {
+          "confidence": 0.97,
+          "evidence_level": "B",
+          "false_positive_notes": "This record does not identify storage, network, permission, filesystem, app, database, Supervisor, hardware, or corruption as the underlying cause.",
+          "id": "causal_boundary",
+          "origin": "official_repository",
+          "reviewed_on": "2026-07-28",
+          "source_ids": [
+            "source_ha_core_backup_manager",
+            "source_home_assistant_docs_backup"
+          ],
+          "statement": "Current Core behavior distinguishes creation failure from per-location artifact errors, so this candidate requires direct creation-state and artifact evidence and cannot be selected from artifact absence alone.",
+          "verification_status": "verified",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app version boundary is asserted."
+            },
+            "core": {
+              "applicable": true,
+              "constraint": null,
+              "notes": "Current Core behavior reviewed; no exact introduction release asserted."
+            },
+            "integrations": {
+              "applicable": true,
+              "constraint": null,
+              "notes": "Applies to current Backup integration creation results."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Host and installation applicability must be established from context."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor applicability depends on installation type and observed component."
+            }
+          }
+        }
+      ],
+      "confirmed": false,
+      "id": "backup_not_created",
+      "official_status": "not_applicable",
+      "references": {
+        "observations": [
+          "backup_creation_state",
+          "backup_artifact_availability"
+        ],
+        "scenarios": [
+          "scenario_backup_creation_failure"
+        ],
+        "sources": [
+          "source_ha_core_backup_manager",
+          "source_home_assistant_docs_backup"
+        ],
+        "symptoms": [
+          "backup_missing",
+          "backup_creation_failure"
+        ]
+      },
+      "relationships": [
+        {
+          "claim_ids": [
+            "causal_boundary"
+          ],
+          "confidence": 0.99,
+          "predicate": "requires",
+          "rationale": "A direct failed creation result is required before selecting this proximal candidate.",
+          "target_id": "backup_creation_state"
+        },
+        {
+          "claim_ids": [
+            "causal_boundary"
+          ],
+          "confidence": 0.95,
+          "predicate": "requires",
+          "rationale": "The expected artifact must also be evaluated separately.",
+          "target_id": "backup_artifact_availability"
+        },
+        {
+          "claim_ids": [
+            "causal_boundary"
+          ],
+          "confidence": 0.85,
+          "predicate": "related_to",
+          "rationale": "The scenario keeps this proximal candidate separate from underlying causes.",
+          "target_id": "scenario_backup_creation_failure"
+        }
+      ],
+      "review": {
+        "next_review_on": "2026-10-28",
+        "reviewed_on": "2026-07-28",
+        "reviewer": "codex_kx004_pack4"
+      },
+      "status": "reviewed",
+      "summary": "Direct lifecycle and artifact evidence establishes that the operation did not produce the expected artifact; the underlying mechanism remains unresolved.",
+      "title": "Backup artifact not produced",
+      "type": "root_cause"
+    },
+    {
+      "candidate_status": "candidate",
+      "claims": [
+        {
+          "confidence": 0.99,
+          "evidence_level": "A",
+          "false_positive_notes": "This cause requires inspection of actual mounts and application paths; container recreation alone is insufficient.",
+          "id": "docker_storage_mechanism",
+          "origin": "external_project_documentation",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_docker_docs_storage"
+          ],
+          "statement": "Docker documents that data in a container writable layer is lost when that container is destroyed, while volumes and bind mounts store data outside that layer.",
+          "verification_status": "verified",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "App storage contracts are packaging-specific."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Only relevant to containerized Core or dependencies."
+            },
+            "external_components": [
+              {
+                "applicable": true,
+                "component_id": "docker_engine",
+                "constraint": null,
+                "notes": "Current Docker documentation reviewed."
+              }
+            ],
+            "integrations": {
+              "applicable": false,
+              "constraint": null,
+              "notes": "This is an infrastructure cause."
+            },
+            "operating_system": {
+              "applicable": false,
+              "constraint": null,
+              "notes": "Do not apply user-managed Docker paths to Home Assistant OS."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor-managed persistence requires app-specific confirmation."
+            }
+          }
+        }
+      ],
+      "confirmed": false,
+      "id": "container_persistence_misconfigured",
+      "official_status": "not_applicable",
+      "references": {
+        "apps": [
+          "docker_engine"
+        ],
+        "recommendations": [
+          "audit_container_persistence"
+        ],
+        "sources": [
+          "source_docker_docs_storage"
+        ],
+        "symptoms": [
+          "container_state_lost_after_recreate"
+        ]
+      },
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_rc2"
+      },
+      "status": "reviewed",
+      "summary": "Application state is written to a container layer or wrong mount instead of the intended persistent host storage.",
+      "title": "Required container state is not on persistent storage",
+      "type": "root_cause"
+    },
+    {
+      "candidate_status": "candidate",
+      "claims": [
+        {
+          "confidence": 0.9,
+          "evidence_level": "A",
+          "false_positive_notes": "This candidate cause requires corroborating context and must not be inferred from one generic symptom.",
+          "id": "causal_boundary",
+          "origin": "official_documentation",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_docs_recorder"
+          ],
+          "statement": "Recorder supports specified external database engines and requires the target database to exist with suitable permissions.",
+          "verification_status": "verified",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app version boundary is asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Current documentation reviewed; symptom or cause is not bounded to an exact Core release."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration versions are not exactly bounded."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Host and installation applicability must be established from context."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor applicability depends on installation type and observed component."
+            }
+          }
+        }
+      ],
+      "confirmed": false,
+      "id": "database_backend_unavailable",
+      "official_status": "not_applicable",
+      "references": {
+        "sources": [
+          "source_home_assistant_docs_recorder"
+        ],
+        "symptoms": [
+          "database_write_failure"
+        ]
+      },
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_core_pack_v1"
+      },
+      "status": "reviewed",
+      "summary": "Recorder cannot reach or authenticate to its configured external database backend.",
+      "title": "External recorder database unavailable",
+      "type": "root_cause"
+    },
+    {
+      "candidate_status": "candidate",
+      "claims": [
+        {
+          "confidence": 0.9,
+          "evidence_level": "A",
+          "false_positive_notes": "This candidate cause requires corroborating context and must not be inferred from one generic symptom.",
+          "id": "causal_boundary",
+          "origin": "official_documentation",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_docs_dns_issue"
+          ],
+          "statement": "Home Assistant documents resolver availability and correct A and AAAA response handling as required for supported DNS operation.",
+          "verification_status": "verified",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app version boundary is asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Current documentation reviewed; symptom or cause is not bounded to an exact Core release."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration versions are not exactly bounded."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Host and installation applicability must be established from context."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor applicability depends on installation type and observed component."
+            }
+          }
+        }
+      ],
+      "confirmed": false,
+      "id": "dns_service_failure",
+      "official_status": "not_applicable",
+      "references": {
+        "observations": [
+          "dns_filtering_management_api_reachable"
+        ],
+        "scenarios": [
+          "scenario_discovery_or_downstream_setup_failure",
+          "scenario_dns_filtering_api_or_client_path"
+        ],
+        "sources": [
+          "source_home_assistant_docs_dns_issue"
+        ],
+        "symptoms": [
+          "dns_resolution_failure",
+          "mqtt_repeated_reconnects"
+        ]
+      },
+      "relationships": [
+        {
+          "claim_ids": [
+            "causal_boundary"
+          ],
+          "confidence": 0.35,
+          "predicate": "related_to",
+          "rationale": "Management reachability can coexist with DNS-path failure and therefore does not exclude this cause.",
+          "target_id": "dns_filtering_management_api_reachable"
+        },
+        {
+          "claim_ids": [
+            "causal_boundary"
+          ],
+          "confidence": 0.35,
+          "predicate": "related_to",
+          "rationale": "Unicast DNS is only one conditional branch and must not be conflated with multicast discovery.",
+          "target_id": "scenario_discovery_or_downstream_setup_failure"
+        },
+        {
+          "claim_ids": [
+            "causal_boundary"
+          ],
+          "confidence": 0.9,
+          "predicate": "related_to",
+          "rationale": "The scenario tests DNS service separately from management and client-routing evidence.",
+          "target_id": "scenario_dns_filtering_api_or_client_path"
+        }
+      ],
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_core_pack_v1"
+      },
+      "status": "reviewed",
+      "summary": "The configured DNS resolver is unreachable or returns responses Home Assistant cannot use.",
+      "title": "DNS service failure",
+      "type": "root_cause"
+    },
+    {
+      "candidate_status": "candidate",
+      "claims": [
+        {
+          "confidence": 0.9,
+          "evidence_level": "A",
+          "false_positive_notes": "This candidate cause requires corroborating context and must not be inferred from one generic symptom.",
+          "id": "causal_boundary",
+          "origin": "official_documentation",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_docs_recorder"
+          ],
+          "statement": "Recorder writes entity state changes and events; frequently changing included data therefore increases recorded writes and storage demand.",
+          "verification_status": "verified",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app version boundary is asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Current documentation reviewed; symptom or cause is not bounded to an exact Core release."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration versions are not exactly bounded."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Host and installation applicability must be established from context."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor applicability depends on installation type and observed component."
+            }
+          }
+        }
+      ],
+      "confirmed": false,
+      "id": "excessive_state_churn",
+      "official_status": "not_applicable",
+      "references": {
+        "sources": [
+          "source_home_assistant_docs_recorder"
+        ],
+        "symptoms": [
+          "rapid_database_growth",
+          "automation_execution_storm"
+        ]
+      },
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_core_pack_v1"
+      },
+      "status": "reviewed",
+      "summary": "Entities or events change more frequently than operationally useful, increasing recorder writes and downstream work.",
+      "title": "Excessive state churn",
+      "type": "root_cause"
+    },
+    {
+      "candidate_status": "candidate",
+      "claims": [
+        {
+          "confidence": 0.98,
+          "evidence_level": "A",
+          "false_positive_notes": "External investigation may identify a workload, but that attribution is outside this sensor's evidence.",
+          "id": "metric_not_attribution",
+          "origin": "official_documentation",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_docs_system_monitor"
+          ],
+          "statement": "System Monitor disk sensors report mount-point capacity, not folder sizes, so the observation alone cannot attribute usage to a directory or workload.",
+          "verification_status": "verified",
+          "version_applicability": {
+            "addons": {
+              "applicable": false,
+              "constraint": null,
+              "notes": "The claim does not concern a specific add-on."
+            },
+            "core": {
+              "applicable": true,
+              "constraint": null,
+              "notes": "Current documentation as reviewed; no exact Core constraint asserted."
+            },
+            "integrations": {
+              "applicable": true,
+              "constraint": null,
+              "notes": "Current documentation is reviewed without an exact integration version constraint."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Mount behavior depends on the host environment."
+            },
+            "supervisor": {
+              "applicable": false,
+              "constraint": null,
+              "notes": "The claim does not depend on Supervisor."
+            }
+          }
+        }
+      ],
+      "confirmed": false,
+      "id": "host_storage_pressure",
+      "official_status": "not_applicable",
+      "references": {
+        "recommendations": [
+          "investigate_host_disk_usage"
+        ],
+        "sources": [
+          "source_home_assistant_docs_system_monitor"
+        ],
+        "symptoms": [
+          "high_disk_usage"
+        ]
+      },
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_workspace_v1"
+      },
+      "status": "draft",
+      "summary": "The Home Assistant host has insufficient free capacity for its workload and expected growth.",
+      "title": "Host storage pressure",
+      "type": "root_cause"
+    },
+    {
+      "candidate_status": "candidate",
+      "claims": [
+        {
+          "confidence": 0.4,
+          "evidence_level": "D",
+          "false_positive_notes": "This candidate cause requires corroborating context and must not be inferred from one generic symptom.",
+          "id": "causal_boundary",
+          "origin": "hypothesis",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_docs_glossary"
+          ],
+          "statement": "Custom integrations are not automatically faulty; incompatibility must be demonstrated by isolation, diagnostics, or a confirmed version boundary.",
+          "verification_status": "needs_manual_verification",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app version boundary is asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Current documentation reviewed; symptom or cause is not bounded to an exact Core release."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration versions are not exactly bounded."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Host and installation applicability must be established from context."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor applicability depends on installation type and observed component."
+            }
+          }
+        }
+      ],
+      "confirmed": false,
+      "id": "incompatible_custom_integration",
+      "official_status": "not_applicable",
+      "references": {
+        "sources": [
+          "source_home_assistant_docs_glossary"
+        ],
+        "symptoms": [
+          "slow_startup"
+        ]
+      },
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_core_pack_v1"
+      },
+      "status": "reviewed",
+      "summary": "A custom integration overrides or extends Core behavior incompatibly with the running release.",
+      "title": "Incompatible custom integration",
+      "type": "root_cause"
+    },
+    {
+      "candidate_status": "candidate",
+      "claims": [
+        {
+          "confidence": 0.99,
+          "evidence_level": "A",
+          "false_positive_notes": "Low host free space is only this cause when it applies to the filesystem used for the maintenance operation.",
+          "id": "minimum_temporary_space",
+          "origin": "official_documentation",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_docs_recorder"
+          ],
+          "statement": "Current Recorder documentation requires at least as much free temporary space as the database size because rebuild, repair, repack, or schema upgrade can temporarily copy data.",
+          "verification_status": "verified",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "External database storage may be outside app storage."
+            },
+            "core": {
+              "applicable": true,
+              "constraint": "current_docs_2026_07_21",
+              "notes": "Current Recorder storage requirement."
+            },
+            "integrations": {
+              "applicable": true,
+              "constraint": "recorder_current_docs_2026_07_21",
+              "notes": "Current Recorder documentation reviewed."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Filesystem placement and capacity depend on installation."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor relevance depends on installation and backup workflow."
+            }
+          }
+        }
+      ],
+      "confirmed": false,
+      "id": "insufficient_recorder_maintenance_space",
+      "official_status": "not_applicable",
+      "references": {
+        "components": [
+          "recorder_database_schema"
+        ],
+        "integrations": [
+          "recorder"
+        ],
+        "recommendations": [
+          "verify_recorder_maintenance_space"
+        ],
+        "sources": [
+          "source_home_assistant_docs_recorder"
+        ],
+        "symptoms": [
+          "high_disk_usage",
+          "database_write_failure"
+        ]
+      },
+      "relationships": [
+        {
+          "claim_ids": [
+            "minimum_temporary_space"
+          ],
+          "confidence": 0.75,
+          "predicate": "causes",
+          "rationale": "Insufficient operation-specific space can prevent maintenance or upgrade writes, but other failures remain possible.",
+          "target_id": "database_write_failure"
+        },
+        {
+          "claim_ids": [
+            "minimum_temporary_space"
+          ],
+          "confidence": 0.8,
+          "predicate": "related_to",
+          "rationale": "High usage can reduce required free space, but the relevant quantity is free space on the database filesystem.",
+          "target_id": "high_disk_usage"
+        },
+        {
+          "claim_ids": [
+            "minimum_temporary_space"
+          ],
+          "confidence": 0.9,
+          "predicate": "requires",
+          "rationale": "The space requirement arises from schema rebuild, repair, repack, and upgrade work.",
+          "target_id": "recorder_database_schema"
+        },
+        {
+          "claim_ids": [
+            "minimum_temporary_space"
+          ],
+          "confidence": 0.85,
+          "predicate": "recovers",
+          "rationale": "Verifying and safely restoring headroom addresses this precondition without asserting database repair.",
+          "target_id": "verify_recorder_maintenance_space"
+        }
+      ],
+      "review": {
+        "next_review_on": "2027-01-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_kp2"
+      },
+      "status": "reviewed",
+      "summary": "Available temporary disk space is below the amount required for a Recorder table rebuild, repair, repack, or schema upgrade.",
+      "title": "Insufficient free space for Recorder maintenance",
+      "type": "root_cause"
+    },
+    {
+      "candidate_status": "candidate",
+      "claims": [
+        {
+          "confidence": 0.9,
+          "evidence_level": "A",
+          "false_positive_notes": "This candidate cause requires corroborating context and must not be inferred from one generic symptom.",
+          "id": "causal_boundary",
+          "origin": "official_documentation",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_docs_thread"
+          ],
+          "statement": "Separate vendor Thread networks use different credentials and devices cannot roam between them; Home Assistant must know credentials to select a preferred network.",
+          "verification_status": "verified",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app version boundary is asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Current documentation reviewed; symptom or cause is not bounded to an exact Core release."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration versions are not exactly bounded."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Host and installation applicability must be established from context."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor applicability depends on installation type and observed component."
+            }
+          }
+        }
+      ],
+      "confirmed": false,
+      "id": "matter_fabric_or_credential_mismatch",
+      "official_status": "not_applicable",
+      "references": {
+        "sources": [
+          "source_home_assistant_docs_thread"
+        ],
+        "symptoms": [
+          "matter_commissioning_failure"
+        ]
+      },
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_core_pack_v1"
+      },
+      "status": "reviewed",
+      "summary": "The commissioning device, controller, or Thread device uses credentials for a different fabric or Thread network.",
+      "title": "Matter fabric or Thread credential mismatch",
+      "type": "root_cause"
+    },
+    {
+      "candidate_status": "candidate",
+      "claims": [
+        {
+          "confidence": 0.9,
+          "evidence_level": "A",
+          "false_positive_notes": "This candidate cause requires corroborating context and must not be inferred from one generic symptom.",
+          "id": "causal_boundary",
+          "origin": "official_documentation",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_docs_mqtt"
+          ],
+          "statement": "Home Assistant's MQTT integration requires a compatible broker configured by host, port, and when needed credentials.",
+          "verification_status": "verified",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app version boundary is asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Current documentation reviewed; symptom or cause is not bounded to an exact Core release."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration versions are not exactly bounded."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Host and installation applicability must be established from context."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor applicability depends on installation type and observed component."
+            }
+          }
+        }
+      ],
+      "confirmed": false,
+      "id": "mqtt_broker_unavailable",
+      "official_status": "not_applicable",
+      "references": {
+        "sources": [
+          "source_home_assistant_docs_mqtt"
+        ],
+        "symptoms": [
+          "mqtt_entities_unavailable",
+          "mqtt_repeated_reconnects"
+        ]
+      },
+      "review": {
+        "next_review_on": "2027-01-29",
+        "reviewed_on": "2026-07-29",
+        "reviewer": "codex_kx020_quality_checkpoint2"
+      },
+      "status": "reviewed",
+      "summary": "The configured broker is stopped, unreachable, or not accepting the intended MQTT transport.",
+      "title": "MQTT broker unavailable",
+      "type": "root_cause"
+    },
+    {
+      "candidate_status": "candidate",
+      "claims": [
+        {
+          "confidence": 0.4,
+          "evidence_level": "D",
+          "false_positive_notes": "This candidate cause requires corroborating context and must not be inferred from one generic symptom.",
+          "id": "causal_boundary",
+          "origin": "hypothesis",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_docs_dns_issue"
+          ],
+          "statement": "Network-path failure is broader than DNS and requires endpoint and route testing; a timeout alone is not sufficient proof.",
+          "verification_status": "needs_manual_verification",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app version boundary is asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Current documentation reviewed; symptom or cause is not bounded to an exact Core release."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration versions are not exactly bounded."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Host and installation applicability must be established from context."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor applicability depends on installation type and observed component."
+            }
+          }
+        }
+      ],
+      "confirmed": false,
+      "id": "network_path_failure",
+      "official_status": "not_applicable",
+      "references": {
+        "sources": [
+          "source_home_assistant_docs_dns_issue"
+        ],
+        "symptoms": [
+          "mqtt_entities_unavailable",
+          "mqtt_repeated_reconnects",
+          "matter_commissioning_failure",
+          "thread_border_router_unavailable",
+          "esphome_device_unavailable"
+        ]
+      },
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_core_pack_v1"
+      },
+      "status": "reviewed",
+      "summary": "Routing, addressing, firewalling, link state, or local network reachability prevents communication between required components.",
+      "title": "Network path failure",
+      "type": "root_cause"
+    },
+    {
+      "candidate_status": "candidate",
+      "claims": [
+        {
+          "confidence": 0.4,
+          "evidence_level": "D",
+          "false_positive_notes": "This candidate cause requires corroborating context and must not be inferred from one generic symptom.",
+          "id": "causal_boundary",
+          "origin": "hypothesis",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_docs_recorder"
+          ],
+          "statement": "Database corruption requires engine-specific confirmation and must not be inferred from a generic write failure.",
+          "verification_status": "needs_manual_verification",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app version boundary is asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Current documentation reviewed; symptom or cause is not bounded to an exact Core release."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration versions are not exactly bounded."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Host and installation applicability must be established from context."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor applicability depends on installation type and observed component."
+            }
+          }
+        }
+      ],
+      "confirmed": false,
+      "id": "recorder_database_corruption",
+      "official_status": "not_applicable",
+      "references": {
+        "log_patterns": [
+          "recorder_sqlite_corrupt_or_malformed"
+        ],
+        "sources": [
+          "source_home_assistant_docs_recorder",
+          "source_home_assistant_core_recorder_util"
+        ],
+        "symptoms": [
+          "database_write_failure"
+        ]
+      },
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_core_pack_v1"
+      },
+      "status": "reviewed",
+      "summary": "The recorder database cannot be read or written consistently because its stored structure or pages are damaged.",
+      "title": "Recorder database corruption",
+      "type": "root_cause"
+    },
+    {
+      "candidate_status": "candidate",
+      "claims": [
+        {
+          "confidence": 0.98,
+          "evidence_level": "A",
+          "false_positive_notes": "Unverified readiness does not establish that a restore will fail; direct evidence can close individual prerequisites without a destructive test.",
+          "id": "causal_boundary",
+          "origin": "official_documentation",
+          "reviewed_on": "2026-07-28",
+          "source_ids": [
+            "source_home_assistant_docs_backup_tasks",
+            "source_ha_docs_backup_emergency_kit"
+          ],
+          "statement": "Official guidance requires artifact access, matching recovery material for encrypted backups, the applicable current-system or onboarding workflow, selected content, credentials, and target storage; post-restore functions remain a separate validation boundary.",
+          "verification_status": "verified",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app version boundary is asserted."
+            },
+            "core": {
+              "applicable": true,
+              "constraint": null,
+              "notes": "Current official restore guidance reviewed; no exact introduction release asserted."
+            },
+            "integrations": {
+              "applicable": true,
+              "constraint": null,
+              "notes": "Applies to current Backup integration restore preparation."
+            },
+            "operating_system": {
+              "applicable": true,
+              "constraint": null,
+              "notes": "Current OS and onboarding restore workflows are documented with installation-specific scope; no exact OS release boundary is asserted."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor applicability depends on installation type and observed component."
+            }
+          }
+        }
+      ],
+      "confirmed": false,
+      "id": "restore_path_not_verified",
+      "official_status": "not_applicable",
+      "references": {
+        "observations": [
+          "backup_artifact_availability",
+          "backup_recovery_validation_state"
+        ],
+        "recommendations": [
+          "protect_and_test_backup_restore",
+          "diagnose_backup_restore_safely"
+        ],
+        "scenarios": [
+          "scenario_backup_exists_restore_unverified",
+          "scenario_backup_restore_failure"
+        ],
+        "sources": [
+          "source_home_assistant_docs_backup_tasks",
+          "source_ha_docs_backup_emergency_kit"
+        ],
+        "symptoms": [
+          "backup_restore_untested"
+        ]
+      },
+      "relationships": [
+        {
+          "claim_ids": [
+            "causal_boundary"
+          ],
+          "confidence": 0.99,
+          "predicate": "requires",
+          "rationale": "Artifact access is one documented prerequisite.",
+          "target_id": "backup_artifact_availability"
+        },
+        {
+          "claim_ids": [
+            "causal_boundary"
+          ],
+          "confidence": 0.95,
+          "predicate": "related_to",
+          "rationale": "Recovery validation is a distinct downstream readiness boundary.",
+          "target_id": "backup_recovery_validation_state"
+        },
+        {
+          "claim_ids": [
+            "causal_boundary"
+          ],
+          "confidence": 0.99,
+          "predicate": "related_to",
+          "rationale": "The scenario inventories the unresolved prerequisites.",
+          "target_id": "scenario_backup_exists_restore_unverified"
+        },
+        {
+          "claim_ids": [
+            "causal_boundary"
+          ],
+          "confidence": 0.99,
+          "predicate": "supports",
+          "rationale": "The recommendation verifies each prerequisite independently.",
+          "target_id": "diagnose_backup_restore_safely"
+        }
+      ],
+      "review": {
+        "next_review_on": "2026-10-28",
+        "reviewed_on": "2026-07-28",
+        "reviewer": "codex_kx004_pack4"
+      },
+      "status": "reviewed",
+      "summary": "Artifact access, matching recovery material, content scope, applicable workflow, or post-restore validation remains unverified.",
+      "title": "Restore path not verified",
+      "type": "root_cause"
+    },
+    {
+      "candidate_status": "candidate",
+      "claims": [
+        {
+          "confidence": 0.4,
+          "evidence_level": "D",
+          "false_positive_notes": "This candidate cause requires corroborating context and must not be inferred from one generic symptom.",
+          "id": "causal_boundary",
+          "origin": "hypothesis",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_developer_supervisor"
+          ],
+          "statement": "Supervisor spans Core, apps, backups, DNS, OS, and Docker; evidence from the specific job is required to identify the dependency.",
+          "verification_status": "needs_manual_verification",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app version boundary is asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Current documentation reviewed; symptom or cause is not bounded to an exact Core release."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration versions are not exactly bounded."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Host and installation applicability must be established from context."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor applicability depends on installation type and observed component."
+            }
+          }
+        }
+      ],
+      "confirmed": false,
+      "id": "supervisor_dependency_failure",
+      "official_status": "not_applicable",
+      "references": {
+        "log_patterns": [
+          "supervisor_job_blocked_from_execution"
+        ],
+        "observations": [
+          "supervisor_job_state",
+          "supervisor_resolution_state"
+        ],
+        "recommendations": [
+          "inspect_supervisor_job_context",
+          "inspect_supervisor_resolution_state"
+        ],
+        "scenarios": [
+          "scenario_supervisor_job_failure_context"
+        ],
+        "sources": [
+          "source_home_assistant_developer_supervisor",
+          "source_home_assistant_supervisor_job_decorator"
+        ],
+        "symptoms": [
+          "supervisor_job_failure"
+        ]
+      },
+      "relationships": [
+        {
+          "claim_ids": [
+            "causal_boundary"
+          ],
+          "confidence": 0.6,
+          "predicate": "related_to",
+          "rationale": "Job identity and error stage are required before this candidate can be evaluated.",
+          "target_id": "supervisor_job_state"
+        },
+        {
+          "claim_ids": [
+            "causal_boundary"
+          ],
+          "confidence": 0.55,
+          "predicate": "related_to",
+          "rationale": "Resolution state may expose a named condition but does not confirm this candidate.",
+          "target_id": "supervisor_resolution_state"
+        },
+        {
+          "claim_ids": [
+            "causal_boundary"
+          ],
+          "confidence": 0.7,
+          "predicate": "related_to",
+          "rationale": "The scenario retains this as one competing cause under explicit evidence boundaries.",
+          "target_id": "scenario_supervisor_job_failure_context"
+        },
+        {
+          "claim_ids": [
+            "causal_boundary"
+          ],
+          "confidence": 0.8,
+          "predicate": "supports",
+          "rationale": "Targeted job inspection is required to identify the named dependency.",
+          "target_id": "inspect_supervisor_job_context"
+        }
+      ],
+      "review": {
+        "next_review_on": "2026-10-27",
+        "reviewed_on": "2026-07-27",
+        "reviewer": "codex_kx001_pack1"
+      },
+      "status": "reviewed",
+      "summary": "A dependency used by a Supervisor-managed operation is unavailable, unhealthy, or incompatible.",
+      "title": "Supervisor dependency failure",
+      "type": "root_cause"
+    },
+    {
+      "candidate_status": "candidate",
+      "claims": [
+        {
+          "confidence": 0.9,
+          "evidence_level": "A",
+          "false_positive_notes": "This candidate cause requires corroborating context and must not be inferred from one generic symptom.",
+          "id": "causal_boundary",
+          "origin": "official_documentation",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_docs_template_errors"
+          ],
+          "statement": "Home Assistant documents these error classes and recommends context-aware defaults and editor testing.",
+          "verification_status": "verified",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app version boundary is asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Current documentation reviewed; symptom or cause is not bounded to an exact Core release."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration versions are not exactly bounded."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Host and installation applicability must be established from context."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor applicability depends on installation type and observed component."
+            }
+          }
+        }
+      ],
+      "confirmed": false,
+      "id": "template_input_or_syntax_error",
+      "official_status": "not_applicable",
+      "references": {
+        "sources": [
+          "source_home_assistant_docs_template_errors"
+        ],
+        "symptoms": [
+          "template_render_error",
+          "automation_not_triggering"
+        ]
+      },
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_core_pack_v1"
+      },
+      "status": "reviewed",
+      "summary": "A template references unavailable context, incompatible types, missing data, or invalid syntax.",
+      "title": "Template input or syntax error",
+      "type": "root_cause"
+    },
+    {
+      "candidate_status": "candidate",
+      "claims": [
+        {
+          "confidence": 0.9,
+          "evidence_level": "A",
+          "false_positive_notes": "This candidate cause requires corroborating context and must not be inferred from one generic symptom.",
+          "id": "causal_boundary",
+          "origin": "official_documentation",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_docs_thread"
+          ],
+          "statement": "Thread-based operation requires a border router and appropriate local IPv6 forwarding, while discovery alone does not provide network credentials.",
+          "verification_status": "verified",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app version boundary is asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Current documentation reviewed; symptom or cause is not bounded to an exact Core release."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration versions are not exactly bounded."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Host and installation applicability must be established from context."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor applicability depends on installation type and observed component."
+            }
+          }
+        }
+      ],
+      "confirmed": false,
+      "id": "thread_border_router_failure",
+      "official_status": "not_applicable",
+      "references": {
+        "sources": [
+          "source_home_assistant_docs_thread"
+        ],
+        "symptoms": [
+          "matter_commissioning_failure",
+          "thread_border_router_unavailable"
+        ]
+      },
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_core_pack_v1"
+      },
+      "status": "reviewed",
+      "summary": "No usable border router provides the required path between the Thread mesh and the local IPv6 network.",
+      "title": "Thread border router failure",
+      "type": "root_cause"
+    },
+    {
+      "candidate_status": "candidate",
+      "claims": [
+        {
+          "confidence": 0.4,
+          "evidence_level": "D",
+          "false_positive_notes": "This candidate cause requires corroborating context and must not be inferred from one generic symptom.",
+          "id": "causal_boundary",
+          "origin": "hypothesis",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_docs_supervisor_integration"
+          ],
+          "statement": "Update availability entities do not alone establish that a direct path is supported; product-specific guidance is required.",
+          "verification_status": "needs_manual_verification",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app version boundary is asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Current documentation reviewed; symptom or cause is not bounded to an exact Core release."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration versions are not exactly bounded."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Host and installation applicability must be established from context."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor applicability depends on installation type and observed component."
+            }
+          }
+        }
+      ],
+      "confirmed": false,
+      "id": "unsupported_upgrade_path",
+      "official_status": "not_applicable",
+      "references": {
+        "sources": [
+          "source_home_assistant_docs_supervisor_integration"
+        ],
+        "symptoms": [
+          "operating_system_update_failure"
+        ]
+      },
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_core_pack_v1"
+      },
+      "status": "reviewed",
+      "summary": "The installed component state is outside a currently supported direct update path.",
+      "title": "Unsupported or stale upgrade path",
+      "type": "root_cause"
+    },
+    {
+      "candidate_status": "candidate",
+      "claims": [
+        {
+          "confidence": 0.9,
+          "evidence_level": "A",
+          "false_positive_notes": "This candidate cause requires corroborating context and must not be inferred from one generic symptom.",
+          "id": "causal_boundary",
+          "origin": "external_project_documentation",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_zigbee2mqtt_docs_faq"
+          ],
+          "statement": "Each Zigbee2MQTT instance requires one dedicated coordinator that is not already used by another application.",
+          "verification_status": "verified",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app version boundary is asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Current documentation reviewed; symptom or cause is not bounded to an exact Core release."
+            },
+            "external_components": [
+              {
+                "applicable": "unknown",
+                "component_id": "zigbee2mqtt",
+                "constraint": null,
+                "notes": "Current project documentation reviewed without an exact release boundary."
+              }
+            ],
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration versions are not exactly bounded."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Host and installation applicability must be established from context."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor applicability depends on installation type and observed component."
+            }
+          }
+        }
+      ],
+      "confirmed": false,
+      "id": "zigbee_coordinator_unavailable",
+      "official_status": "not_applicable",
+      "references": {
+        "sources": [
+          "source_zigbee2mqtt_docs_faq"
+        ],
+        "symptoms": [
+          "zigbee_devices_unavailable",
+          "zigbee_interview_failure"
+        ]
+      },
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_core_pack_v1"
+      },
+      "status": "reviewed",
+      "summary": "The application cannot use the coordinator because it is disconnected, failed, misconfigured, or owned by another process.",
+      "title": "Zigbee coordinator unavailable",
+      "type": "root_cause"
+    },
+    {
+      "candidate_status": "candidate",
+      "claims": [
+        {
+          "confidence": 0.9,
+          "evidence_level": "A",
+          "false_positive_notes": "This candidate cause requires corroborating context and must not be inferred from one generic symptom.",
+          "id": "causal_boundary",
+          "origin": "official_documentation",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_home_assistant_docs_zha"
+          ],
+          "statement": "ZHA troubleshooting directs pairing and connection problems to network range and coverage optimization as well as interference avoidance.",
+          "verification_status": "verified",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app version boundary is asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Current documentation reviewed; symptom or cause is not bounded to an exact Core release."
+            },
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration versions are not exactly bounded."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Host and installation applicability must be established from context."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor applicability depends on installation type and observed component."
+            }
+          }
+        }
+      ],
+      "confirmed": false,
+      "id": "zigbee_mesh_insufficient",
+      "official_status": "not_applicable",
+      "references": {
+        "sources": [
+          "source_home_assistant_docs_zha"
+        ],
+        "symptoms": [
+          "zigbee_devices_unavailable",
+          "zigbee_interview_failure"
+        ]
+      },
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_core_pack_v1"
+      },
+      "status": "reviewed",
+      "summary": "Device placement, router availability, range, or power behavior leaves unreliable paths in the Zigbee mesh.",
+      "title": "Insufficient Zigbee mesh coverage",
+      "type": "root_cause"
+    },
+    {
+      "candidate_status": "candidate",
+      "claims": [
+        {
+          "confidence": 0.9,
+          "evidence_level": "A",
+          "false_positive_notes": "This candidate cause requires corroborating context and must not be inferred from one generic symptom.",
+          "id": "causal_boundary",
+          "origin": "external_project_documentation",
+          "reviewed_on": "2026-07-21",
+          "source_ids": [
+            "source_zigbee2mqtt_docs_faq"
+          ],
+          "statement": "Zigbee2MQTT documents occupied spectrum and overlapping Wi-Fi activity as causes of channel access failures and poor operation.",
+          "verification_status": "verified",
+          "version_applicability": {
+            "addons": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "No universal app version boundary is asserted."
+            },
+            "core": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Current documentation reviewed; symptom or cause is not bounded to an exact Core release."
+            },
+            "external_components": [
+              {
+                "applicable": "unknown",
+                "component_id": "zigbee2mqtt",
+                "constraint": null,
+                "notes": "Current project documentation reviewed without an exact release boundary."
+              }
+            ],
+            "integrations": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Relevant integration versions are not exactly bounded."
+            },
+            "operating_system": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Host and installation applicability must be established from context."
+            },
+            "supervisor": {
+              "applicable": "unknown",
+              "constraint": null,
+              "notes": "Supervisor applicability depends on installation type and observed component."
+            }
+          }
+        }
+      ],
+      "confirmed": false,
+      "id": "zigbee_radio_interference",
+      "official_status": "not_applicable",
+      "references": {
+        "sources": [
+          "source_zigbee2mqtt_docs_faq"
+        ],
+        "symptoms": [
+          "zigbee_devices_unavailable",
+          "zigbee_interview_failure"
+        ]
+      },
+      "review": {
+        "next_review_on": "2026-10-21",
+        "reviewed_on": "2026-07-21",
+        "reviewer": "codex_core_pack_v1"
+      },
+      "status": "reviewed",
+      "summary": "Competing 2.4 GHz activity or an unfavorable channel reduces reliable Zigbee communication.",
+      "title": "Zigbee radio interference",
+      "type": "root_cause"
+    }
+  ],
+  "metadata": {
+    "confirmed_count": 0
+  }
+}

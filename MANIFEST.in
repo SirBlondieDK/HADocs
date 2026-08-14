@@ -1,0 +1,4 @@
+include scripts/__init__.py
+include scripts/build_hadocs_contract.py
+include scripts/hask_bundle_sources/*.json
+include docs/integration/hask_runtime/BUNDLE_GENERATION.md

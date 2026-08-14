@@ -13,7 +13,8 @@ from hadocs.knowledge.hask_runtime.discovery import BundleDiscovery
 from hadocs.knowledge.hask_runtime.provider import KnowledgeProvider
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
-BUNDLE = REPOSITORY_ROOT / "src" / "hadocs" / "knowledge" / "hask_bundle" / "0.2.0"
+BUNDLE = REPOSITORY_ROOT / "src" / "hadocs" / "knowledge" / "hask_bundle" / "0.2.1"
+PREVIOUS_BUNDLE = BUNDLE.parent / "0.2.0"
 REQUIRED = tuple(sorted(path.name for path in BUNDLE.glob("*.json") if path.name != "manifest.json"))
 
 
@@ -60,6 +61,28 @@ def test_enabled_startup_discovers_configured_bundle():
     assert result.bundle_version == manager.provider.bundle.contract_version
     assert result.compatibility == "compatible_with_unknown_fields"
     assert manager.provider.items("platform_index.json")
+
+
+def test_packaged_bundle_exposes_three_typed_matchers():
+    manager = BundleManager(config())
+    assert manager.startup().active
+    matchers = manager.typed_matcher_contracts()
+    assert len(manager.provider.items("evidence_matchers.json")) == 26
+    assert len(matchers) == 3
+    assert {item.matcher_id for item in matchers} == {
+        "mikrotik_api_connectivity_failure",
+        "tuya_integration_status_problem",
+        "unifi_controller_connectivity_failure",
+    }
+
+
+def test_previous_bundle_without_tuya_remains_compatible():
+    manager = BundleManager(config(PREVIOUS_BUNDLE))
+    assert manager.startup().active
+    assert {item.matcher_id for item in manager.typed_matcher_contracts()} == {
+        "mikrotik_api_connectivity_failure",
+        "unifi_controller_connectivity_failure",
+    }
 
 
 def test_standard_discovery(tmp_path: Path):

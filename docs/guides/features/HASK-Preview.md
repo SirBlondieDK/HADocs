@@ -24,6 +24,7 @@ database, candidate-evidence, and native-status gates.
 
 - `SUPPORTED_CANDIDATE`: bounded evidence supports an experimental candidate.
 - `INSUFFICIENT_EVIDENCE`: relevant knowledge exists but required evidence is missing.
+- `NO_MATCH`: applicable matchers completed without supporting a problem candidate.
 - `NOT_APPLICABLE`: the knowledge does not apply to the observed platform context.
 - `REJECTED_CONFLICT`: conflicting evidence rejected the candidate.
 - `BUNDLE_DISABLED`, `BUNDLE_UNAVAILABLE`, and `BUNDLE_INVALID`: safe runtime states.
@@ -40,5 +41,13 @@ SQLite database. HADocs never writes private installation data into HASK.
 
 Only bounded typed matchers are executable. UniFi and MikroTik remain
 `INSUFFICIENT_EVIDENCE` when authoritative controller/API results are absent.
-HADocs performs no authenticated probe, controller login, or fabricated
-connectivity inference.
+Tuya uses only Home Assistant's collected native config-entry lifecycle aggregate;
+a reported problem does not identify a physical-device, cloud, account, network,
+or code root cause. HADocs performs no authenticated probe, controller login, or
+fabricated connectivity inference.
+
+Matcher applicability is currently derived from persisted entity/platform
+relationships. A Tuya config entry that exposes no entities can therefore appear
+as `NOT_APPLICABLE` even when native status observed the config entry. That state
+does not establish that Tuya is absent or not installed; it means there is no
+persisted subject to which the current candidate matcher can attach.

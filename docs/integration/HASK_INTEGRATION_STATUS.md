@@ -15,6 +15,7 @@ are retained as evidence, but they do not control normal product execution.
 | HASK Preview | Implemented, experimental, read-only, and default-disabled | Web and generated reports show validated coverage and redacted candidate context without analytical impact. |
 | HASK candidate bridge | Implemented, deterministic, read-only, and default-disabled | Candidate evidence remains separate from production analytics. |
 | Native integration status | Implemented, optional, and default-disabled | Home Assistant config-entry lifecycle supplies domain-level problem evidence for the current scan. |
+| Tuya candidate | Conservative native-status result | A complete, uniform Home Assistant problem state for the official `tuya` integration can emit one experimental candidate; healthy status is `NO_MATCH`, and no underlying cause or physical-device fault is inferred. |
 | UniFi and MikroTik candidates | Conservative evidence result | They remain `INSUFFICIENT_EVIDENCE` because no authenticated controller/API `connection_result` is collected. This is not an implementation failure. |
 | Authenticated controller probes | Intentionally deferred | No controller connection, authentication, or network probe is performed. |
 | Generic metadata collector | Deferred; runtime package excluded from the wheel | It is not part of current product execution. |
@@ -51,7 +52,7 @@ findings, recommendations, Root Causes or Health Score.**
 The Preview distinguishes relevant HASK knowledge, a HASK candidate,
 insufficient evidence, and a confirmed HADocs Root Cause. Only HADocs owns the
 last category. Preview classifications are `SUPPORTED_CANDIDATE`,
-`INSUFFICIENT_EVIDENCE`, `NOT_APPLICABLE`, `REJECTED_CONFLICT`,
+`INSUFFICIENT_EVIDENCE`, `NO_MATCH`, `NOT_APPLICABLE`, `REJECTED_CONFLICT`,
 `BUNDLE_DISABLED`, `BUNDLE_UNAVAILABLE`, and `BUNDLE_INVALID`.
 
 The product resource contains generated Consumer Contract JSON only. It is not
@@ -59,6 +60,11 @@ the HASK Knowledge Database, cannot be written at runtime, is separate from the
 operational SQLite database, and is replaceable only by a later validated
 release. Preview output contains no protected installation scope, entity/device
 IDs, database keys, digests, credentials, addresses, URLs, or raw rows.
+
+Current applicability is entity/platform based. A Tuya config entry with no
+exposed entities may therefore be shown as `NOT_APPLICABLE` even if the native
+status collector observed it. This does not mean that Tuya is absent or not
+installed; the current candidate bridge has no persisted subject to evaluate.
 
 ## Windows wheel and packaged application workflow
 
@@ -154,7 +160,7 @@ a named family, it inherits that family's classification.
 
 | Classification | Paths/families | Current role |
 |---|---|---|
-| **CURRENT PRODUCT CONTRACT** | This document; `hask_runtime/{CONSUMER_MATCHER_REQUIREMENTS_INVENTORY.json,RUNTIME_CONFIGURATION.md,PRODUCTION_RUNTIME_FOUNDATION.md,BUNDLE_LIFECYCLE.md,CACHE_ARCHITECTURE.md,TRUST_FOUNDATION.md,DB-001_HASK_DATABASE_FOUNDATION.md,DB-002_EXECUTABLE_CONSTRAINT_SEMANTICS.md,ENTITY_DEVICE_RELATIONSHIPS.json}`; `hask_runtime/ca001/*` | Current runtime, schema, identity, trust, and matcher boundaries. |
+| **CURRENT PRODUCT CONTRACT** | This document; `hask_runtime/{CONSUMER_MATCHER_REQUIREMENTS_INVENTORY.json,RUNTIME_CONFIGURATION.md,PRODUCTION_RUNTIME_FOUNDATION.md,BUNDLE_LIFECYCLE.md,BUNDLE_GENERATION.md,CACHE_ARCHITECTURE.md,TRUST_FOUNDATION.md,DB-001_HASK_DATABASE_FOUNDATION.md,DB-002_EXECUTABLE_CONSTRAINT_SEMANTICS.md,ENTITY_DEVICE_RELATIONSHIPS.json}`; `hask_runtime/ca001/*` | Current runtime, schema, identity, trust, and matcher boundaries. |
 | **CURRENT USER DOCUMENTATION** | The Windows and Home Assistant App workflows in this document, linked from the top-level `README.md` | Supported activation and safe verification guidance. |
 | **COMPLETED IMPLEMENTATION EVIDENCE** | `hask_pilot/*`; `hask_runtime/{I-001*,IM-001*,PI1*,r004/*}`; API/discovery inventories and reports matching `API_*`, `HOME_ASSISTANT_API*`, `HOME_ASSISTANT_SIGNAL*`, `FINAL_DISCOVERY*`, `HADOCS_API_GAP_ANALYSIS.md`, `HADOCS_NATIVE_SIGNAL_INVENTORY.md`, `EVENT_MODEL_ANALYSIS.md`, `LIVE_API_RESPONSE_CATALOG.md`, `OBJECT_GRAPH_ANALYSIS.md`, `OBSERVED_STRUCTURED_SIGNALS.json`, `OFFICIAL_VS_OBSERVED_COMPARISON.md`, `PRIVACY_CLASSIFICATION_REPORT.md`, `REGISTRY_ANALYSIS.md`, and `REST_VS_WEBSOCKET_REPORT.md` | Reproducibility, discovery, validation, and completed-batch evidence. |
 | **HISTORICAL GOVERNANCE/PROCESS** | `hask_runtime/{A-001*,AI-001*,AI-002*,DF-001*,DF-002*,G-001*,PS-001*,R-002*,R-003*,ARCHITECTURE_REVIEW*,ARCHITECTURAL_RISK_REGISTER.md,DESIGN_FREEZE*,OPEN_ITEMS_CLASSIFICATION.md}` | Records how earlier decisions were reached. They do not govern current normal product execution. |
@@ -178,8 +184,8 @@ No files are deleted or moved by this classification.
 - **HASK Knowledge Coverage Expansion** is the next separately authorized product
   phase after this HADocs boundary and its user workflows are accepted. It must
   begin from the existing approximately 333-record HASK baseline and use bounded,
-  reviewed Knowledge Packs in `D:\HA-Stability-Knowledge`. It must not run inside
-  `C:\HomeAssistantDocs`, use private installation data, or write operational
+  reviewed Knowledge Packs in the separate HASK knowledge workspace. It must not
+  run inside the HADocs repository, use private installation data, or write operational
   HADocs data back into HASK. See the [roadmap](../../ROADMAP.md#next-separate-phase-hask-knowledge-coverage-expansion).
 
 ## Recovery and release closeout checklist

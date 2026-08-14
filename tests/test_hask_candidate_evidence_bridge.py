@@ -546,13 +546,14 @@ def test_packaged_bundle_is_used_when_explicit_path_is_absent(tmp_path):
     assert bridge.candidates
     assert {item.matcher_id for item in bridge.candidates}
 
-    assert len(bridge.matcher_readiness) == 2
+    assert len(bridge.matcher_readiness) == 3
     readiness = {
         item.matcher_id: item for item in bridge.matcher_readiness
     }
     assert set(readiness) == {
         "unifi_controller_connectivity_failure",
         "mikrotik_api_connectivity_failure",
+        "tuya_integration_status_problem",
     }
     assert (
         readiness["unifi_controller_connectivity_failure"].state
@@ -560,5 +561,9 @@ def test_packaged_bundle_is_used_when_explicit_path_is_absent(tmp_path):
     )
     assert (
         readiness["mikrotik_api_connectivity_failure"].state
+        is MatcherReadinessState.NOT_APPLICABLE
+    )
+    assert (
+        readiness["tuya_integration_status_problem"].state
         is MatcherReadinessState.NOT_APPLICABLE
     )

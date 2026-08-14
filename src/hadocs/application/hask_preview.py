@@ -23,6 +23,7 @@ ANALYTICAL_IMPACT = (
 class PreviewClassification(StrEnum):
     SUPPORTED_CANDIDATE = "SUPPORTED_CANDIDATE"
     INSUFFICIENT_EVIDENCE = "INSUFFICIENT_EVIDENCE"
+    NO_MATCH = "NO_MATCH"
     NOT_APPLICABLE = "NOT_APPLICABLE"
     REJECTED_CONFLICT = "REJECTED_CONFLICT"
     BUNDLE_DISABLED = "BUNDLE_DISABLED"
@@ -146,7 +147,19 @@ def _empty_snapshot(
     )
 
 
-def _candidate_explanation(classification: PreviewClassification) -> str:
+def _candidate_explanation(
+    classification: PreviewClassification,
+    matcher_id: str,
+) -> str:
+    if (
+        classification is PreviewClassification.SUPPORTED_CANDIDATE
+        and matcher_id == "tuya_integration_status_problem"
+    ):
+        return (
+            "Home Assistant reports a problem with the Tuya integration. "
+            "This signal does not identify the underlying cause and does not "
+            "prove a fault in a physical device, Tuya Cloud, or the user's network."
+        )
     return {
         PreviewClassification.SUPPORTED_CANDIDATE: (
             "Validated local evidence supports an experimental HASK candidate; "
@@ -157,7 +170,8 @@ def _candidate_explanation(classification: PreviewClassification) -> str:
             "evidence is missing."
         ),
         PreviewClassification.NOT_APPLICABLE: (
-            "The validated knowledge does not apply to the observed platform context."
+            "The validated knowledge does not apply to the observed platform context. "
+            "This does not establish that the integration is absent."
         ),
         PreviewClassification.REJECTED_CONFLICT: (
             "Conflicting evidence rejected the candidate without changing HADocs analysis."
@@ -199,7 +213,10 @@ def _safe_candidates(result: object | None) -> tuple[PreviewCandidate, ...]:
                     if classification is PreviewClassification.SUPPORTED_CANDIDATE
                     else "not confirmed"
                 ),
-                explanation=_candidate_explanation(classification),
+                explanation=_candidate_explanation(
+                    classification,
+                    str(getattr(item, "matcher_id", "")),
+                ),
             )
         )
     ordered = sorted(
@@ -225,6 +242,7 @@ def _safe_matcher_readiness(
     allowed_states = {
         "READY",
         "BLOCKED",
+        "NO_MATCH",
         "NOT_APPLICABLE",
         "REJECTED_CONFLICT",
     }
@@ -302,6 +320,8 @@ def _preview_classification(
         return PreviewClassification.REJECTED_CONFLICT
     if "BLOCKED" in states:
         return PreviewClassification.INSUFFICIENT_EVIDENCE
+    if "NO_MATCH" in states and states <= {"NO_MATCH", "NOT_APPLICABLE"}:
+        return PreviewClassification.NO_MATCH
     if states and states == {"NOT_APPLICABLE"}:
         return PreviewClassification.NOT_APPLICABLE
     return PreviewClassification.INSUFFICIENT_EVIDENCE
@@ -430,6 +450,7 @@ class HaskPreviewService:
             limitations=(
                 "Only bounded typed matchers are executable; bundle record counts are not matcher counts.",
                 "UniFi and MikroTik diagnoses require authoritative controller/API results when those platforms are applicable.",
+                "Tuya native integration status identifies a Home Assistant lifecycle problem, not its underlying cause.",
                 "Authenticated probes and network logins are not performed.",
             ),
         )

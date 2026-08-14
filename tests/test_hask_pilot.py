@@ -11,7 +11,7 @@ from hadocs.knowledge.hask_pilot import BundleError, PilotConfig, load_bundle, r
 from hadocs.knowledge.hask_pilot.loader import REQUIRED, negotiate_version
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
-HASK_BUNDLE = REPOSITORY_ROOT / "src" / "hadocs" / "knowledge" / "hask_bundle" / "0.2.0"
+HASK_BUNDLE = REPOSITORY_ROOT / "src" / "hadocs" / "knowledge" / "hask_bundle" / "0.2.1"
 FIXTURES = Path(__file__).parent / "fixtures" / "hask_pilot"
 
 

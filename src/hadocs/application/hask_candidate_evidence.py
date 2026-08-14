@@ -37,6 +37,7 @@ _PLATFORM_PREDICATE = "entity_uses_platform"
 class CandidateClassification(StrEnum):
     SUPPORTED_CANDIDATE = "SUPPORTED_CANDIDATE"
     INSUFFICIENT_EVIDENCE = "INSUFFICIENT_EVIDENCE"
+    NO_MATCH = "NO_MATCH"
     NOT_APPLICABLE = "NOT_APPLICABLE"
     REJECTED_CONFLICT = "REJECTED_CONFLICT"
 
@@ -49,6 +50,7 @@ class CandidateBridgeState(StrEnum):
 class MatcherReadinessState(StrEnum):
     READY = "READY"
     BLOCKED = "BLOCKED"
+    NO_MATCH = "NO_MATCH"
     NOT_APPLICABLE = "NOT_APPLICABLE"
     REJECTED_CONFLICT = "REJECTED_CONFLICT"
 
@@ -123,6 +125,9 @@ class _DatabaseReader(Protocol):
     def list_entities_for_installation(
         self, installation_id: int
     ) -> tuple[Mapping[str, object], ...]: ...
+    def list_relationships_for_installation(
+        self, installation_id: int
+    ) -> tuple[Mapping[str, object], ...]: ...
 
 
 @dataclass(frozen=True, slots=True)
@@ -130,6 +135,7 @@ class _DomainStatusEvidence:
     observation_id: int
     domain: str
     entry_count: int
+    state_counts: tuple[tuple[str, int], ...]
     problem_entry_count: int
     unknown_state_count: int
 
@@ -188,13 +194,14 @@ def _domain_status_evidence(
             observation_id=observation_id,
             domain=domain,
             entry_count=int(payload["entry_count"]),
+            state_counts=tuple(sorted(
+                (str(state), int(count))
+                for state, count in state_counts.items()
+            )),
             problem_entry_count=problem_count,
             unknown_state_count=int(payload["unknown_state_count"]),
         )
     return by_domain, tuple(sorted(base_ids))
-    def list_relationships_for_installation(
-        self, installation_id: int
-    ) -> tuple[Mapping[str, object], ...]: ...
 
 
 def _frame(value: str) -> bytes:
@@ -295,6 +302,8 @@ def _matcher_readiness(
             state = MatcherReadinessState.REJECTED_CONFLICT
         elif CandidateClassification.INSUFFICIENT_EVIDENCE in classifications:
             state = MatcherReadinessState.BLOCKED
+        elif CandidateClassification.NO_MATCH in classifications:
+            state = MatcherReadinessState.NO_MATCH
         else:
             state = MatcherReadinessState.NOT_APPLICABLE
 
@@ -463,22 +472,34 @@ def build_candidate_evidence_bridge(
                         candidate_observation_ids = tuple(sorted(
                             (*base_observation_ids, native_status.observation_id)
                         ))
-                        if (
-                            native_status.entry_count > 1
-                            and 0 < native_status.problem_entry_count
-                            < native_status.entry_count
-                        ):
+                        if native_status.unknown_state_count > 0:
+                            pass
+                        elif len(native_status.state_counts) != 1:
                             classification = CandidateClassification.REJECTED_CONFLICT
                             rejection_code = "CONTRADICTORY_DOMAIN_STATUS_EVIDENCE"
                             candidate_missing = ()
-                        elif (
-                            native_status.entry_count == 1
-                            and native_status.unknown_state_count == 0
-                        ):
+                        else:
                             candidate_missing = tuple(
                                 item for item in missing
                                 if item != "NATIVE_PROBLEM_SIGNAL"
                             )
+                            if not candidate_missing:
+                                if (
+                                    native_status.problem_entry_count
+                                    == native_status.entry_count
+                                ):
+                                    classification = (
+                                        CandidateClassification.SUPPORTED_CANDIDATE
+                                    )
+                                elif native_status.problem_entry_count == 0:
+                                    classification = CandidateClassification.NO_MATCH
+                                else:
+                                    classification = (
+                                        CandidateClassification.REJECTED_CONFLICT
+                                    )
+                                    rejection_code = (
+                                        "CONTRADICTORY_DOMAIN_STATUS_EVIDENCE"
+                                    )
                 else:
                     classification = CandidateClassification.NOT_APPLICABLE
                     rejection_code = None
@@ -498,7 +519,7 @@ def build_candidate_evidence_bridge(
                 ))
         if orphaned_subjects:
             return _rejected("PERSISTED_EVIDENCE_CONFLICT")
-        ordered = tuple(sorted(
+        preliminary = sorted(
             candidates,
             key=lambda item: (
                 item.matcher_id,
@@ -506,7 +527,21 @@ def build_candidate_evidence_bridge(
                 item.hask_record_ref,
                 item.candidate_digest,
             ),
-        ))
+        )
+        deduplicated: list[CandidateEvidence] = []
+        supported_matchers: set[tuple[str, str, str]] = set()
+        for item in preliminary:
+            supported_key = (
+                item.matcher_id,
+                item.matcher_version,
+                item.hask_record_ref,
+            )
+            if item.classification is CandidateClassification.SUPPORTED_CANDIDATE:
+                if supported_key in supported_matchers:
+                    continue
+                supported_matchers.add(supported_key)
+            deduplicated.append(item)
+        ordered = tuple(deduplicated)
         return CandidateEvidenceBridgeResult(
             state=CandidateBridgeState.READY,
             candidates=ordered,
