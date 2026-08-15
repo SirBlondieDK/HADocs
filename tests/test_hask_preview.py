@@ -140,7 +140,7 @@ def test_corrupt_checksum_contract_and_minimum_version_fail_closed(
 def test_version_authority_is_shared_by_runtime_and_package_metadata() -> None:
     pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
     assert RELEASE_VERSION == "0.17.0"
-    assert __version__ == "0.17.0-rc2"
+    assert __version__ == "0.17.0-rc3"
     assert VersionNegotiator.HADOCS_VERSION == RELEASE_VERSION
     assert 'dynamic = ["version"]' in pyproject
     assert 'version = {attr = "hadocs.version.__version__"}' in pyproject

@@ -8,7 +8,7 @@ from dataclasses import dataclass
 # documented public desktop runtime baseline; the preview channel is kept
 # separately so SemVer minimum checks use the stable release triplet.
 RELEASE_VERSION = "0.17.0"
-RELEASE_CHANNEL = "rc2"
+RELEASE_CHANNEL = "rc3"
 
 
 @dataclass(frozen=True)
