@@ -13,7 +13,10 @@ powershell -ExecutionPolicy Bypass -File installer/build_windows.ps1
 The script builds the program files exactly once in the canonical staging
 directory, creates the portable ZIP from that directory, verifies every common
 file by relative path and SHA-256, and then points Inno Setup at the same
-directory.
+directory. It installs the versioned toolchain from `requirements-build.txt`
+before running tests and invokes pip, pytest, and PyInstaller through one Python
+3.14 interpreter. CI passes the interpreter installed by `actions/setup-python`
+explicitly; local builds resolve `py -3.14` when no interpreter is supplied.
 
 Outputs:
 
@@ -32,6 +35,10 @@ installer can be named unambiguously with:
 ```powershell
 powershell -ExecutionPolicy Bypass -File installer/build_windows.ps1 -SkipTests -SkipDependencies -TestArtifact
 ```
+
+Use `-SkipDependencies` only when `requirements-build.txt` has already been
+installed into the same Python 3.14 interpreter used for the build. The script
+always verifies PyInstaller through that interpreter before staging begins.
 
 For RC4 this produces `HADocs_Setup_v0.17.0-rc4-audit-test.exe`. Test
 installers are local validation artifacts and are not published as releases.

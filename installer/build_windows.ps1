@@ -4,7 +4,8 @@ param(
     [switch]$SkipPackaging,
     [switch]$SkipInstaller,
     [switch]$TestArtifact,
-    [string]$ArtifactRoot
+    [string]$ArtifactRoot,
+    [string]$PythonExecutable
 )
 
 $ErrorActionPreference = "Stop"
@@ -49,16 +50,28 @@ function Assert-NativeSuccess([string]$Action) {
     }
 }
 
-if (!$SkipTests) {
-    py -3.14 -m pytest
-    Assert-NativeSuccess "Test suite"
+$Python = if ($PythonExecutable) {
+    (Resolve-Path -LiteralPath $PythonExecutable -ErrorAction Stop).Path
+} else {
+    $ResolvedPython = py -3.14 -c "import sys; print(sys.executable)"
+    Assert-NativeSuccess "Python 3.14 interpreter discovery"
+    (Resolve-Path -LiteralPath $ResolvedPython.Trim() -ErrorAction Stop).Path
 }
 
+& $Python -c "import sys; sys.exit(0 if sys.version_info[:2] == (3, 14) else 'Python 3.14 is required for the canonical Windows build.')"
+Assert-NativeSuccess "Python 3.14 interpreter validation"
+
 if (!$SkipDependencies) {
-    py -3.14 -m pip install -r requirements.txt
-    Assert-NativeSuccess "Runtime dependency installation"
-    py -3.14 -m pip install pyinstaller
-    Assert-NativeSuccess "PyInstaller installation"
+    & $Python -m pip install -r requirements-build.txt
+    Assert-NativeSuccess "Build dependency installation"
+}
+
+& $Python -m PyInstaller --version
+Assert-NativeSuccess "PyInstaller availability for selected Python"
+
+if (!$SkipTests) {
+    & $Python -m pytest
+    Assert-NativeSuccess "Test suite"
 }
 
 if (Test-Path -LiteralPath $WindowsRoot) {
@@ -69,7 +82,7 @@ if (Test-Path -LiteralPath $WorkDirectory) {
 }
 New-Item -ItemType Directory -Force -Path $StageParent, $ManifestDirectory | Out-Null
 
-py -3.14 -m PyInstaller installer/HADocs.spec --clean --noconfirm --distpath $StageParent --workpath $WorkDirectory
+& $Python -m PyInstaller installer/HADocs.spec --clean --noconfirm --distpath $StageParent --workpath $WorkDirectory
 Assert-NativeSuccess "Canonical PyInstaller staging build"
 if (!(Test-Path -LiteralPath (Join-Path $Stage "HADocs.exe"))) {
     throw "Canonical Windows staging build did not create HADocs.exe."
