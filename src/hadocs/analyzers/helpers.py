@@ -4,6 +4,7 @@ from hadocs.analyzers.rules import (
     PHYSICAL_DOMAINS,
     SYSTEM_PLATFORMS,
 )
+from hadocs.core.entity_eligibility import is_disabled_entity
 
 IMPORTANT_DOMAINS = {
     "light", "switch", "sensor", "binary_sensor", "camera",
@@ -58,6 +59,12 @@ def friendly_name(entity: dict, idx: dict) -> str:
 
 
 def is_ignored_entity(entity: dict) -> bool:
+    # Raw analyzer callers receive entity-registry records rather than the
+    # typed EntityModel. Apply the same registry eligibility policy at this
+    # boundary so disabled entities cannot become analytical signals.
+    if is_disabled_entity(entity):
+        return True
+
     entity_id = entity["entity_id"].lower()
     domain = entity_id.split(".")[0]
     if domain in IGNORED_DOMAINS:
