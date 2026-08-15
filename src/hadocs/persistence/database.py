@@ -51,13 +51,16 @@ SCHEMA = [
 ]
 
 def default_database_path() -> Path:
+    from hadocs.platform.paths import AppPaths
+
+    paths = AppPaths.discover()
     explicit = os.environ.get('HADOCS_DATABASE_FILE')
     if explicit:
-        return Path(explicit).expanduser().resolve()
+        return paths.resolve_data_path(explicit)
     config = os.environ.get('HADOCS_CONFIG_FILE')
     if config:
-        return Path(config).expanduser().resolve().parent / 'hadocs.db'
-    return Path('config/hadocs.db').resolve()
+        return paths.resolve_data_path(config).parent / 'hadocs.db'
+    return paths.config_dir / 'hadocs.db'
 
 class Database:
     def __init__(self, path: Path | str | None = None) -> None:

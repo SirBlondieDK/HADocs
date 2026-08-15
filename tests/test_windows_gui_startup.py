@@ -70,3 +70,30 @@ def test_gui_startup_failure_is_logged_and_returns_nonzero(tmp_path, monkeypatch
         encoding="utf-8"
     )
     assert displayed_paths == [expected_log]
+
+
+def test_frozen_installed_bootstrap_migrates_before_gui_import(tmp_path, monkeypatch):
+    import main as launcher
+    import hadocs.platform.paths as paths_module
+
+    install = tmp_path / "Program Files" / "HADocs"
+    resources = install / "_internal"
+    local_app_data = tmp_path / "profile" / "AppData" / "Local"
+    (install / "config").mkdir(parents=True)
+    (install / ".hadocs-installed").touch()
+    (install / "config/config.json").write_text(
+        '{"project_name": "Legacy RC3"}', encoding="utf-8"
+    )
+    monkeypatch.setattr(paths_module.sys, "platform", "win32")
+    monkeypatch.setattr(paths_module.sys, "frozen", True, raising=False)
+    monkeypatch.setattr(paths_module.sys, "executable", str(install / "HADocs.exe"))
+    monkeypatch.setattr(paths_module.sys, "_MEIPASS", str(resources), raising=False)
+    monkeypatch.setenv("LOCALAPPDATA", str(local_app_data))
+    monkeypatch.delenv("HADOCS_ROOT", raising=False)
+
+    result = launcher._run_gui(lambda: None)
+
+    migrated = local_app_data / "HADocs/config/config.json"
+    assert result == 0
+    assert migrated.read_text(encoding="utf-8") == '{"project_name": "Legacy RC3"}'
+    assert (install / "config/config.json").exists()

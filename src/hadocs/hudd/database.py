@@ -13,7 +13,11 @@ DEFAULT_DATABASE_PATH = PACKAGE_DIR / "data" / "hudd.sqlite"
 def database_path() -> Path:
     """Return the configured HUDD database path."""
     configured = os.getenv("HUDD_DATABASE_PATH")
-    return Path(configured).expanduser().resolve() if configured else DEFAULT_DATABASE_PATH
+    if not configured:
+        return DEFAULT_DATABASE_PATH
+    from hadocs.platform.paths import AppPaths
+
+    return AppPaths.discover().resolve_resource_path(configured)
 
 
 def connect(path: str | Path | None = None, *, read_only: bool = False) -> sqlite3.Connection:

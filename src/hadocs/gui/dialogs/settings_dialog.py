@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
+from hadocs.gui.config_persistence import try_config_callback, try_save_config
 from hadocs.gui.theme import Theme
 from hadocs.utils.config import save_config
 
@@ -152,25 +153,30 @@ class SettingsDialog(tk.Toplevel):
     def save(self):
         token = self.token_var.get().strip()
 
-        try:
-            from hadocs.security.credential_store import set_home_assistant_token
-            if token:
-                set_home_assistant_token(token)
-        except Exception as exc:
-            messagebox.showerror("HADocs", f"Could not save token in Windows Credential Manager:\n{exc}")
-            return
-
         self.cfg["ha_url"] = self.url_var.get().strip()
         self.cfg["project_name"] = self.project_var.get().strip() or "My Smart Home"
         self.cfg["output_dir"] = self.output_var.get().strip() or "output"
         self.cfg["cache_dir"] = self.cfg.get("cache_dir", "cache")
         self.cfg["open_dashboard_after_scan"] = bool(self.auto_open_var.get())
         self._apply_database_fields(self.cfg)
-        self.cfg.pop("token", None)
+        if token:
+            self.cfg["token"] = token
+        else:
+            self.cfg.pop("token", None)
         self.cfg.pop("ha_token", None)
 
-        save_config(self.cfg)
-        self.on_save(self.cfg)
+        saved, error = try_save_config(self.cfg, save=save_config)
+        if not saved:
+            messagebox.showerror("HADocs", error, parent=self)
+            return
+        self.cfg.pop("token", None)
+        notified, error = try_config_callback(
+            self.cfg,
+            callback=self.on_save,
+        )
+        if not notified:
+            messagebox.showerror("HADocs", error, parent=self)
+            return
         self.destroy()
 
     def forget_token(self):
@@ -279,7 +285,13 @@ class SettingsDialog(tk.Toplevel):
         self.cfg = updated
         self.database_enabled_var.set(enabled_before)
         self.cfg["hask_database_enabled"] = enabled_before
-        self.on_save(self.cfg)
+        notified, error = try_config_callback(
+            self.cfg,
+            callback=self.on_save,
+        )
+        if not notified:
+            messagebox.showerror("HADocs", error, parent=self)
+            return
         self.refresh_database_status()
         message = (
             "Database identity was already initialized; no changes were made."

@@ -1,6 +1,7 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import messagebox, ttk
 from hadocs.gui.assets import load_logo_image
+from hadocs.gui.config_persistence import try_config_callback, try_save_config
 from hadocs.gui.theme import Theme
 from hadocs.utils.config import save_config
 
@@ -109,8 +110,15 @@ class FirstRunWizard(tk.Toplevel):
         self.cfg["ha_url"] = self.url_var.get().strip()
         self.cfg["token"] = self.token_var.get().strip()
         self.cfg["project_name"] = self.project_var.get().strip() or "My Smart Home"
-        save_config(self.cfg)
-        self.on_finish(self.cfg)
+        saved, error = try_save_config(self.cfg, save=save_config)
+        if not saved:
+            messagebox.showerror("HADocs setup", error, parent=self)
+            return
+        notified, error = try_config_callback(
+            self.cfg,
+            callback=self.on_finish,
+        )
+        if not notified:
+            messagebox.showerror("HADocs setup", error, parent=self)
+            return
         self.destroy()
-
-

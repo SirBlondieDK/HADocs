@@ -5,6 +5,9 @@ on:
     tags:
       - "v*"
 
+permissions:
+  contents: read
+
 jobs:
   build-windows:
     runs-on: windows-latest
@@ -23,17 +26,11 @@ jobs:
         run: python -m pytest
       - name: Build Windows package
         shell: pwsh
-        run: |
-          if (Test-Path installer/build_windows.ps1) {
-            powershell -ExecutionPolicy Bypass -File installer/build_windows.ps1
-          } else {
-            pyinstaller --noconfirm --windowed --name HADocs main.py
-          }
-      - name: Zip package
-        shell: pwsh
-        run: Compress-Archive -Path dist\HADocs\* -DestinationPath HADocs-${{ github.ref_name }}-win64.zip -Force
+        run: powershell -ExecutionPolicy Bypass -File installer/build_windows.ps1 -SkipTests -SkipDependencies -SkipInstaller
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: HADocs-${{ github.ref_name }}-win64
-          path: HADocs-${{ github.ref_name }}-win64.zip
+          path: |
+            dist/windows/portable/*.zip
+            dist/windows/manifests/*.sha256
