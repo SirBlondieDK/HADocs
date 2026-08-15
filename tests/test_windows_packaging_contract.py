@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def test_inno_uses_canonical_stage_and_explicit_wrapper_marker() -> None:
     script = (ROOT / "installer/HADocs.iss").read_text(encoding="utf-8")
 
-    assert '#define MyAppVersion "0.17.0-rc3"' in script
+    assert '#define MyAppVersion "0.17.0-rc4"' in script
     assert '#define MyPayloadDir "..\\dist\\windows\\staging\\HADocs"' in script
     assert 'Source: "{#MyPayloadDir}\\*"' in script
     assert script.count('Source: "{#MyPayloadDir}') == 1
@@ -37,7 +37,10 @@ def test_portable_and_installer_share_one_build_and_manifest_contract() -> None:
     assert "Assert-NativeSuccess \"Test suite\"" in build
     assert "Assert-NativeSuccess \"Canonical PyInstaller staging build\"" in build
     assert "Assert-NativeSuccess \"Inno Setup compilation\"" in build
-    assert "-pathfix-audit-test" in build
+    assert "-audit-test" in build
+    assert "[string]$ArtifactRoot" in build
+    assert "ArtifactRoot must stay inside the repository checkout" in build
+    assert 'Join-Path $WindowsRoot "pyinstaller-work"' in build
 
 
 def test_ci_uses_the_canonical_windows_build_script() -> None:

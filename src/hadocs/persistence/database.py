@@ -57,9 +57,6 @@ def default_database_path() -> Path:
     explicit = os.environ.get('HADOCS_DATABASE_FILE')
     if explicit:
         return paths.resolve_data_path(explicit)
-    config = os.environ.get('HADOCS_CONFIG_FILE')
-    if config:
-        return paths.resolve_data_path(config).parent / 'hadocs.db'
     return paths.config_dir / 'hadocs.db'
 
 class Database:
