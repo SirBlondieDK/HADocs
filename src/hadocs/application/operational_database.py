@@ -228,7 +228,9 @@ def initialize_operational_database_identity(
     )
     if not path_text:
         raise ValueError("an explicit operational database path is required")
-    path = Path(path_text).expanduser().resolve()
+    from hadocs.platform.paths import AppPaths
+
+    path = AppPaths.discover().resolve_data_path(path_text)
     if path.name.lower() == "hudd.sqlite":
         raise ValueError("the operational database must not reuse hudd.sqlite")
 

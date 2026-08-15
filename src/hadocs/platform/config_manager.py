@@ -4,14 +4,21 @@ import json
 import os
 from pathlib import Path
 from urllib.parse import urlparse
+from uuid import uuid4
 
 from hadocs.runtime import RuntimeEnvironment, detect_runtime
 from hadocs.security.credential_store import (
+    delete_home_assistant_token,
+    get_home_assistant_token,
     inject_token_into_runtime_config,
-    migrate_plaintext_token_from_config,
+    set_home_assistant_token,
 )
 
-from .paths import AppPaths
+from .paths import AppPaths, RuntimeMode
+
+
+class ConfigPersistenceError(RuntimeError):
+    """A redacted configuration persistence failure safe for UI display."""
 
 
 DEFAULT_CONFIG = {
@@ -42,15 +49,15 @@ SENSITIVE_CONFIG_FILES = [
 
 def resolve_config_file(paths: AppPaths | None = None) -> Path:
     """Resolve the active configuration file while supporting legacy installs."""
+    app_paths = paths or AppPaths.discover()
     configured_path = os.environ.get("HADOCS_CONFIG_FILE")
 
     if configured_path:
-        return Path(configured_path).expanduser()
-
-    app_paths = paths or AppPaths.discover()
+        return app_paths.resolve_data_path(configured_path)
 
     if (
-        app_paths.legacy_config_file.exists()
+        app_paths.mode is not RuntimeMode.WINDOWS_INSTALLED
+        and app_paths.legacy_config_file.exists()
         and not app_paths.config_file.exists()
     ):
         return app_paths.legacy_config_file
@@ -69,7 +76,7 @@ class ConfigManager:
     ) -> None:
         self.paths = paths or AppPaths.discover()
         self.config_file = (
-            Path(config_file).expanduser()
+            self.paths.resolve_data_path(config_file)
             if config_file is not None
             else resolve_config_file(self.paths)
         )
@@ -173,10 +180,13 @@ class ConfigManager:
         else:
             stored_config = {}
 
-        clean_config = migrate_plaintext_token_from_config(stored_config or {})
-
-        if clean_config != (stored_config or {}) and self.config_file.exists():
+        clean_config = dict(stored_config or {})
+        if any(key in clean_config for key in ("token", "ha_token")):
+            # Save performs the credential/config update as one recoverable
+            # operation and removes the plaintext token from disk.
             self.save(clean_config)
+            clean_config.pop("token", None)
+            clean_config.pop("ha_token", None)
 
         merged = dict(DEFAULT_CONFIG)
         merged.update(clean_config or {})
@@ -184,21 +194,78 @@ class ConfigManager:
         merged = inject_token_into_runtime_config(merged)
         merged = self.apply_environment_overrides(merged)
         merged = self.apply_runtime_overrides(merged)
+        merged = self.resolve_runtime_paths(merged)
 
         return merged
 
     def save(self, config: dict | None) -> None:
-        """Save non-sensitive configuration values."""
-        clean = migrate_plaintext_token_from_config(config or {})
-        clean = dict(clean or {})
+        """Atomically save config and recover credential changes on failure."""
 
-        clean.pop("token", None)
-        clean.pop("ha_token", None)
+        clean = dict(config or {})
+        token_value = clean.pop("token", None) or clean.pop("ha_token", None)
+        token = str(token_value) if token_value else None
+        temporary = self.config_file.with_name(
+            f".{self.config_file.name}.hadocs-save-{uuid4().hex}.tmp"
+        )
+        previous_token: str | None = None
+        credential_changed = False
 
-        self.config_file.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            # Creating and flushing the temporary file proves the runtime root
+            # is writable before Windows Credential Manager is changed.
+            self.config_file.parent.mkdir(parents=True, exist_ok=True)
+            with temporary.open("x", encoding="utf-8") as file:
+                json.dump(clean, file, indent=2)
+                file.write("\n")
+                file.flush()
+                os.fsync(file.fileno())
 
-        with self.config_file.open("w", encoding="utf-8") as file:
-            json.dump(clean, file, indent=2)
+            if token:
+                previous_token = get_home_assistant_token()
+                if token != previous_token:
+                    credential_changed = bool(set_home_assistant_token(token))
+
+            os.replace(temporary, self.config_file)
+        except Exception as error:
+            if credential_changed:
+                try:
+                    if previous_token:
+                        set_home_assistant_token(previous_token)
+                    else:
+                        delete_home_assistant_token()
+                except Exception:
+                    pass
+            raise ConfigPersistenceError(
+                "HADocs could not save configuration in the selected data "
+                "directory. Check folder permissions and available disk space."
+            ) from error
+        finally:
+            try:
+                temporary.unlink(missing_ok=True)
+            except OSError:
+                pass
+
+    def resolve_runtime_paths(self, config: dict | None) -> dict:
+        """Resolve mutable relative paths against the writable data root."""
+
+        result = dict(config or {})
+        for key in (
+            "output_dir",
+            "cache_dir",
+            "logs_dir",
+            "hask_database_path",
+            "hask_database_credential_store_path",
+        ):
+            value = result.get(key)
+            if isinstance(value, (str, Path)) and str(value).strip():
+                result[key] = str(self.paths.resolve_data_path(value))
+
+        bundle = result.get("hask_bundle_path")
+        if isinstance(bundle, (str, Path)) and str(bundle).strip():
+            result["hask_bundle_path"] = str(
+                self.paths.resolve_resource_path(bundle)
+            )
+        return result
 
     def validate(self, config: dict) -> list[str]:
         """Return blocking configuration problems."""

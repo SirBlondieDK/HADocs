@@ -2,11 +2,14 @@ from pathlib import Path
 import sys
 import tkinter as tk
 
+from hadocs.platform.paths import AppPaths
+
 LOGO_DEBUG = []
 
 
 def _project_roots():
-    roots = [Path(getattr(sys, "_MEIPASS", Path.cwd())), Path.cwd()]
+    paths = AppPaths.discover()
+    roots = [paths.application_root]
     try:
         roots.extend(Path(__file__).resolve().parents)
     except Exception:
@@ -30,7 +33,7 @@ def app_path(*parts):
         candidate = root.joinpath(*parts)
         if candidate.exists():
             return candidate
-    return Path.cwd().joinpath(*parts)
+    return AppPaths.discover().resolve_resource_path(Path(*parts))
 
 
 def find_logo_file():

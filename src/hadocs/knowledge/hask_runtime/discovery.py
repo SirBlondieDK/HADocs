@@ -35,12 +35,14 @@ class BundleDiscovery:
 
     @staticmethod
     def _defaults() -> tuple[Path, ...]:
+        from hadocs.platform.paths import AppPaths
+
         paths = []
         program_data = os.getenv("PROGRAMDATA")
         if program_data:
             paths.append(Path(program_data) / "HADocs" / "knowledge" / "hask")
         paths.append(Path.home() / ".local" / "share" / "hadocs" / "hask")
-        paths.append(Path.cwd() / "knowledge" / "hask")
+        paths.append(AppPaths.discover().resolve_resource_path("knowledge/hask"))
         return tuple(paths)
 
     def discover(self, configured: Path | None = None) -> DiscoveryResult:

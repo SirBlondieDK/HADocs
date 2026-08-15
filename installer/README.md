@@ -2,7 +2,7 @@
 
 This directory contains the Windows packaging configuration for HADocs.
 
-## Build the executable
+## Canonical Windows build
 
 Run from the repository root:
 
@@ -10,18 +10,33 @@ Run from the repository root:
 powershell -ExecutionPolicy Bypass -File installer/build_windows.ps1
 ```
 
-Output:
+The script builds the program files exactly once in the canonical staging
+directory, creates the portable ZIP from that directory, verifies every common
+file by relative path and SHA-256, and then points Inno Setup at the same
+directory.
+
+Outputs:
 
 ```text
-dist/HADocs/HADocs.exe
+dist/windows/staging/HADocs/HADocs.exe
+dist/windows/portable/HADocs_v0.17.0-rc3_win64.zip
+dist/windows/installer/HADocs_Setup_v0.17.0-rc3.exe
+dist/windows/manifests/common-payload.sha256
 ```
 
 ## Build the installer
 
-Install Inno Setup, then compile:
+Install Inno Setup 6 before running the complete script. A local manual-test
+installer can be named unambiguously with:
 
-```text
-installer/HADocs.iss
+```powershell
+powershell -ExecutionPolicy Bypass -File installer/build_windows.ps1 -SkipTests -SkipDependencies -TestArtifact
 ```
+
+The portable payload has no runtime marker. The installer wrapper adds
+`installer/installed-runtime.marker` as `.hadocs-installed` beside `HADocs.exe`.
+That marker is the explicit contract selecting `%LOCALAPPDATA%\HADocs`; it is
+the only intended payload difference. The installer never removes that user
+data directory during uninstall.
 
 Run the complete test suite before creating a release artifact. See the [release checklist](../docs/release/Release-Checklist.md).

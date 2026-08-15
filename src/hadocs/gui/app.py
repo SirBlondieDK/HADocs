@@ -8,6 +8,7 @@ from hadocs.gui.theme import Theme
 from hadocs.gui.dialogs.about_dialog import AboutDialog
 from hadocs.gui.dialogs.first_run import FirstRunWizard
 from hadocs.gui.dialogs.settings_dialog import SettingsDialog
+from hadocs.gui.config_persistence import try_save_config
 from hadocs.gui.widgets.health_gauge import HealthGauge
 from hadocs.collectors.homeassistant import build_indexes, collect_all
 from hadocs.gui.assets import LOGO_DEBUG, find_logo_file, load_logo_image
@@ -411,7 +412,13 @@ class App(tk.Tk):
         self.update_idletasks()
 
     def run_doctor(self):
-        save_config(self.get_cfg())
+        config_to_save = self.get_cfg()
+        config_to_save.pop("token", None)
+        config_to_save.pop("ha_token", None)
+        saved, error = try_save_config(config_to_save, save=save_config)
+        if not saved:
+            messagebox.showerror("HADocs", error, parent=self)
+            return
         self.log.delete("1.0", "end")
         if not self.console_visible:
             self.toggle_console()
@@ -464,7 +471,16 @@ class App(tk.Tk):
 
 
     def run(self):
-        save_config(self.get_cfg())
+        config_to_save = self.get_cfg()
+        config_to_save.pop("token", None)
+        config_to_save.pop("ha_token", None)
+        saved, error = try_save_config(config_to_save, save=save_config)
+        if not saved:
+            self.status_label.config(text="Ready")
+            self.set_metric(self.metric_status, "Idle")
+            self.run_btn.config(state="normal", text="🚀 Scan Home Assistant")
+            messagebox.showerror("HADocs", error, parent=self)
+            return
         self.run_btn.config(state="disabled", text="⟳ Scanning...")
         self.progress.config(value=5)
         self.status_label.config(text="Connecting...")

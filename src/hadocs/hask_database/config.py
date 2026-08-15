@@ -36,6 +36,12 @@ _SECRET_HANDLE_PATTERN = re.compile(
 _SCOPE_DOMAIN = "hadocs-generic-metadata/installation-scope/v1"
 
 
+def _runtime_data_path(value: str) -> Path:
+    from hadocs.platform.paths import AppPaths
+
+    return AppPaths.discover().resolve_data_path(value)
+
+
 def _frame(value: str) -> bytes:
     normalized = unicodedata.normalize("NFC", value)
     encoded = normalized.encode("utf-8", errors="strict")
@@ -199,7 +205,7 @@ class HaskDatabaseConfig:
     def from_environment(cls) -> HaskDatabaseConfig:
         enabled = _environment_bool("HADOCS_HASK_DATABASE_ENABLED", False)
         raw_path = os.environ.get("HADOCS_HASK_DATABASE_PATH", "").strip()
-        path = Path(raw_path).expanduser().resolve() if raw_path else None
+        path = _runtime_data_path(raw_path) if raw_path else None
         return cls(enabled=enabled, path=path)
 
 
@@ -258,7 +264,7 @@ class HaskDatabaseApplicationConfig:
             "hask_database_path",
         )
         path_text = "" if raw_path is None else str(raw_path).strip()
-        path = Path(path_text).expanduser().resolve() if path_text else None
+        path = _runtime_data_path(path_text) if path_text else None
         raw_reference = _configured_value(
             values,
             "HADOCS_HASK_DATABASE_INSTALLATION_REF",

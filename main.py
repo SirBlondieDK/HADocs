@@ -23,6 +23,7 @@ def main() -> int:
     _ensure_source_package_path()
 
     if len(sys.argv) > 1:
+        _bootstrap_runtime()
         from hadocs.cli.main import main as run_cli
 
         return run_cli()
@@ -35,6 +36,7 @@ def _run_gui(gui_runner: Callable[[], None] | None = None) -> int:
     """Run the GUI and report startup failures after the console is hidden."""
 
     try:
+        _bootstrap_runtime()
         if gui_runner is None:
             from hadocs.gui.app import run_gui
 
@@ -47,6 +49,16 @@ def _run_gui(gui_runner: Callable[[], None] | None = None) -> int:
         log_path = _write_gui_startup_error(details)
         _show_gui_startup_error(log_path)
         return 1
+
+
+def _bootstrap_runtime() -> None:
+    """Prepare only installed mutable data before config modules are imported."""
+
+    from hadocs.platform import AppPaths, MigrationManager, RuntimeMode
+
+    paths = AppPaths.discover()
+    if paths.mode is RuntimeMode.WINDOWS_INSTALLED:
+        MigrationManager(paths).migrate()
 
 
 def _write_gui_startup_error(details: str) -> Path | None:

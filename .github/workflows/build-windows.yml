@@ -6,6 +6,9 @@ on:
     tags:
       - "v*"
 
+permissions:
+  contents: read
+
 jobs:
   build-windows:
     runs-on: windows-latest
@@ -27,11 +30,15 @@ jobs:
       - name: Run tests
         run: python -m pytest
 
-      - name: Build with PyInstaller
-        run: python -m PyInstaller installer/HADocs.spec --clean --noconfirm
+      - name: Build canonical Windows payload
+        shell: pwsh
+        run: powershell -ExecutionPolicy Bypass -File installer/build_windows.ps1 -SkipTests -SkipDependencies -SkipInstaller
 
       - name: Upload executable artifact
         uses: actions/upload-artifact@v4
         with:
           name: HADocs-Windows
-          path: dist/HADocs
+          path: |
+            dist/windows/staging/HADocs
+            dist/windows/portable/*.zip
+            dist/windows/manifests/*.sha256

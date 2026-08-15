@@ -150,7 +150,12 @@ def read_operational_database_status(
     path_text = _configured_text(
         config, "HADOCS_HASK_DATABASE_PATH", "hask_database_path"
     )
-    path = Path(path_text).expanduser() if path_text else None
+    if path_text:
+        from hadocs.platform.paths import AppPaths
+
+        path = AppPaths.discover().resolve_data_path(path_text)
+    else:
+        path = None
     present = bool(path is not None and path.is_file())
     schema_version: int | None = None
     integrity_status = "not available"
