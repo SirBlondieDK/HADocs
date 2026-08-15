@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
 
 from hadocs.core.device_overrides import DeviceOverride, get_device_policy
@@ -114,12 +115,14 @@ def _primary_entities(
 
 def _healthy_primary_entities(
     entities: list[EntityModel],
+    *,
+    now: datetime | None = None,
 ) -> list[EntityModel]:
     healthy: list[EntityModel] = []
 
     for entity in _primary_entities(entities):
         interpretation = interpret_entity_state(entity)
-        freshness = determine_entity_freshness(entity)
+        freshness = determine_entity_freshness(entity, now=now)
 
         if (
             interpretation.meaning is StateMeaning.HEALTHY
@@ -136,6 +139,8 @@ def _healthy_primary_entities(
 
 def _freshness_evidence(
     entities: list[EntityModel],
+    *,
+    now: datetime | None = None,
 ) -> tuple[
     list[tuple[EntityModel, FreshnessStatus]],
     list[tuple[EntityModel, FreshnessStatus]],
@@ -144,7 +149,7 @@ def _freshness_evidence(
     very_stale: list[tuple[EntityModel, FreshnessStatus]] = []
 
     for entity in _primary_entities(entities):
-        freshness = determine_entity_freshness(entity)
+        freshness = determine_entity_freshness(entity, now=now)
 
         if freshness.status is FreshnessStatus.VERY_STALE:
             very_stale.append((entity, freshness.status))
@@ -157,9 +162,11 @@ def _freshness_evidence(
 def determine_device_reachability(
     device: DeviceModel,
     overrides: tuple[DeviceOverride, ...] = (),
+    *,
+    now: datetime | None = None,
 ) -> ReachabilityResult:
     """Determine device reachability from explicit and supporting evidence."""
-    policy = get_device_policy(device, overrides)
+    policy = get_device_policy(device, overrides, now)
 
     if policy.ownership == "external":
         return ReachabilityResult(
@@ -231,7 +238,7 @@ def determine_device_reachability(
             evidence=tuple(explicit_sleeping),
         )
 
-    healthy_entities = _healthy_primary_entities(relevant_entities)
+    healthy_entities = _healthy_primary_entities(relevant_entities, now=now)
 
     if healthy_entities:
         evidence = tuple(
@@ -251,7 +258,8 @@ def determine_device_reachability(
 
     primary_entities = _primary_entities(relevant_entities)
     stale_entities, very_stale_entities = _freshness_evidence(
-        relevant_entities
+        relevant_entities,
+        now=now,
     )
 
     if (

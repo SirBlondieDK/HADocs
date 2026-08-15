@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta, timezone
+
 from hadocs.core.device_reachability import (
     ReachabilityStatus,
     determine_device_reachability,
@@ -12,6 +14,7 @@ def make_entity(
     importance: str = "normal",
     is_ignored: bool = False,
     is_physical: bool = True,
+    last_reported: str | None = None,
 ) -> EntityModel:
     return EntityModel(
         entity_id=entity_id,
@@ -24,6 +27,7 @@ def make_entity(
         is_ignored=is_ignored,
         is_physical=is_physical,
         importance=importance,
+        last_reported=last_reported,
     )
 
 
@@ -124,6 +128,33 @@ def test_healthy_primary_entity_supports_online_status():
 
     assert result.status is ReachabilityStatus.ONLINE
     assert result.confidence == 70
+
+
+def test_injected_now_controls_freshness_based_reachability():
+    reported_at = datetime(2026, 7, 16, 17, 59, tzinfo=timezone.utc)
+    device = make_device(
+        [
+            make_entity(
+                "sensor.room_temperature",
+                "21.5",
+                last_reported=reported_at.isoformat(),
+            ),
+        ]
+    )
+
+    current = determine_device_reachability(
+        device,
+        now=reported_at + timedelta(minutes=1),
+    )
+    very_stale = determine_device_reachability(
+        device,
+        now=reported_at + timedelta(days=31),
+    )
+
+    assert current.status is ReachabilityStatus.ONLINE
+    assert current.confidence == 70
+    assert very_stale.status is ReachabilityStatus.OFFLINE
+    assert very_stale.confidence == 85
 
 
 def test_only_expected_unknown_entities_do_not_mark_device_offline():

@@ -207,7 +207,11 @@ def calculate_integration_health(
 
         for device in physical_devices:
             policy = get_device_policy(device, overrides, now)
-            reachability = determine_device_reachability(device, overrides)
+            reachability = determine_device_reachability(
+                device,
+                overrides,
+                now=now,
+            )
             freshness = (
                 FreshnessStatus.UNKNOWN
                 if policy.ignore_stale or policy.expected_offline

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 
@@ -26,7 +27,10 @@ def test_inno_uses_canonical_stage_and_explicit_wrapper_marker() -> None:
 def test_portable_and_installer_share_one_build_and_manifest_contract() -> None:
     build = (ROOT / "installer/build_windows.ps1").read_text(encoding="utf-8")
 
-    assert build.count("-m PyInstaller") == 1
+    assert build.count("-m PyInstaller") == 2
+    assert build.count("-m PyInstaller installer/HADocs.spec") == 1
+    assert "& $Python -m PyInstaller" in build
+    assert "py -3.14 -m PyInstaller" not in build
     assert 'Compress-Archive -Path (Join-Path $Stage "*")' in build
     assert "Get-PayloadManifest $Stage" in build
     assert "Get-PayloadManifest $VerificationRoot" in build
@@ -41,6 +45,25 @@ def test_portable_and_installer_share_one_build_and_manifest_contract() -> None:
     assert "[string]$ArtifactRoot" in build
     assert "ArtifactRoot must stay inside the repository checkout" in build
     assert 'Join-Path $WindowsRoot "pyinstaller-work"' in build
+
+
+def test_canonical_build_owns_and_verifies_its_python_toolchain() -> None:
+    build = (ROOT / "installer/build_windows.ps1").read_text(encoding="utf-8")
+    requirements = (ROOT / "requirements-build.txt").read_text(encoding="utf-8")
+
+    assert "-r requirements.txt" in requirements.splitlines()
+    assert re.search(r"^PyInstaller==\d+\.\d+\.\d+$", requirements, re.MULTILINE)
+    assert "[string]$PythonExecutable" in build
+    assert "& $Python -m pip install -r requirements-build.txt" in build
+    assert "& $Python -m PyInstaller --version" in build
+    assert "PyInstaller availability for selected Python" in build
+    assert build.index("if (!$SkipDependencies)") < build.index(
+        "& $Python -m PyInstaller --version"
+    )
+    assert build.index("& $Python -m PyInstaller --version") < build.index(
+        "Remove-Item -LiteralPath $WindowsRoot"
+    )
+    assert "& $Python -m pytest" in build
 
 
 def test_ci_uses_the_canonical_windows_build_script() -> None:
