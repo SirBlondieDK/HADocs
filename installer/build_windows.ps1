@@ -3,7 +3,8 @@ param(
     [switch]$SkipDependencies,
     [switch]$SkipPackaging,
     [switch]$SkipInstaller,
-    [switch]$TestArtifact
+    [switch]$TestArtifact,
+    [string]$ArtifactRoot
 )
 
 $ErrorActionPreference = "Stop"
@@ -14,14 +15,33 @@ if (!(Test-Path -LiteralPath (Join-Path $RepositoryRoot "main.py"))) {
     throw "Run this script from a HADocs repository checkout."
 }
 
-$Version = "0.17.0-rc3"
-$WindowsRoot = Join-Path $RepositoryRoot "dist\windows"
+$Version = "0.17.0-rc4"
+if ($ArtifactRoot) {
+    $WindowsRoot = if ([System.IO.Path]::IsPathRooted($ArtifactRoot)) {
+        [System.IO.Path]::GetFullPath($ArtifactRoot)
+    } else {
+        [System.IO.Path]::GetFullPath((Join-Path $RepositoryRoot $ArtifactRoot))
+    }
+    $RepositoryPrefix = $RepositoryRoot.TrimEnd('\') + '\'
+    if (!$WindowsRoot.StartsWith(
+        $RepositoryPrefix,
+        [System.StringComparison]::OrdinalIgnoreCase
+    )) {
+        throw "ArtifactRoot must stay inside the repository checkout."
+    }
+} else {
+    $WindowsRoot = Join-Path $RepositoryRoot "dist\windows"
+}
 $StageParent = Join-Path $WindowsRoot "staging"
 $Stage = Join-Path $StageParent "HADocs"
 $ManifestDirectory = Join-Path $WindowsRoot "manifests"
 $PortableDirectory = Join-Path $WindowsRoot "portable"
 $InstallerDirectory = Join-Path $WindowsRoot "installer"
-$WorkDirectory = Join-Path $RepositoryRoot "build\windows"
+$WorkDirectory = if ($ArtifactRoot) {
+    Join-Path $WindowsRoot "pyinstaller-work"
+} else {
+    Join-Path $RepositoryRoot "build\windows"
+}
 
 function Assert-NativeSuccess([string]$Action) {
     if ($LASTEXITCODE -ne 0) {
@@ -97,7 +117,7 @@ if (!$SkipInstaller) {
         throw "Inno Setup 6 compiler was not found. Use -SkipInstaller only for an explicit executable-only build."
     }
     New-Item -ItemType Directory -Force -Path $InstallerDirectory | Out-Null
-    $OutputName = if ($TestArtifact) { "HADocs_Setup_v${Version}-pathfix-audit-test" } else { "HADocs_Setup_v${Version}" }
+    $OutputName = if ($TestArtifact) { "HADocs_Setup_v${Version}-audit-test" } else { "HADocs_Setup_v${Version}" }
     & $Compiler "/DMyPayloadDir=$Stage" "/DMyOutputDir=$InstallerDirectory" "/DMyOutputBaseFilename=$OutputName" "installer\HADocs.iss"
     Assert-NativeSuccess "Inno Setup compilation"
     Copy-Item -LiteralPath $CommonManifest -Destination (Join-Path $ManifestDirectory "installer-common-payload.sha256")

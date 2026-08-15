@@ -9,6 +9,7 @@ from hadocs.platform.paths import (
     RuntimeMode,
     RuntimePathError,
 )
+from hadocs.persistence.database import default_database_path
 
 
 def _frozen_windows(monkeypatch, executable: Path, resources: Path) -> None:
@@ -153,6 +154,18 @@ def test_container_config_file_does_not_move_the_data_root(
 
     assert paths.mode is RuntimeMode.CONTAINER
     assert paths.data_root == cwd.resolve()
+
+
+def test_config_file_override_does_not_move_default_database(
+    tmp_path: Path, monkeypatch
+) -> None:
+    runtime = tmp_path / "runtime"
+    external_config = tmp_path / "external" / "config.json"
+    monkeypatch.setenv("HADOCS_ROOT", str(runtime))
+    monkeypatch.setenv("HADOCS_CONFIG_FILE", str(external_config))
+    monkeypatch.delenv("HADOCS_DATABASE_FILE", raising=False)
+
+    assert default_database_path() == (runtime / "config/hadocs.db").resolve()
 
 
 def test_mutable_and_resource_paths_use_different_roots(tmp_path: Path) -> None:

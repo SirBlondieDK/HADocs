@@ -19,8 +19,8 @@ Outputs:
 
 ```text
 dist/windows/staging/HADocs/HADocs.exe
-dist/windows/portable/HADocs_v0.17.0-rc3_win64.zip
-dist/windows/installer/HADocs_Setup_v0.17.0-rc3.exe
+dist/windows/portable/HADocs_v0.17.0-rc4_win64.zip
+dist/windows/installer/HADocs_Setup_v0.17.0-rc4.exe
 dist/windows/manifests/common-payload.sha256
 ```
 
@@ -31,6 +31,14 @@ installer can be named unambiguously with:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File installer/build_windows.ps1 -SkipTests -SkipDependencies -TestArtifact
+```
+
+For RC4 this produces `HADocs_Setup_v0.17.0-rc4-audit-test.exe`. Test
+installers are local validation artifacts and are not published as releases.
+To preserve an existing local build, select a distinct ignored output root:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File installer/build_windows.ps1 -SkipTests -SkipDependencies -TestArtifact -ArtifactRoot dist/windows-rc4-audit
 ```
 
 The portable payload has no runtime marker. The installer wrapper adds

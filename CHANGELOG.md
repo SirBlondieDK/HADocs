@@ -2,6 +2,34 @@
 
 Notable changes to HADocs are documented in this file. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) where practical.
 
+## [0.17.0-rc4] - 2026-08-15
+
+### Fixed
+
+- Moved installed Windows mutable runtime data from Program Files to
+  `%LOCALAPPDATA%\HADocs`, while preserving portable, source, Home Assistant App,
+  and container path contracts.
+- Separated packaged application resources from writable config, output, cache,
+  logs, and relative database paths, with traversal-safe relative resolution.
+- Made configuration and credential persistence atomic, recoverable, and
+  secret-safe across setup, Settings, Scan, and Doctor.
+- Added conservative, idempotent legacy JSON migration without overwriting or
+  deleting existing data and without automatically copying SQLite/WAL databases.
+
+### Packaging and security
+
+- Added explicit installed-runtime detection and writable shortcut/post-install
+  working directories without placing the marker in portable artifacts.
+- Built portable ZIP and installer payloads from one canonical staging tree with
+  relative SHA-256 manifests and native build-command failure checks.
+- Restricted release workflows to read-only repository contents.
+
+RC4 replaces the unpublished RC3 candidate after its release-blocking Windows
+runtime-root defect was found during manual validation. HASK Candidate Readiness,
+the typed Tuya matcher, HASK bundle `0.2.1`, and the issue #43 correction remain
+included. HASK stays experimental, read-only, and analytically isolated. Issue #44
+is not included. See the [RC4 release notes](docs/release/v0.17.0-rc4.md).
+
 ## [0.17.0-rc3] - 2026-08-15
 
 ### Added
@@ -103,5 +131,6 @@ See the [canonical integration status](docs/integration/HASK_INTEGRATION_STATUS.
 - Preserved `output/index.html`, `output/explorer/index.html`, and `output/index.md` generation.
 - Corrected report wrapper, generator compatibility, and secure GUI scan validation issues.
 
+[0.17.0-rc4]: https://github.com/SirBlondieDK/HADocs/compare/v0.17.0-rc3...v0.17.0-rc4
 [0.17.0-rc3]: https://github.com/SirBlondieDK/HADocs/compare/v0.17.0-rc2...v0.17.0-rc3
 [0.13.0]: https://github.com/SirBlondieDK/HADocs/releases/tag/v0.13.0
