@@ -2,6 +2,30 @@
 
 Notable changes to HADocs are documented in this file. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) where practical.
 
+## [0.17.0-rc3] - 2026-08-15
+
+### Added
+
+- Exposed redacted HASK candidate readiness, bridge state, evaluation counts, and safe rejection diagnostics.
+- Added Tuya as the third executable typed HASK matcher with deterministic `NOT_APPLICABLE`, `BLOCKED`, `NO_MATCH`, `READY`, and `REJECTED_CONFLICT` outcomes.
+- Added immutable packaged HASK bundle `0.2.1` and a deterministic, validated bundle-generation workflow.
+
+### Changed
+
+- Distinguished matcher records from executable matchers and candidate evaluations from supported candidates.
+- Included bundle `0.2.1` and its generator sources in Python, Windows, container, and source-distribution packaging paths.
+
+### Fixed
+
+- Applied the central disabled-entity policy at the remaining raw analyzer boundary so registry-disabled ZHA LQI entities cannot become analytical signals.
+
+### Security and isolation
+
+- Kept HASK experimental, local-first, read-only, redacted, and isolated from normal findings, Root Causes, recommendations, device status, and Health Score.
+- Required explicit authoritative Tuya problem evidence before emitting a supported candidate.
+
+See the [RC3 release notes](docs/release/v0.17.0-rc3.md).
+
 ## Unreleased — HASK Preview release candidate
 
 ### Added
@@ -79,4 +103,5 @@ See the [canonical integration status](docs/integration/HASK_INTEGRATION_STATUS.
 - Preserved `output/index.html`, `output/explorer/index.html`, and `output/index.md` generation.
 - Corrected report wrapper, generator compatibility, and secure GUI scan validation issues.
 
+[0.17.0-rc3]: https://github.com/SirBlondieDK/HADocs/compare/v0.17.0-rc2...v0.17.0-rc3
 [0.13.0]: https://github.com/SirBlondieDK/HADocs/releases/tag/v0.13.0

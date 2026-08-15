@@ -9,7 +9,8 @@ Releases are prepared from a clean working tree after tests and platform checks 
 5. Complete the [release checklist](Release-Checklist.md).
 6. Create and push the release tag.
 7. Confirm GitHub Actions completes successfully.
-8. Publish the GitHub Release and attach the expected artifacts.
+8. Publish the GitHub Release and attach the expected artifacts. Mark release
+   candidates as prereleases; do not publish them as stable releases.
 
 Do not publish credentials, private reports, caches, or local configuration in source archives or release artifacts.
 

@@ -1,5 +1,5 @@
 name: HADocs
-version: "0.17.0-rc2"
+version: "0.17.0-rc3"
 slug: hadocs
 description: Local Home Assistant analysis, diagnostics and stability platform
 url: https://github.com/SirBlondieDK/HADocs
