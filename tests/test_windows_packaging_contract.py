@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def test_inno_uses_canonical_stage_and_explicit_wrapper_marker() -> None:
     script = (ROOT / "installer/HADocs.iss").read_text(encoding="utf-8")
 
-    assert '#define MyAppVersion "0.17.0-rc4"' in script
+    assert '#define MyAppVersion "0.17.0-rc5"' in script
     assert '#define MyPayloadDir "..\\dist\\windows\\staging\\HADocs"' in script
     assert 'Source: "{#MyPayloadDir}\\*"' in script
     assert script.count('Source: "{#MyPayloadDir}') == 1
