@@ -16,7 +16,7 @@ if (!(Test-Path -LiteralPath (Join-Path $RepositoryRoot "main.py"))) {
     throw "Run this script from a HADocs repository checkout."
 }
 
-$Version = "0.17.0-rc4"
+$Version = "0.17.0-rc5"
 if ($ArtifactRoot) {
     $WindowsRoot = if ([System.IO.Path]::IsPathRooted($ArtifactRoot)) {
         [System.IO.Path]::GetFullPath($ArtifactRoot)

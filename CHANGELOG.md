@@ -2,6 +2,23 @@
 
 Notable changes to HADocs are documented in this file. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) where practical.
 
+## [0.17.0-rc5] - 2026-08-15
+
+### Fixed
+
+- Made Windows build dependencies reproducible by installing the authoritative
+  `requirements-build.txt` toolchain, including pinned PyInstaller `6.21.0`,
+  into the same explicit Python 3.14 interpreter used for tests and packaging.
+- Propagated one analysis timestamp through integration freshness and device
+  reachability so the 30-day boundary is deterministic without changing score
+  calibration or default wall-clock behavior.
+
+RC5 replaces the unpublished RC3 and RC4 candidates. It retains RC4's writable
+installed Windows runtime root under `%LOCALAPPDATA%\HADocs` and the RC3 HASK
+Candidate Readiness, typed Tuya matcher, HASK bundle `0.2.1`, and issue #43
+correction. HASK remains experimental, read-only, and analytically isolated.
+Issue #44 is not included. See the [RC5 release notes](docs/release/v0.17.0-rc5.md).
+
 ## [0.17.0-rc4] - 2026-08-15
 
 ### Fixed
@@ -131,6 +148,7 @@ See the [canonical integration status](docs/integration/HASK_INTEGRATION_STATUS.
 - Preserved `output/index.html`, `output/explorer/index.html`, and `output/index.md` generation.
 - Corrected report wrapper, generator compatibility, and secure GUI scan validation issues.
 
+[0.17.0-rc5]: https://github.com/SirBlondieDK/HADocs/compare/v0.17.0-rc4...v0.17.0-rc5
 [0.17.0-rc4]: https://github.com/SirBlondieDK/HADocs/compare/v0.17.0-rc3...v0.17.0-rc4
 [0.17.0-rc3]: https://github.com/SirBlondieDK/HADocs/compare/v0.17.0-rc2...v0.17.0-rc3
 [0.13.0]: https://github.com/SirBlondieDK/HADocs/releases/tag/v0.13.0

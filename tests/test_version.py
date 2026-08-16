@@ -19,18 +19,18 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def test_version_metadata():
     assert RELEASE_VERSION == "0.17.0"
-    assert RELEASE_CHANNEL == "rc4"
-    assert __version__ == "0.17.0-rc4"
-    assert __version__.replace("-", "") == "0.17.0rc4"
+    assert RELEASE_CHANNEL == "rc5"
+    assert __version__ == "0.17.0-rc5"
+    assert __version__.replace("-", "") == "0.17.0rc5"
     assert APP_NAME == "HADocs"
     assert "Home Assistant" in APP_DESCRIPTION
 
 
 def test_product_versions():
-    assert WINDOWS.display_version == "0.17.0-rc4"
-    assert CORE.display_version == "0.17.0-rc4"
-    assert DOCKER.display_version == "0.17.0-rc4"
-    assert HOME_ASSISTANT_ADDON.display_version == "0.17.0-rc4"
+    assert WINDOWS.display_version == "0.17.0-rc5"
+    assert CORE.display_version == "0.17.0-rc5"
+    assert DOCKER.display_version == "0.17.0-rc5"
+    assert HOME_ASSISTANT_ADDON.display_version == "0.17.0-rc5"
 
 
 def test_distribution_and_web_versions_follow_product_authority():

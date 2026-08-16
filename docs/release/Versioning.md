@@ -1,10 +1,10 @@
 # Versioning
 
 HADocs stable release tags use `v<major>.<minor>.<patch>`. Release candidates add
-the channel suffix, for example `v0.17.0-rc4`.
+the channel suffix, for example `v0.17.0-rc5`.
 
-Product surfaces display `0.17.0-rc4`, while Python package metadata normalizes
-the same release to the PEP 440 form `0.17.0rc4`.
+Product surfaces display `0.17.0-rc5`, while Python package metadata normalizes
+the same release to the PEP 440 form `0.17.0rc5`.
 
 Do not infer release stability from a Docker tag. `sirblondiedk/hadocs:dev` is the current preview/development channel, and no `latest` Docker channel is configured.
 

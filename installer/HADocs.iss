@@ -2,7 +2,7 @@
 ; staging payload and adds only the installed-runtime marker.
 
 #define MyAppName "HADocs"
-#define MyAppVersion "0.17.0-rc4"
+#define MyAppVersion "0.17.0-rc5"
 #define MyAppPublisher "SirBlondieDK"
 #define MyAppURL "https://github.com/SirBlondieDK/HADocs"
 #define MyAppExeName "HADocs.exe"
@@ -14,7 +14,7 @@
   #define MyOutputDir "..\dist\windows\installer"
 #endif
 #ifndef MyOutputBaseFilename
-  #define MyOutputBaseFilename "HADocs_Setup_v0.17.0-rc4"
+  #define MyOutputBaseFilename "HADocs_Setup_v0.17.0-rc5"
 #endif
 
 [Setup]
