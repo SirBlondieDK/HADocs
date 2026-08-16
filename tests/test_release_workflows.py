@@ -18,7 +18,7 @@ def test_windows_workflows_delegate_to_the_canonical_python_314_build(workflow_n
         ROOT / ".github" / "workflows" / workflow_name
     ).read_text(encoding="utf-8")
 
-    assert 'python-version: "3.14"' in workflow
+    assert 'python-version: "3.14.3"' in workflow
     assert "installer/build_windows.ps1" in workflow
     assert '-PythonExecutable "$env:pythonLocation\\python.exe"' in workflow
     assert "-SkipDependencies" not in workflow
@@ -28,6 +28,15 @@ def test_windows_workflows_delegate_to_the_canonical_python_314_build(workflow_n
     assert "releases: write" not in workflow
     assert "gh release" not in workflow.lower()
     assert "action-gh-release" not in workflow.lower()
+
+
+def test_general_python_tests_remain_separate_from_release_build_pin():
+    workflow = (
+        ROOT / ".github" / "workflows" / "tests.yml"
+    ).read_text(encoding="utf-8")
+
+    assert 'python-version: "3.14"' in workflow
+    assert 'python-version: "3.14.3"' not in workflow
 
 
 def test_tagged_release_artifact_keeps_the_triggering_ref_name():

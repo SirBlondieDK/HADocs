@@ -22,6 +22,12 @@ def _ensure_source_package_path() -> None:
 def main() -> int:
     _ensure_source_package_path()
 
+    if sys.argv[1:] == ["--windows-runtime-smoke"]:
+        from hadocs.runtime.windows_smoke import run_windows_runtime_smoke
+
+        print(run_windows_runtime_smoke())
+        return 0
+
     if len(sys.argv) > 1:
         _bootstrap_runtime()
         from hadocs.cli.main import main as run_cli
