@@ -2,6 +2,9 @@ name: Build Windows App
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches:
+      - main
   push:
     tags:
       - "v*"
@@ -14,12 +17,39 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v4
+      # Default checkout tests the pull-request merge ref and the pushed tag commit.
+      - name: Check out triggering merge ref or tag
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.14"
+          python-version: "3.14.3"
+
+      - name: Resolve safe artifact suffix
+        id: artifact-name
+        shell: pwsh
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          if ($env:EVENT_NAME -eq "pull_request") {
+            if ($env:PR_NUMBER -notmatch '^\d+$') {
+              throw "Pull-request artifact suffix requires a numeric PR number."
+            }
+            $Suffix = "pr-$env:PR_NUMBER"
+          } elseif ($env:REF_TYPE -eq "tag") {
+            $Suffix = $env:REF_NAME
+          } else {
+            $Suffix = "run-$env:RUN_ID"
+          }
+          if ($Suffix -notmatch '^[A-Za-z0-9][A-Za-z0-9._-]*$') {
+            throw "Artifact suffix contains unsafe characters."
+          }
+          "suffix=$Suffix" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
 
       - name: Build canonical Windows payload
         shell: pwsh
@@ -28,7 +58,7 @@ jobs:
       - name: Upload executable artifact
         uses: actions/upload-artifact@v4
         with:
-          name: HADocs-Windows
+          name: HADocs-Windows-${{ steps.artifact-name.outputs.suffix }}
           path: |
             dist/windows/staging/HADocs
             dist/windows/portable/*.zip

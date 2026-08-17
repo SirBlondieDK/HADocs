@@ -66,6 +66,9 @@ if (!$SkipDependencies) {
     Assert-NativeSuccess "Build dependency installation"
 }
 
+& $Python installer/windows_runtime_contract.py inspect-interpreter
+Assert-NativeSuccess "Build-interpreter Tcl/Tk and GUI validation"
+
 & $Python -m PyInstaller --version
 Assert-NativeSuccess "PyInstaller availability for selected Python"
 
@@ -91,6 +94,11 @@ if (Test-Path -LiteralPath (Join-Path $Stage ".hadocs-installed")) {
     throw "Installer marker must never be present in the portable staging payload."
 }
 
+& $Python installer/windows_runtime_contract.py validate-payload --root $Stage
+Assert-NativeSuccess "Canonical staging runtime validation"
+& $Python installer/windows_runtime_contract.py smoke-executable --executable (Join-Path $Stage "HADocs.exe") --expected-version $Version
+Assert-NativeSuccess "Canonical staging executable smoke-test"
+
 function Get-PayloadManifest([string]$Root) {
     $rootPath = (Resolve-Path -LiteralPath $Root).Path
     Get-ChildItem -LiteralPath $rootPath -File -Recurse | Sort-Object FullName | ForEach-Object {
@@ -111,6 +119,10 @@ if (!$SkipPackaging) {
     $VerificationRoot = Join-Path $WindowsRoot "portable-verification"
     New-Item -ItemType Directory -Force -Path $VerificationRoot | Out-Null
     Expand-Archive -LiteralPath $PortableZip -DestinationPath $VerificationRoot -Force
+    & $Python installer/windows_runtime_contract.py validate-payload --root $VerificationRoot
+    Assert-NativeSuccess "Extracted portable runtime validation"
+    & $Python installer/windows_runtime_contract.py smoke-executable --executable (Join-Path $VerificationRoot "HADocs.exe") --expected-version $Version
+    Assert-NativeSuccess "Extracted portable executable smoke-test"
     $PortableManifest = Join-Path $ManifestDirectory "portable-payload.sha256"
     Get-PayloadManifest $VerificationRoot | Set-Content -LiteralPath $PortableManifest -Encoding utf8
     if ((Get-Content -Raw $CommonManifest) -cne (Get-Content -Raw $PortableManifest)) {

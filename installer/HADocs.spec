@@ -4,12 +4,30 @@
 
 from pathlib import Path
 
+from PyInstaller.utils.hooks.tcl_tk import tcltk_info
+
 ROOT = Path.cwd()
 SRC = ROOT / "src"
 MAIN = ROOT / "main.py"
 
 if not MAIN.exists():
     raise FileNotFoundError(f"main.py not found at {MAIN}. Run PyInstaller from the repository root.")
+
+# PyInstaller's non-macOS tkinter runtime hook always requires its remapped
+# Tcl/Tk data directories. Fail during analysis if the selected interpreter
+# cannot provide the central scripts that the hook will expect at runtime.
+tcl_tk_destinations = {Path(destination) for destination, _, _ in tcltk_info.data_files}
+required_tcl_tk_destinations = {
+    Path(tcltk_info.TCL_ROOTNAME) / "init.tcl",
+    Path(tcltk_info.TK_ROOTNAME) / "tk.tcl",
+}
+missing_tcl_tk_destinations = required_tcl_tk_destinations - tcl_tk_destinations
+if not tcltk_info.available or missing_tcl_tk_destinations:
+    missing = ", ".join(sorted(path.as_posix() for path in missing_tcl_tk_destinations))
+    raise RuntimeError(
+        "Selected Python cannot provide the required physical Tcl/Tk data "
+        f"for PyInstaller (missing: {missing or 'Tcl/Tk discovery'})."
+    )
 
 datas = []
 for migration in sorted((SRC / "hadocs" / "hask_database" / "sql").glob("*.sql")):
@@ -50,6 +68,7 @@ a = Analysis(
         "hadocs.gui.app",
         "hadocs.gui.modern_app",
         "hadocs.gui.output_actions",
+        "hadocs.runtime.windows_smoke",
         "hadocs.api.client",
         "hadocs.reports.generator",
         "hadocs.html.explorer",

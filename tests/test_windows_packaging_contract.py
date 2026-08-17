@@ -45,6 +45,30 @@ def test_portable_and_installer_share_one_build_and_manifest_contract() -> None:
     assert "[string]$ArtifactRoot" in build
     assert "ArtifactRoot must stay inside the repository checkout" in build
     assert 'Join-Path $WindowsRoot "pyinstaller-work"' in build
+    assert "inspect-interpreter" in build
+    assert build.index("if (!$SkipDependencies)") < build.index(
+        "inspect-interpreter"
+    )
+    assert build.index("inspect-interpreter") < build.index(
+        "-m PyInstaller installer/HADocs.spec"
+    )
+    assert "validate-payload --root $Stage" in build
+    assert "validate-payload --root $VerificationRoot" in build
+    assert "smoke-executable --executable (Join-Path $Stage" in build
+    assert "smoke-executable --executable (Join-Path $VerificationRoot" in build
+    assert "Canonical staging executable smoke-test" in build
+    assert "Extracted portable executable smoke-test" in build
+
+
+def test_spec_fails_closed_when_pyinstaller_lacks_tcl_tk_data() -> None:
+    spec = (ROOT / "installer/HADocs.spec").read_text(encoding="utf-8")
+
+    assert "tcltk_info.data_files" in spec
+    assert "tcltk_info.TCL_ROOTNAME" in spec
+    assert "tcltk_info.TK_ROOTNAME" in spec
+    assert 'Path(tcltk_info.TCL_ROOTNAME) / "init.tcl"' in spec
+    assert 'Path(tcltk_info.TK_ROOTNAME) / "tk.tcl"' in spec
+    assert "missing_tcl_tk_destinations" in spec
 
 
 def test_canonical_build_owns_and_verifies_its_python_toolchain() -> None:

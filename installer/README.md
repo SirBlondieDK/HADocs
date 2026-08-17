@@ -18,6 +18,21 @@ before running tests and invokes pip, pytest, and PyInstaller through one Python
 3.14 interpreter. CI passes the interpreter installed by `actions/setup-python`
 explicitly; local builds resolve `py -3.14` when no interpreter is supplied.
 
+The two release-packaging workflows pin Python `3.14.3`, the known-good
+physical Tcl/Tk 8.6 layout used by the accepted RC5 audit installer. Ordinary
+Python test workflows continue to follow the current Python 3.14 patch release.
+The pin prevents a release build from silently switching Tcl/Tk layouts; it is
+backed by fail-closed validation rather than used as a substitute for it.
+
+Before PyInstaller starts, the canonical script imports tkinter, initializes a
+display-free Tcl interpreter, imports the HADocs GUI and credential modules,
+and requires physical Tcl and Tk data sources including `init.tcl` and
+`tk.tcl`. After staging and again after portable ZIP extraction, it validates
+the remapped `_internal\_tcl_data` and `_internal\_tk_data` trees, required
+packaged resources and privacy boundaries. It then runs both
+`HADocs.exe --version` and the noninteractive GUI/Tcl runtime smoke command.
+Any missing runtime data, failed executable, or wrong version stops the build.
+
 Outputs:
 
 ```text
